@@ -1,0 +1,542 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - plumed test coverage - tools/Tools.h</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">tools</a> - Tools.h<span style="font-size: 80%;"> (source / <a href="Tools.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">plumed test coverage</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">76</td>
+            <td class="headerCovTableEntry">92</td>
+            <td class="headerCovTableEntryMed">82.6 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2024-10-18 14:29:08</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">399</td>
+            <td class="headerCovTableEntry">434</td>
+            <td class="headerCovTableEntryHi">91.9 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</a>
+<a name="2"><span class="lineNum">       2 </span>            :    Copyright (c) 2011-2023 The plumed team</a>
+<a name="3"><span class="lineNum">       3 </span>            :    (see the PEOPLE file at the root of the distribution for a list of names)</a>
+<a name="4"><span class="lineNum">       4 </span>            : </a>
+<a name="5"><span class="lineNum">       5 </span>            :    See http://www.plumed.org for more information.</a>
+<a name="6"><span class="lineNum">       6 </span>            : </a>
+<a name="7"><span class="lineNum">       7 </span>            :    This file is part of plumed, version 2.</a>
+<a name="8"><span class="lineNum">       8 </span>            : </a>
+<a name="9"><span class="lineNum">       9 </span>            :    plumed is free software: you can redistribute it and/or modify</a>
+<a name="10"><span class="lineNum">      10 </span>            :    it under the terms of the GNU Lesser General Public License as published by</a>
+<a name="11"><span class="lineNum">      11 </span>            :    the Free Software Foundation, either version 3 of the License, or</a>
+<a name="12"><span class="lineNum">      12 </span>            :    (at your option) any later version.</a>
+<a name="13"><span class="lineNum">      13 </span>            : </a>
+<a name="14"><span class="lineNum">      14 </span>            :    plumed is distributed in the hope that it will be useful,</a>
+<a name="15"><span class="lineNum">      15 </span>            :    but WITHOUT ANY WARRANTY; without even the implied warranty of</a>
+<a name="16"><span class="lineNum">      16 </span>            :    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</a>
+<a name="17"><span class="lineNum">      17 </span>            :    GNU Lesser General Public License for more details.</a>
+<a name="18"><span class="lineNum">      18 </span>            : </a>
+<a name="19"><span class="lineNum">      19 </span>            :    You should have received a copy of the GNU Lesser General Public License</a>
+<a name="20"><span class="lineNum">      20 </span>            :    along with plumed.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</a>
+<a name="21"><span class="lineNum">      21 </span>            : +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */</a>
+<a name="22"><span class="lineNum">      22 </span>            : #ifndef __PLUMED_tools_Tools_h</a>
+<a name="23"><span class="lineNum">      23 </span>            : #define __PLUMED_tools_Tools_h</a>
+<a name="24"><span class="lineNum">      24 </span>            : </a>
+<a name="25"><span class="lineNum">      25 </span>            : #include &quot;AtomNumber.h&quot;</a>
+<a name="26"><span class="lineNum">      26 </span>            : #include &quot;Vector.h&quot;</a>
+<a name="27"><span class="lineNum">      27 </span>            : #include &quot;Tensor.h&quot;</a>
+<a name="28"><span class="lineNum">      28 </span>            : #include &lt;vector&gt;</a>
+<a name="29"><span class="lineNum">      29 </span>            : #include &lt;string&gt;</a>
+<a name="30"><span class="lineNum">      30 </span>            : #include &lt;cctype&gt;</a>
+<a name="31"><span class="lineNum">      31 </span>            : #include &lt;cstdio&gt;</a>
+<a name="32"><span class="lineNum">      32 </span>            : #include &lt;cmath&gt;</a>
+<a name="33"><span class="lineNum">      33 </span>            : #include &lt;limits&gt;</a>
+<a name="34"><span class="lineNum">      34 </span>            : #include &lt;algorithm&gt;</a>
+<a name="35"><span class="lineNum">      35 </span>            : #include &lt;sstream&gt;</a>
+<a name="36"><span class="lineNum">      36 </span>            : #include &lt;memory&gt;</a>
+<a name="37"><span class="lineNum">      37 </span>            : #include &lt;cstddef&gt;</a>
+<a name="38"><span class="lineNum">      38 </span>            : #include &lt;queue&gt;</a>
+<a name="39"><span class="lineNum">      39 </span>            : #include &lt;mutex&gt;</a>
+<a name="40"><span class="lineNum">      40 </span>            : </a>
+<a name="41"><span class="lineNum">      41 </span>            : namespace PLMD {</a>
+<a name="42"><span class="lineNum">      42 </span>            : </a>
+<a name="43"><span class="lineNum">      43 </span>            : class IFile;</a>
+<a name="44"><span class="lineNum">      44 </span>            : </a>
+<a name="45"><span class="lineNum">      45 </span>            : /// \ingroup TOOLBOX</a>
+<a name="46"><span class="lineNum">      46 </span>            : /// Very small non-zero number</a>
+<a name="47"><span class="lineNum">      47 </span>            : const double epsilon(std::numeric_limits&lt;double&gt;::epsilon());</a>
+<a name="48"><span class="lineNum">      48 </span>            : </a>
+<a name="49"><span class="lineNum">      49 </span>            : /// \ingroup TOOLBOX</a>
+<a name="50"><span class="lineNum">      50 </span>            : /// Boltzman constant in kj/K</a>
+<a name="51"><span class="lineNum">      51 </span>            : const double kBoltzmann(0.0083144621);</a>
+<a name="52"><span class="lineNum">      52 </span>            : </a>
+<a name="53"><span class="lineNum">      53 </span>            : /// \ingroup TOOLBOX</a>
+<a name="54"><span class="lineNum">      54 </span>            : /// PI</a>
+<a name="55"><span class="lineNum">      55 </span>            : const double pi(3.141592653589793238462643383279502884197169399375105820974944592307);</a>
+<a name="56"><span class="lineNum">      56 </span>            : </a>
+<a name="57"><span class="lineNum">      57 </span>            : const double dp2cutoff(6.25);</a>
+<a name="58"><span class="lineNum">      58 </span>            : </a>
+<a name="59"><span class="lineNum">      59 </span>            : const double dp2cutoffA=1.00193418799744762399; // 1.0/(1-std::exp(-dp2cutoff));</a>
+<a name="60"><span class="lineNum">      60 </span>            : const double dp2cutoffB=-.00193418799744762399; // -std::exp(-dp2cutoff)/(1-std::exp(-dp2cutoff));</a>
+<a name="61"><span class="lineNum">      61 </span>            : </a>
+<a name="62"><span class="lineNum">      62 </span><span class="lineCov">      30397 : inline static bool dp2cutoffNoStretch() {</span></a>
+<a name="63"><span class="lineNum">      63 </span><span class="lineCov">      30397 :   static const auto* res=std::getenv(&quot;PLUMED_DP2CUTOFF_NOSTRETCH&quot;);</span></a>
+<a name="64"><span class="lineNum">      64 </span><span class="lineCov">      30397 :   return res;</span></a>
+<a name="65"><span class="lineNum">      65 </span>            : }</a>
+<a name="66"><span class="lineNum">      66 </span>            : </a>
+<a name="67"><span class="lineNum">      67 </span>            : /// \ingroup TOOLBOX</a>
+<a name="68"><span class="lineNum">      68 </span>            : /// Empty class which just contains several (static) tools</a>
+<a name="69"><span class="lineNum">      69 </span>            : class Tools {</a>
+<a name="70"><span class="lineNum">      70 </span>            : /// class to convert a string to a generic type T</a>
+<a name="71"><span class="lineNum">      71 </span>            :   template&lt;class T&gt;</a>
+<a name="72"><span class="lineNum">      72 </span>            :   static bool convertToAny(const std::string &amp; str,T &amp;t);</a>
+<a name="73"><span class="lineNum">      73 </span>            : /// class to convert a string to a real type T.</a>
+<a name="74"><span class="lineNum">      74 </span>            : /// T should be either float, double, or long double</a>
+<a name="75"><span class="lineNum">      75 </span>            :   template&lt;class T&gt;</a>
+<a name="76"><span class="lineNum">      76 </span>            :   static bool convertToReal(const std::string &amp; str,T &amp;t);</a>
+<a name="77"><span class="lineNum">      77 </span>            : /// class to convert a string to a int type T</a>
+<a name="78"><span class="lineNum">      78 </span>            :   template&lt;class T&gt;</a>
+<a name="79"><span class="lineNum">      79 </span>            :   static bool convertToInt(const std::string &amp; str,T &amp;t);</a>
+<a name="80"><span class="lineNum">      80 </span>            : public:</a>
+<a name="81"><span class="lineNum">      81 </span>            : /// Split the line in words using separators.</a>
+<a name="82"><span class="lineNum">      82 </span>            : /// It also take into account parenthesis. Outer parenthesis found are removed from</a>
+<a name="83"><span class="lineNum">      83 </span>            : /// output, and the text between them is considered as a single word. Only the</a>
+<a name="84"><span class="lineNum">      84 </span>            : /// outer parenthesis are processed, to allow nesting them.</a>
+<a name="85"><span class="lineNum">      85 </span>            : /// parlevel, if not NULL, is increased or decreased according to the number of opened/closed parenthesis</a>
+<a name="86"><span class="lineNum">      86 </span>            :   static std::vector&lt;std::string&gt; getWords(const std::string &amp; line,const char* sep=NULL,int* parlevel=NULL,const char* parenthesis=&quot;{&quot;, const bool&amp; delete_parenthesis=true);</a>
+<a name="87"><span class="lineNum">      87 </span>            : /// Get a line from the file pointer ifile</a>
+<a name="88"><span class="lineNum">      88 </span>            :   static bool getline(FILE*,std::string &amp; line);</a>
+<a name="89"><span class="lineNum">      89 </span>            : /// Get a parsed line from the file pointer ifile</a>
+<a name="90"><span class="lineNum">      90 </span>            : /// This function already takes care of joining continued lines and splitting the</a>
+<a name="91"><span class="lineNum">      91 </span>            : /// resulting line into an array of words</a>
+<a name="92"><span class="lineNum">      92 </span>            :   static bool getParsedLine(IFile&amp;ifile,std::vector&lt;std::string&gt; &amp; line, const bool trimcomments=true);</a>
+<a name="93"><span class="lineNum">      93 </span>            : /// compare two string in a case insensitive manner</a>
+<a name="94"><span class="lineNum">      94 </span>            :   static bool caseInSensStringCompare(const std::string &amp; str1, const std::string &amp;str2);</a>
+<a name="95"><span class="lineNum">      95 </span>            : /// Convert a string to a double, reading it</a>
+<a name="96"><span class="lineNum">      96 </span>            :   static bool convertNoexcept(const std::string &amp; str,double &amp; t);</a>
+<a name="97"><span class="lineNum">      97 </span>            : /// Convert a string to a long double, reading it</a>
+<a name="98"><span class="lineNum">      98 </span>            :   static bool convertNoexcept(const std::string &amp; str,long double &amp; t);</a>
+<a name="99"><span class="lineNum">      99 </span>            : /// Convert a string to a float, reading it</a>
+<a name="100"><span class="lineNum">     100 </span>            :   static bool convertNoexcept(const std::string &amp; str,float &amp; t);</a>
+<a name="101"><span class="lineNum">     101 </span>            : /// Convert a string to a int, reading it</a>
+<a name="102"><span class="lineNum">     102 </span>            :   static bool convertNoexcept(const std::string &amp; str,int &amp; t);</a>
+<a name="103"><span class="lineNum">     103 </span>            : /// Convert a string to a long int, reading it</a>
+<a name="104"><span class="lineNum">     104 </span>            :   static bool convertNoexcept(const std::string &amp; str,long int &amp; t);</a>
+<a name="105"><span class="lineNum">     105 </span>            : /// Convert a string to a long long int, reading it</a>
+<a name="106"><span class="lineNum">     106 </span>            :   static bool convertNoexcept(const std::string &amp; str,long long int &amp; t);</a>
+<a name="107"><span class="lineNum">     107 </span>            : /// Convert a string to an unsigned int, reading it</a>
+<a name="108"><span class="lineNum">     108 </span>            :   static bool convertNoexcept(const std::string &amp; str,unsigned &amp; t);</a>
+<a name="109"><span class="lineNum">     109 </span>            : /// Convert a string to a long unsigned int, reading it</a>
+<a name="110"><span class="lineNum">     110 </span>            :   static bool convertNoexcept(const std::string &amp; str,long unsigned &amp; t);</a>
+<a name="111"><span class="lineNum">     111 </span>            : /// Convert a string to a long long unsigned int, reading it</a>
+<a name="112"><span class="lineNum">     112 </span>            :   static bool convertNoexcept(const std::string &amp; str,long long unsigned &amp; t);</a>
+<a name="113"><span class="lineNum">     113 </span>            : /// Convert a string to a atom number, reading it</a>
+<a name="114"><span class="lineNum">     114 </span>            :   static bool convertNoexcept(const std::string &amp; str,AtomNumber &amp; t);</a>
+<a name="115"><span class="lineNum">     115 </span>            : /// Convert a string to a string (i.e. copy)</a>
+<a name="116"><span class="lineNum">     116 </span>            :   static bool convertNoexcept(const std::string &amp; str,std::string &amp; t);</a>
+<a name="117"><span class="lineNum">     117 </span>            : /// Convert anything into a string</a>
+<a name="118"><span class="lineNum">     118 </span>            :   template&lt;typename T&gt;</a>
+<a name="119"><span class="lineNum">     119 </span>            :   static bool convertNoexcept(T i,std::string &amp; str);</a>
+<a name="120"><span class="lineNum">     120 </span>            : /// Convert anything into anything, throwing an exception in case there is an error</a>
+<a name="121"><span class="lineNum">     121 </span>            : /// Remove trailing blanks</a>
+<a name="122"><span class="lineNum">     122 </span>            :   static void trim(std::string &amp; s);</a>
+<a name="123"><span class="lineNum">     123 </span>            : /// Remove trailing comments</a>
+<a name="124"><span class="lineNum">     124 </span>            :   static void trimComments(std::string &amp; s);</a>
+<a name="125"><span class="lineNum">     125 </span>            : /// Apply pbc for a unitary cell</a>
+<a name="126"><span class="lineNum">     126 </span>            :   static double pbc(double);</a>
+<a name="127"><span class="lineNum">     127 </span>            : /// Retrieve a key from a vector of options.</a>
+<a name="128"><span class="lineNum">     128 </span>            : /// It finds a key starting with &quot;key=&quot; or equal to &quot;key&quot; and copy the</a>
+<a name="129"><span class="lineNum">     129 </span>            : /// part after the = on s. E.g.:</a>
+<a name="130"><span class="lineNum">     130 </span>            : /// line.push_back(&quot;aa=xx&quot;);</a>
+<a name="131"><span class="lineNum">     131 </span>            : /// getKey(line,&quot;aa&quot;,s);</a>
+<a name="132"><span class="lineNum">     132 </span>            : /// will set s=&quot;xx&quot;</a>
+<a name="133"><span class="lineNum">     133 </span>            :   static bool getKey(std::vector&lt;std::string&gt;&amp; line,const std::string &amp; key,std::string &amp; s,int rep=-1);</a>
+<a name="134"><span class="lineNum">     134 </span>            : /// Find a keyword on the input line, eventually deleting it, and saving its value to val</a>
+<a name="135"><span class="lineNum">     135 </span>            :   template &lt;typename T,typename U&gt;</a>
+<a name="136"><span class="lineNum">     136 </span><span class="lineCov">   14685905 :   static void convert(const T &amp; t,U &amp; u) {</span></a>
+<a name="137"><span class="lineNum">     137 </span><span class="lineCov">   14686713 :     plumed_assert(convertNoexcept(t,u)) &lt;&lt;&quot;Error converting  &quot;&lt;&lt;t;</span></a>
+<a name="138"><span class="lineNum">     138 </span><span class="lineCov">   14685904 :   }</span></a>
+<a name="139"><span class="lineNum">     139 </span>            :   template &lt;typename T&gt;</a>
+<a name="140"><span class="lineNum">     140 </span>            :   static bool parse(std::vector&lt;std::string&gt;&amp;line,const std::string&amp;key,T&amp;val,int rep=-1);</a>
+<a name="141"><span class="lineNum">     141 </span>            : /// Find a keyword on the input line, eventually deleting it, and saving its value to a vector</a>
+<a name="142"><span class="lineNum">     142 </span>            :   template &lt;class T&gt;</a>
+<a name="143"><span class="lineNum">     143 </span>            :   static bool parseVector(std::vector&lt;std::string&gt;&amp;line,const std::string&amp;key,std::vector&lt;T&gt;&amp;val,int rep=-1);</a>
+<a name="144"><span class="lineNum">     144 </span>            : /// Find a keyword without arguments on the input line</a>
+<a name="145"><span class="lineNum">     145 </span>            :   static bool parseFlag(std::vector&lt;std::string&gt;&amp;line,const std::string&amp;key,bool&amp;val);</a>
+<a name="146"><span class="lineNum">     146 </span>            : /// Find a keyword on the input line, just reporting if it exists or not</a>
+<a name="147"><span class="lineNum">     147 </span>            :   static bool findKeyword(const std::vector&lt;std::string&gt;&amp;line,const std::string&amp;key);</a>
+<a name="148"><span class="lineNum">     148 </span>            : /// Interpret atom ranges</a>
+<a name="149"><span class="lineNum">     149 </span>            :   static void interpretRanges(std::vector&lt;std::string&gt;&amp;);</a>
+<a name="150"><span class="lineNum">     150 </span>            : /// Remove duplicates from a vector of type T</a>
+<a name="151"><span class="lineNum">     151 </span>            :   template &lt;typename T&gt;</a>
+<a name="152"><span class="lineNum">     152 </span>            :   static void removeDuplicates(std::vector&lt;T&gt;&amp; vec);</a>
+<a name="153"><span class="lineNum">     153 </span>            : /// interpret &quot;:&quot; syntax for labels</a>
+<a name="154"><span class="lineNum">     154 </span>            :   static void interpretLabel(std::vector&lt;std::string&gt;&amp;s);</a>
+<a name="155"><span class="lineNum">     155 </span>            : /// list files in a directory</a>
+<a name="156"><span class="lineNum">     156 </span>            :   static std::vector&lt;std::string&gt; ls(const std::string&amp;);</a>
+<a name="157"><span class="lineNum">     157 </span>            : /// removes leading and trailing blanks from a string</a>
+<a name="158"><span class="lineNum">     158 </span>            :   static void stripLeadingAndTrailingBlanks( std::string&amp; str );</a>
+<a name="159"><span class="lineNum">     159 </span>            : /// Extract the extensions from a file name.</a>
+<a name="160"><span class="lineNum">     160 </span>            : /// E.g.: extension(&quot;pippo.xyz&quot;)=&quot;xyz&quot;.</a>
+<a name="161"><span class="lineNum">     161 </span>            : /// It only returns extensions with a length between 1 and 4</a>
+<a name="162"><span class="lineNum">     162 </span>            : /// E.g.: extension(&quot;pippo.12345&quot;)=&quot;&quot; whereas extenion(&quot;pippo.1234&quot;)=&quot;1234&quot;;</a>
+<a name="163"><span class="lineNum">     163 </span>            : /// It is also smart enough to detect &quot;/&quot;, so that</a>
+<a name="164"><span class="lineNum">     164 </span>            : /// extension(&quot;pippo/.t&quot;)=&quot;&quot; whereas extension(&quot;pippo/a.t&quot;)=&quot;t&quot;</a>
+<a name="165"><span class="lineNum">     165 </span>            :   static std::string extension(const std::string&amp;);</a>
+<a name="166"><span class="lineNum">     166 </span>            : /// Fast int power</a>
+<a name="167"><span class="lineNum">     167 </span>            :   static double fastpow(double base,int exp);</a>
+<a name="168"><span class="lineNum">     168 </span>            : /// Modified 0th-order Bessel function of the first kind</a>
+<a name="169"><span class="lineNum">     169 </span>            :   static double bessel0(const double&amp; val);</a>
+<a name="170"><span class="lineNum">     170 </span>            : /// Check if a string full starts with string start.</a>
+<a name="171"><span class="lineNum">     171 </span>            : /// Same as full.find(start)==0</a>
+<a name="172"><span class="lineNum">     172 </span>            :   static bool startWith(const std::string &amp; full,const std::string &amp;start);</a>
+<a name="173"><span class="lineNum">     173 </span>            :   /**</a>
+<a name="174"><span class="lineNum">     174 </span>            :     Tool to create a vector of raw pointers from a vector of unique_pointers (const version).</a>
+<a name="175"><span class="lineNum">     175 </span>            :   Returning a vector is fast in C++11. It can be used in order to feed a vector&lt;unique_ptr&lt;T&gt;&gt;</a>
+<a name="176"><span class="lineNum">     176 </span>            :   to a function that takes a vector&lt;T*&gt;.</a>
+<a name="177"><span class="lineNum">     177 </span>            :   \verbatim</a>
+<a name="178"><span class="lineNum">     178 </span>            :   // some function that takes a vec</a>
+<a name="179"><span class="lineNum">     179 </span>            :   void func(std::vector&lt;Data*&gt; &amp; vec);</a>
+<a name="180"><span class="lineNum">     180 </span>            :   std::vector&lt;std::unique_ptr&lt;Data&gt;&gt; vec;</a>
+<a name="181"><span class="lineNum">     181 </span>            :   // func(vec); // does not compile</a>
+<a name="182"><span class="lineNum">     182 </span>            :   func(Tools::unique2raw(vec)); // compiles</a>
+<a name="183"><span class="lineNum">     183 </span>            :   \endverbatim</a>
+<a name="184"><span class="lineNum">     184 </span>            :   Notice that the conversion is fast but takes</a>
+<a name="185"><span class="lineNum">     185 </span>            :   some time to allocate the new vector and copy the pointers. In case the function</a>
+<a name="186"><span class="lineNum">     186 </span>            :   acting on the vector&lt;T*&gt; is very fast and we do not want to add significant overhead,</a>
+<a name="187"><span class="lineNum">     187 </span>            :   it might be convenient to store a separate set of raw pointers.</a>
+<a name="188"><span class="lineNum">     188 </span>            :   \verbatim</a>
+<a name="189"><span class="lineNum">     189 </span>            :   // some function that takes a vec</a>
+<a name="190"><span class="lineNum">     190 </span>            :   void func(std::vector&lt;Data*&gt; &amp; vec);</a>
+<a name="191"><span class="lineNum">     191 </span>            :   std::vector&lt;std::unique_ptr&lt;Data&gt;&gt; vec;</a>
+<a name="192"><span class="lineNum">     192 </span>            : </a>
+<a name="193"><span class="lineNum">     193 </span>            :   // conversion done only once:</a>
+<a name="194"><span class="lineNum">     194 </span>            :   auto vec_ptr=Tools::unique2raw(vec);</a>
+<a name="195"><span class="lineNum">     195 </span>            : </a>
+<a name="196"><span class="lineNum">     196 </span>            :   for(int i=0;i&lt;1000;i++){</a>
+<a name="197"><span class="lineNum">     197 </span>            :     func(vec_ptr);</a>
+<a name="198"><span class="lineNum">     198 </span>            :   }</a>
+<a name="199"><span class="lineNum">     199 </span>            :   \endverbatim</a>
+<a name="200"><span class="lineNum">     200 </span>            :   */</a>
+<a name="201"><span class="lineNum">     201 </span>            :   template &lt;typename T&gt;</a>
+<a name="202"><span class="lineNum">     202 </span>            :   static std::vector&lt;T*&gt; unique2raw(const std::vector&lt;std::unique_ptr&lt;T&gt;&gt;&amp;);</a>
+<a name="203"><span class="lineNum">     203 </span>            : /// Tool to create a vector of raw pointers from a vector of unique_pointers.</a>
+<a name="204"><span class="lineNum">     204 </span>            : /// See the non const version.</a>
+<a name="205"><span class="lineNum">     205 </span>            :   template &lt;typename T&gt;</a>
+<a name="206"><span class="lineNum">     206 </span>            :   static std::vector&lt;const T*&gt; unique2raw(const std::vector&lt;std::unique_ptr&lt;const T&gt;&gt;&amp;);</a>
+<a name="207"><span class="lineNum">     207 </span>            : /// Tiny class that changes directory and comes back when going out of scope.</a>
+<a name="208"><span class="lineNum">     208 </span>            : /// In case system calls to change dir are not available it throws an exception.</a>
+<a name="209"><span class="lineNum">     209 </span>            : /// \warning By construction, changing directory breaks thread safety! Use with care.</a>
+<a name="210"><span class="lineNum">     210 </span>            :   class DirectoryChanger {</a>
+<a name="211"><span class="lineNum">     211 </span>            :     static const std::size_t buffersize=4096;</a>
+<a name="212"><span class="lineNum">     212 </span>            :     char cwd[buffersize]= {0};</a>
+<a name="213"><span class="lineNum">     213 </span>            :   public:</a>
+<a name="214"><span class="lineNum">     214 </span>            :     explicit DirectoryChanger(const char*path);</a>
+<a name="215"><span class="lineNum">     215 </span>            :     ~DirectoryChanger();</a>
+<a name="216"><span class="lineNum">     216 </span>            :   };</a>
+<a name="217"><span class="lineNum">     217 </span>            : /// Mimic C++14 std::make_unique</a>
+<a name="218"><span class="lineNum">     218 </span>            :   template&lt;class T&gt; struct _Unique_if {</a>
+<a name="219"><span class="lineNum">     219 </span>            :     typedef std::unique_ptr&lt;T&gt; _Single_object;</a>
+<a name="220"><span class="lineNum">     220 </span>            :   };</a>
+<a name="221"><span class="lineNum">     221 </span>            :   template&lt;class T&gt; struct _Unique_if&lt;T[]&gt; {</a>
+<a name="222"><span class="lineNum">     222 </span>            :     typedef std::unique_ptr&lt;T[]&gt; _Unknown_bound;</a>
+<a name="223"><span class="lineNum">     223 </span>            :   };</a>
+<a name="224"><span class="lineNum">     224 </span>            :   template&lt;class T, std::size_t N&gt; struct _Unique_if&lt;T[N]&gt; {</a>
+<a name="225"><span class="lineNum">     225 </span>            :     typedef void _Known_bound;</a>
+<a name="226"><span class="lineNum">     226 </span>            :   };</a>
+<a name="227"><span class="lineNum">     227 </span>            :   template&lt;class T, class... Args&gt;</a>
+<a name="228"><span class="lineNum">     228 </span>            :   static typename _Unique_if&lt;T&gt;::_Single_object</a>
+<a name="229"><span class="lineNum">     229 </span><span class="lineCov">    5810773 :   make_unique(Args&amp;&amp;... args) {</span></a>
+<a name="230"><span class="lineNum">     230 </span><span class="lineCov">    9424116 :     return std::unique_ptr&lt;T&gt;(new T(std::forward&lt;Args&gt;(args)...));</span></a>
+<a name="231"><span class="lineNum">     231 </span>            :   }</a>
+<a name="232"><span class="lineNum">     232 </span>            :   template&lt;class T&gt;</a>
+<a name="233"><span class="lineNum">     233 </span>            :   static typename _Unique_if&lt;T&gt;::_Unknown_bound</a>
+<a name="234"><span class="lineNum">     234 </span><span class="lineCov">        189 :   make_unique(std::size_t n) {</span></a>
+<a name="235"><span class="lineNum">     235 </span>            :     typedef typename std::remove_extent&lt;T&gt;::type U;</a>
+<a name="236"><span class="lineNum">     236 </span><span class="lineCov">       9473 :     return std::unique_ptr&lt;T&gt;(new U[n]());</span></a>
+<a name="237"><span class="lineNum">     237 </span>            :   }</a>
+<a name="238"><span class="lineNum">     238 </span>            :   template&lt;class T, class... Args&gt;</a>
+<a name="239"><span class="lineNum">     239 </span>            :   static typename _Unique_if&lt;T&gt;::_Known_bound</a>
+<a name="240"><span class="lineNum">     240 </span>            :   make_unique(Args&amp;&amp;...) = delete;</a>
+<a name="241"><span class="lineNum">     241 </span>            : </a>
+<a name="242"><span class="lineNum">     242 </span>            :   static void set_to_zero(double*ptr,unsigned n) {</a>
+<a name="243"><span class="lineNum">     243 </span><span class="lineCov">   22592770 :     for(unsigned i=0; i&lt;n; i++) ptr[i]=0.0;</span></a>
+<a name="244"><span class="lineNum">     244 </span>            :   }</a>
+<a name="245"><span class="lineNum">     245 </span>            : </a>
+<a name="246"><span class="lineNum">     246 </span>            :   template&lt;unsigned n&gt;</a>
+<a name="247"><span class="lineNum">     247 </span><span class="lineCov">     220374 :   static void set_to_zero(std::vector&lt;VectorGeneric&lt;n&gt;&gt; &amp; vec) {</span></a>
+<a name="248"><span class="lineNum">     248 </span><span class="lineCov">     220374 :     unsigned s=vec.size();</span></a>
+<a name="249"><span class="lineNum">     249 </span><span class="lineCov">     220374 :     if(s==0) return;</span></a>
+<a name="250"><span class="lineNum">     250 </span><span class="lineCov">     197821 :     set_to_zero(&amp;vec[0][0],s*n);</span></a>
+<a name="251"><span class="lineNum">     251 </span>            :   }</a>
+<a name="252"><span class="lineNum">     252 </span>            : </a>
+<a name="253"><span class="lineNum">     253 </span>            :   template&lt;unsigned n,unsigned m&gt;</a>
+<a name="254"><span class="lineNum">     254 </span>            :   static void set_to_zero(std::vector&lt;TensorGeneric&lt;n,m&gt;&gt; &amp; vec) {</a>
+<a name="255"><span class="lineNum">     255 </span>            :     unsigned s=vec.size();</a>
+<a name="256"><span class="lineNum">     256 </span>            :     if(s==0) return;</a>
+<a name="257"><span class="lineNum">     257 </span>            :     set_to_zero(&amp;vec[0](0,0),s*n*m);</a>
+<a name="258"><span class="lineNum">     258 </span>            :   }</a>
+<a name="259"><span class="lineNum">     259 </span>            : </a>
+<a name="260"><span class="lineNum">     260 </span>            : </a>
+<a name="261"><span class="lineNum">     261 </span>            : </a>
+<a name="262"><span class="lineNum">     262 </span>            : </a>
+<a name="263"><span class="lineNum">     263 </span>            :   /// Merge sorted vectors.</a>
+<a name="264"><span class="lineNum">     264 </span>            :   /// Takes a vector of pointers to containers and merge them.</a>
+<a name="265"><span class="lineNum">     265 </span>            :   /// Containers should be already sorted.</a>
+<a name="266"><span class="lineNum">     266 </span>            :   /// The content is appended to the result vector.</a>
+<a name="267"><span class="lineNum">     267 </span>            :   /// Optionally, uses a priority_queue implementation.</a>
+<a name="268"><span class="lineNum">     268 </span>            :   template&lt;class C&gt;</a>
+<a name="269"><span class="lineNum">     269 </span><span class="lineCov">      27342 :   static void mergeSortedVectors(const std::vector&lt;C*&gt; &amp; vecs, std::vector&lt;typename C::value_type&gt; &amp; result,bool priority_queue=false) {</span></a>
+<a name="270"><span class="lineNum">     270 </span>            : </a>
+<a name="271"><span class="lineNum">     271 </span>            :     /// local class storing the range of remaining objects to be pushed</a>
+<a name="272"><span class="lineNum">     272 </span>            :     struct Entry</a>
+<a name="273"><span class="lineNum">     273 </span>            :     {</a>
+<a name="274"><span class="lineNum">     274 </span>            :       typename C::const_iterator fwdIt,endIt;</a>
+<a name="275"><span class="lineNum">     275 </span>            : </a>
+<a name="276"><span class="lineNum">     276 </span><span class="lineCov">      54491 :       explicit Entry(C const&amp; v) : fwdIt(v.begin()), endIt(v.end()) {}</span></a>
+<a name="277"><span class="lineNum">     277 </span>            :       /// check if this vector still contains something to be pushed</a>
+<a name="278"><span class="lineNum">     278 </span>            :       explicit operator bool () const { return fwdIt != endIt; }</a>
+<a name="279"><span class="lineNum">     279 </span>            :       /// to allow using a priority_queu, which selects the highest element.</a>
+<a name="280"><span class="lineNum">     280 </span>            :       /// we here (counterintuitively) define &lt; as &gt;</a>
+<a name="281"><span class="lineNum">     281 </span>            :       bool operator&lt; (Entry const&amp; rhs) const { return *fwdIt &gt; *rhs.fwdIt; }</a>
+<a name="282"><span class="lineNum">     282 </span>            :     };</a>
+<a name="283"><span class="lineNum">     283 </span>            : </a>
+<a name="284"><span class="lineNum">     284 </span><span class="lineCov">      27342 :     if(priority_queue) {</span></a>
+<a name="285"><span class="lineNum">     285 </span>            :       std::priority_queue&lt;Entry&gt; queue;</a>
+<a name="286"><span class="lineNum">     286 </span>            :       // note: queue does not have reserve() method</a>
+<a name="287"><span class="lineNum">     287 </span>            : </a>
+<a name="288"><span class="lineNum">     288 </span>            :       // add vectors to the queue</a>
+<a name="289"><span class="lineNum">     289 </span>            :       {</a>
+<a name="290"><span class="lineNum">     290 </span>            :         std::size_t maxsize=0;</a>
+<a name="291"><span class="lineNum">     291 </span><span class="lineNoCov">          0 :         for(unsigned i=0; i&lt;vecs.size(); i++) {</span></a>
+<a name="292"><span class="lineNum">     292 </span><span class="lineNoCov">          0 :           if(vecs[i]-&gt;size()&gt;maxsize) maxsize=vecs[i]-&gt;size();</span></a>
+<a name="293"><span class="lineNum">     293 </span><span class="lineNoCov">          0 :           if(!vecs[i]-&gt;empty())queue.push(Entry(*vecs[i]));</span></a>
+<a name="294"><span class="lineNum">     294 </span>            :         }</a>
+<a name="295"><span class="lineNum">     295 </span>            :         // this is just to save multiple reallocations on push_back</a>
+<a name="296"><span class="lineNum">     296 </span><span class="lineNoCov">          0 :         result.reserve(maxsize);</span></a>
+<a name="297"><span class="lineNum">     297 </span>            :       }</a>
+<a name="298"><span class="lineNum">     298 </span>            : </a>
+<a name="299"><span class="lineNum">     299 </span>            :       // first iteration (to avoid a if in the main loop)</a>
+<a name="300"><span class="lineNum">     300 </span><span class="lineNoCov">          0 :       if(queue.empty()) return;</span></a>
+<a name="301"><span class="lineNum">     301 </span><span class="lineNoCov">          0 :       auto tmp=queue.top();</span></a>
+<a name="302"><span class="lineNum">     302 </span><span class="lineNoCov">          0 :       queue.pop();</span></a>
+<a name="303"><span class="lineNum">     303 </span><span class="lineNoCov">          0 :       result.push_back(*tmp.fwdIt);</span></a>
+<a name="304"><span class="lineNum">     304 </span>            :       tmp.fwdIt++;</a>
+<a name="305"><span class="lineNum">     305 </span><span class="lineNoCov">          0 :       if(tmp) queue.push(tmp);</span></a>
+<a name="306"><span class="lineNum">     306 </span>            : </a>
+<a name="307"><span class="lineNum">     307 </span>            :       // main loop</a>
+<a name="308"><span class="lineNum">     308 </span><span class="lineNoCov">          0 :       while(!queue.empty()) {</span></a>
+<a name="309"><span class="lineNum">     309 </span><span class="lineNoCov">          0 :         auto tmp=queue.top();</span></a>
+<a name="310"><span class="lineNum">     310 </span><span class="lineNoCov">          0 :         queue.pop();</span></a>
+<a name="311"><span class="lineNum">     311 </span><span class="lineNoCov">          0 :         if(result.back() &lt; *tmp.fwdIt) result.push_back(*tmp.fwdIt);</span></a>
+<a name="312"><span class="lineNum">     312 </span>            :         tmp.fwdIt++;</a>
+<a name="313"><span class="lineNum">     313 </span><span class="lineNoCov">          0 :         if(tmp) queue.push(tmp);</span></a>
+<a name="314"><span class="lineNum">     314 </span>            :       }</a>
+<a name="315"><span class="lineNum">     315 </span>            :     } else {</a>
+<a name="316"><span class="lineNum">     316 </span>            : </a>
+<a name="317"><span class="lineNum">     317 </span>            :       std::vector&lt;Entry&gt; entries;</a>
+<a name="318"><span class="lineNum">     318 </span><span class="lineCov">      27342 :       entries.reserve(vecs.size());</span></a>
+<a name="319"><span class="lineNum">     319 </span>            : </a>
+<a name="320"><span class="lineNum">     320 </span>            :       {</a>
+<a name="321"><span class="lineNum">     321 </span>            :         std::size_t maxsize=0;</a>
+<a name="322"><span class="lineNum">     322 </span><span class="lineCov">      84574 :         for(int i=0; i&lt;vecs.size(); i++) {</span></a>
+<a name="323"><span class="lineNum">     323 </span><span class="lineCov">      57232 :           if(vecs[i]-&gt;size()&gt;maxsize) maxsize=vecs[i]-&gt;size();</span></a>
+<a name="324"><span class="lineNum">     324 </span><span class="lineCov">     111723 :           if(!vecs[i]-&gt;empty())entries.push_back(Entry(*vecs[i]));</span></a>
+<a name="325"><span class="lineNum">     325 </span>            :         }</a>
+<a name="326"><span class="lineNum">     326 </span>            :         // this is just to save multiple reallocations on push_back</a>
+<a name="327"><span class="lineNum">     327 </span><span class="lineCov">      27342 :         result.reserve(maxsize);</span></a>
+<a name="328"><span class="lineNum">     328 </span>            :       }</a>
+<a name="329"><span class="lineNum">     329 </span>            : </a>
+<a name="330"><span class="lineNum">     330 </span><span class="lineCov">     415851 :       while(!entries.empty()) {</span></a>
+<a name="331"><span class="lineNum">     331 </span>            :         // find smallest pending element</a>
+<a name="332"><span class="lineNum">     332 </span>            :         // we use max_element instead of min_element because we are defining &lt; as &gt; (see above)</a>
+<a name="333"><span class="lineNum">     333 </span><span class="lineCov">     388509 :         const auto minval=*std::max_element(entries.begin(),entries.end())-&gt;fwdIt;</span></a>
+<a name="334"><span class="lineNum">     334 </span>            : </a>
+<a name="335"><span class="lineNum">     335 </span>            :         // push it</a>
+<a name="336"><span class="lineNum">     336 </span><span class="lineCov">     388509 :         result.push_back(minval);</span></a>
+<a name="337"><span class="lineNum">     337 </span>            : </a>
+<a name="338"><span class="lineNum">     338 </span>            :         // fast forward vectors with elements equal to minval (to avoid duplicates)</a>
+<a name="339"><span class="lineNum">     339 </span><span class="lineCov">    2314538 :         for(auto &amp; e : entries) while(e &amp;&amp; *e.fwdIt==minval) ++e.fwdIt;</span></a>
+<a name="340"><span class="lineNum">     340 </span>            : </a>
+<a name="341"><span class="lineNum">     341 </span>            :         // remove from the entries vector all exhausted vectors</a>
+<a name="342"><span class="lineNum">     342 </span><span class="lineCov">     388509 :         auto erase=std::remove_if(entries.begin(),entries.end(),[](const Entry &amp; e) {return !e;});</span></a>
+<a name="343"><span class="lineNum">     343 </span>            :         entries.erase(erase,entries.end());</a>
+<a name="344"><span class="lineNum">     344 </span>            :       }</a>
+<a name="345"><span class="lineNum">     345 </span>            :     }</a>
+<a name="346"><span class="lineNum">     346 </span>            : </a>
+<a name="347"><span class="lineNum">     347 </span>            :   }</a>
+<a name="348"><span class="lineNum">     348 </span>            :   static std::unique_ptr&lt;std::lock_guard&lt;std::mutex&gt;&gt; molfile_lock();</a>
+<a name="349"><span class="lineNum">     349 </span>            :   /// Build a concatenated exception message.</a>
+<a name="350"><span class="lineNum">     350 </span>            :   /// Should be called with an in-flight exception.</a>
+<a name="351"><span class="lineNum">     351 </span>            :   static std::string concatenateExceptionMessages();</a>
+<a name="352"><span class="lineNum">     352 </span>            : };</a>
+<a name="353"><span class="lineNum">     353 </span>            : </a>
+<a name="354"><span class="lineNum">     354 </span>            : template &lt;class T&gt;</a>
+<a name="355"><span class="lineNum">     355 </span><span class="lineCov">      72304 : bool Tools::parse(std::vector&lt;std::string&gt;&amp;line,const std::string&amp;key,T&amp;val,int rep) {</span></a>
+<a name="356"><span class="lineNum">     356 </span>            :   std::string s;</a>
+<a name="357"><span class="lineNum">     357 </span><span class="lineCov">     144608 :   if(!getKey(line,key+&quot;=&quot;,s,rep)) return false;</span></a>
+<a name="358"><span class="lineNum">     358 </span><span class="lineCov">      28820 :   if(s.length()&gt;0 &amp;&amp; !convertNoexcept(s,val))return false;</span></a>
+<a name="359"><span class="lineNum">     359 </span>            :   return true;</a>
+<a name="360"><span class="lineNum">     360 </span>            : }</a>
+<a name="361"><span class="lineNum">     361 </span>            : </a>
+<a name="362"><span class="lineNum">     362 </span>            : template &lt;class T&gt;</a>
+<a name="363"><span class="lineNum">     363 </span><span class="lineCov">      35715 : bool Tools::parseVector(std::vector&lt;std::string&gt;&amp;line,const std::string&amp;key,std::vector&lt;T&gt;&amp;val,int rep) {</span></a>
+<a name="364"><span class="lineNum">     364 </span>            :   std::string s;</a>
+<a name="365"><span class="lineNum">     365 </span><span class="lineCov">      71430 :   if(!getKey(line,key+&quot;=&quot;,s,rep)) return false;</span></a>
+<a name="366"><span class="lineNum">     366 </span>            :   val.clear();</a>
+<a name="367"><span class="lineNum">     367 </span><span class="lineCov">      26321 :   std::vector&lt;std::string&gt; words=getWords(s,&quot;\t\n ,&quot;);</span></a>
+<a name="368"><span class="lineNum">     368 </span><span class="lineCov">     114188 :   for(unsigned i=0; i&lt;words.size(); ++i) {</span></a>
+<a name="369"><span class="lineNum">     369 </span>            :     T v;</a>
+<a name="370"><span class="lineNum">     370 </span><span class="lineCov">      87867 :     std::string s=words[i];</span></a>
+<a name="371"><span class="lineNum">     371 </span><span class="lineCov">      87867 :     const std::string multi(&quot;@replicas:&quot;);</span></a>
+<a name="372"><span class="lineNum">     372 </span><span class="lineCov">      87867 :     if(rep&gt;=0 &amp;&amp; startWith(s,multi)) {</span></a>
+<a name="373"><span class="lineNum">     373 </span><span class="lineCov">          6 :       s=s.substr(multi.length(),s.length());</span></a>
+<a name="374"><span class="lineNum">     374 </span><span class="lineCov">          6 :       std::vector&lt;std::string&gt; words=getWords(s,&quot;\t\n ,&quot;);</span></a>
+<a name="375"><span class="lineNum">     375 </span><span class="lineCov">          6 :       plumed_assert(rep&lt;static_cast&lt;int&gt;(words.size()));</span></a>
+<a name="376"><span class="lineNum">     376 </span><span class="lineCov">          6 :       s=words[rep];</span></a>
+<a name="377"><span class="lineNum">     377 </span><span class="lineCov">          6 :     }</span></a>
+<a name="378"><span class="lineNum">     378 </span><span class="lineCov">      87867 :     if(!convertNoexcept(s,v))return false;</span></a>
+<a name="379"><span class="lineNum">     379 </span><span class="lineCov">      87867 :     val.push_back(v);</span></a>
+<a name="380"><span class="lineNum">     380 </span>            :   }</a>
+<a name="381"><span class="lineNum">     381 </span>            :   return true;</a>
+<a name="382"><span class="lineNum">     382 </span><span class="lineCov">      26321 : }</span></a>
+<a name="383"><span class="lineNum">     383 </span>            : </a>
+<a name="384"><span class="lineNum">     384 </span>            : template&lt;typename T&gt;</a>
+<a name="385"><span class="lineNum">     385 </span><span class="lineCov">      13506 : void Tools::removeDuplicates(std::vector&lt;T&gt;&amp; vec)</span></a>
+<a name="386"><span class="lineNum">     386 </span>            : {</a>
+<a name="387"><span class="lineNum">     387 </span><span class="lineCov">      13506 :   std::sort(vec.begin(), vec.end());</span></a>
+<a name="388"><span class="lineNum">     388 </span><span class="lineCov">      13506 :   vec.erase(std::unique(vec.begin(), vec.end()), vec.end());</span></a>
+<a name="389"><span class="lineNum">     389 </span><span class="lineCov">      13506 : }</span></a>
+<a name="390"><span class="lineNum">     390 </span>            : </a>
+<a name="391"><span class="lineNum">     391 </span>            : inline</a>
+<a name="392"><span class="lineNum">     392 </span><span class="lineCov">      43441 : bool Tools::parseFlag(std::vector&lt;std::string&gt;&amp;line,const std::string&amp;key,bool&amp;val) {</span></a>
+<a name="393"><span class="lineNum">     393 </span><span class="lineCov">     107997 :   for(auto p=line.begin(); p!=line.end(); ++p) {</span></a>
+<a name="394"><span class="lineNum">     394 </span><span class="lineCov">      66100 :     if(key==*p) {</span></a>
+<a name="395"><span class="lineNum">     395 </span><span class="lineCov">       1544 :       val=true;</span></a>
+<a name="396"><span class="lineNum">     396 </span>            :       line.erase(p);</a>
+<a name="397"><span class="lineNum">     397 </span>            :       return true;</a>
+<a name="398"><span class="lineNum">     398 </span>            :     }</a>
+<a name="399"><span class="lineNum">     399 </span>            :   }</a>
+<a name="400"><span class="lineNum">     400 </span>            :   return false;</a>
+<a name="401"><span class="lineNum">     401 </span>            : }</a>
+<a name="402"><span class="lineNum">     402 </span>            : </a>
+<a name="403"><span class="lineNum">     403 </span>            : /// beware: this brings any number into a pbc that ranges from -0.5 to 0.5</a>
+<a name="404"><span class="lineNum">     404 </span>            : inline</a>
+<a name="405"><span class="lineNum">     405 </span><span class="lineCov"> 1852896592 : double Tools::pbc(double x) {</span></a>
+<a name="406"><span class="lineNum">     406 </span>            : #ifdef __PLUMED_PBC_WHILE</a>
+<a name="407"><span class="lineNum">     407 </span>            :   while (x&gt;0.5) x-=1.0;</a>
+<a name="408"><span class="lineNum">     408 </span>            :   while (x&lt;-0.5) x+=1.0;</a>
+<a name="409"><span class="lineNum">     409 </span>            :   return x;</a>
+<a name="410"><span class="lineNum">     410 </span>            : #else</a>
+<a name="411"><span class="lineNum">     411 </span>            :   if(std::numeric_limits&lt;int&gt;::round_style == std::round_toward_zero) {</a>
+<a name="412"><span class="lineNum">     412 </span>            :     const double offset=100.0;</a>
+<a name="413"><span class="lineNum">     413 </span><span class="lineCov"> 1852896592 :     const double y=x+offset;</span></a>
+<a name="414"><span class="lineNum">     414 </span><span class="lineCov"> 1852896592 :     if(y&gt;=0) return y-int(y+0.5);</span></a>
+<a name="415"><span class="lineNum">     415 </span><span class="lineCov">       4577 :     else     return y-int(y-0.5);</span></a>
+<a name="416"><span class="lineNum">     416 </span>            :   } else if(std::numeric_limits&lt;int&gt;::round_style == std::round_to_nearest) {</a>
+<a name="417"><span class="lineNum">     417 </span>            :     return x-int(x);</a>
+<a name="418"><span class="lineNum">     418 </span>            :   } else return x-floor(x+0.5);</a>
+<a name="419"><span class="lineNum">     419 </span>            : #endif</a>
+<a name="420"><span class="lineNum">     420 </span>            : }</a>
+<a name="421"><span class="lineNum">     421 </span>            : </a>
+<a name="422"><span class="lineNum">     422 </span>            : template&lt;typename T&gt;</a>
+<a name="423"><span class="lineNum">     423 </span><span class="lineCov">     533501 : bool Tools::convertNoexcept(T i,std::string &amp; str) {</span></a>
+<a name="424"><span class="lineNum">     424 </span><span class="lineCov">     533501 :   std::ostringstream ostr;</span></a>
+<a name="425"><span class="lineNum">     425 </span><span class="lineCov">     418750 :   ostr&lt;&lt;i;</span></a>
+<a name="426"><span class="lineNum">     426 </span><span class="lineCov">     533501 :   str=ostr.str();</span></a>
+<a name="427"><span class="lineNum">     427 </span><span class="lineCov">     533501 :   return true;</span></a>
+<a name="428"><span class="lineNum">     428 </span><span class="lineCov">     533501 : }</span></a>
+<a name="429"><span class="lineNum">     429 </span>            : </a>
+<a name="430"><span class="lineNum">     430 </span>            : inline</a>
+<a name="431"><span class="lineNum">     431 </span><span class="lineCov">   79272934 : double Tools::fastpow(double base, int exp)</span></a>
+<a name="432"><span class="lineNum">     432 </span>            : {</a>
+<a name="433"><span class="lineNum">     433 </span><span class="lineCov">   79272934 :   if(exp&lt;0) {</span></a>
+<a name="434"><span class="lineNum">     434 </span><span class="lineNoCov">          0 :     exp=-exp;</span></a>
+<a name="435"><span class="lineNum">     435 </span><span class="lineNoCov">          0 :     base=1.0/base;</span></a>
+<a name="436"><span class="lineNum">     436 </span>            :   }</a>
+<a name="437"><span class="lineNum">     437 </span>            :   double result = 1.0;</a>
+<a name="438"><span class="lineNum">     438 </span><span class="lineCov">  375452097 :   while (exp)</span></a>
+<a name="439"><span class="lineNum">     439 </span>            :   {</a>
+<a name="440"><span class="lineNum">     440 </span><span class="lineCov">  262578969 :     if (exp &amp; 1)</span></a>
+<a name="441"><span class="lineNum">     441 </span><span class="lineCov">  181428788 :       result *= base;</span></a>
+<a name="442"><span class="lineNum">     442 </span><span class="lineCov">  262578969 :     exp &gt;&gt;= 1;</span></a>
+<a name="443"><span class="lineNum">     443 </span><span class="lineCov">  262578969 :     base *= base;</span></a>
+<a name="444"><span class="lineNum">     444 </span>            :   }</a>
+<a name="445"><span class="lineNum">     445 </span>            : </a>
+<a name="446"><span class="lineNum">     446 </span><span class="lineCov">   79272934 :   return result;</span></a>
+<a name="447"><span class="lineNum">     447 </span>            : }</a>
+<a name="448"><span class="lineNum">     448 </span>            : </a>
+<a name="449"><span class="lineNum">     449 </span>            : template&lt;typename T&gt;</a>
+<a name="450"><span class="lineNum">     450 </span><span class="lineCov">   13703470 : std::vector&lt;T*&gt; Tools::unique2raw(const std::vector&lt;std::unique_ptr&lt;T&gt;&gt; &amp; x) {</span></a>
+<a name="451"><span class="lineNum">     451 </span><span class="lineCov">   13703470 :   std::vector&lt;T*&gt; v(x.size());</span></a>
+<a name="452"><span class="lineNum">     452 </span><span class="lineCov">   52721172 :   for(unsigned i=0; i&lt;x.size(); i++) v[i]=x[i].get();</span></a>
+<a name="453"><span class="lineNum">     453 </span><span class="lineCov">   13703470 :   return v;</span></a>
+<a name="454"><span class="lineNum">     454 </span>            : }</a>
+<a name="455"><span class="lineNum">     455 </span>            : </a>
+<a name="456"><span class="lineNum">     456 </span>            : template&lt;typename T&gt;</a>
+<a name="457"><span class="lineNum">     457 </span>            : std::vector&lt;const T*&gt; Tools::unique2raw(const std::vector&lt;std::unique_ptr&lt;const T&gt;&gt; &amp; x) {</a>
+<a name="458"><span class="lineNum">     458 </span>            :   std::vector&lt;const T*&gt; v(x.size());</a>
+<a name="459"><span class="lineNum">     459 </span>            :   for(unsigned i=0; i&lt;x.size(); i++) v[i]=x[i].get();</a>
+<a name="460"><span class="lineNum">     460 </span>            :   return v;</a>
+<a name="461"><span class="lineNum">     461 </span>            : }</a>
+<a name="462"><span class="lineNum">     462 </span>            : </a>
+<a name="463"><span class="lineNum">     463 </span>            : }</a>
+<a name="464"><span class="lineNum">     464 </span>            : </a>
+<a name="465"><span class="lineNum">     465 </span>            : #endif</a>
+<a name="466"><span class="lineNum">     466 </span>            : </a>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="https://github.com/linux-test-project/lcov" target="_parent">LCOV version 1.16</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,397 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - plumed test coverage - funnel/FPS.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">funnel</a> - FPS.cpp<span style="font-size: 80%;"> (source / <a href="FPS.cpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">plumed test coverage</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">96</td>
+            <td class="headerCovTableEntry">100</td>
+            <td class="headerCovTableEntryHi">96.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2024-10-18 14:29:08</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntryMed">85.7 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</a>
+<a name="2"><span class="lineNum">       2 </span>            :    Copyright (c) 2019-2020</a>
+<a name="3"><span class="lineNum">       3 </span>            : </a>
+<a name="4"><span class="lineNum">       4 </span>            :    This file is part of funnel code module.</a>
+<a name="5"><span class="lineNum">       5 </span>            : </a>
+<a name="6"><span class="lineNum">       6 </span>            :    The FM code respects the CC BY-NC license.</a>
+<a name="7"><span class="lineNum">       7 </span>            :    Users are free to download, adapt and use the code as long as it is not for commercial purposes.</a>
+<a name="8"><span class="lineNum">       8 </span>            : +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */</a>
+<a name="9"><span class="lineNum">       9 </span>            : #include &quot;colvar/Colvar.h&quot;</a>
+<a name="10"><span class="lineNum">      10 </span>            : #include &quot;colvar/ActionRegister.h&quot;</a>
+<a name="11"><span class="lineNum">      11 </span>            : #include &lt;string&gt;</a>
+<a name="12"><span class="lineNum">      12 </span>            : #include &lt;cmath&gt;</a>
+<a name="13"><span class="lineNum">      13 </span>            : #include &lt;cassert&gt;</a>
+<a name="14"><span class="lineNum">      14 </span>            : #include &lt;vector&gt;</a>
+<a name="15"><span class="lineNum">      15 </span>            : #include &quot;tools/Tools.h&quot;</a>
+<a name="16"><span class="lineNum">      16 </span>            : #include &quot;tools/PDB.h&quot;</a>
+<a name="17"><span class="lineNum">      17 </span>            : #include &quot;core/PlumedMain.h&quot;</a>
+<a name="18"><span class="lineNum">      18 </span>            : #include &quot;core/Atoms.h&quot;</a>
+<a name="19"><span class="lineNum">      19 </span>            : #include &lt;iostream&gt;</a>
+<a name="20"><span class="lineNum">      20 </span>            : #include &quot;tools/RMSD.h&quot;</a>
+<a name="21"><span class="lineNum">      21 </span>            : </a>
+<a name="22"><span class="lineNum">      22 </span>            : using namespace std;</a>
+<a name="23"><span class="lineNum">      23 </span>            : </a>
+<a name="24"><span class="lineNum">      24 </span>            : namespace PLMD {</a>
+<a name="25"><span class="lineNum">      25 </span>            : namespace funnel {</a>
+<a name="26"><span class="lineNum">      26 </span>            : </a>
+<a name="27"><span class="lineNum">      27 </span>            : //+PLUMEDOC FUNNELMOD_COLVAR FUNNEL_PS</a>
+<a name="28"><span class="lineNum">      28 </span>            : /*</a>
+<a name="29"><span class="lineNum">      29 </span>            : FUNNEL_PS implements the Funnel-Metadynamics (FM) technique in PLUMED 2.</a>
+<a name="30"><span class="lineNum">      30 </span>            : </a>
+<a name="31"><span class="lineNum">      31 </span>            : Please read the FM \cite limongelli2013funnel \cite raniolo2020ligand papers to better understand the notions hereby reported.</a>
+<a name="32"><span class="lineNum">      32 </span>            : </a>
+<a name="33"><span class="lineNum">      33 </span>            : This colvar evaluates the position of a ligand of interest with respect to a given line, built from the two points</a>
+<a name="34"><span class="lineNum">      34 </span>            : A and B, and should be used together with the \ref FUNNEL bias.</a>
+<a name="35"><span class="lineNum">      35 </span>            : The constructed line represents the axis of the funnel-shape restraint potential, which should be placed so</a>
+<a name="36"><span class="lineNum">      36 </span>            : as to include the portion of a macromolecule (i.e., protein, DNA, etc.) that should be explored.</a>
+<a name="37"><span class="lineNum">      37 </span>            : Since it is important that the position of the line is updated based on the motion of the macromolecule during</a>
+<a name="38"><span class="lineNum">      38 </span>            : the simulation, this colvar incorporates an alignment method. The latter uses the TYPE=OPTIMAL option to remove</a>
+<a name="39"><span class="lineNum">      39 </span>            : motions due to rotation and translation of the macromolecule with respect to a reference structure, which is</a>
+<a name="40"><span class="lineNum">      40 </span>            : provided by the user. In order to accomplish the task, an optimal alignment matrix is calculated using the</a>
+<a name="41"><span class="lineNum">      41 </span>            : Kearsley \cite kearsley algorithm.</a>
+<a name="42"><span class="lineNum">      42 </span>            : The reference structure should be given as a pdb file, containing only the atoms of the macromolecule or a</a>
+<a name="43"><span class="lineNum">      43 </span>            : selection of them (e.g., the protein CA atoms of secondary structures). In contrast to the methods reported in</a>
+<a name="44"><span class="lineNum">      44 </span>            : the \ref dists, the values reported in the occupancy and beta-factor columns of the pdb file are not important</a>
+<a name="45"><span class="lineNum">      45 </span>            : since they will be overwritten and replaced by the value 1.00 during the procedure. It is important to understand</a>
+<a name="46"><span class="lineNum">      46 </span>            : that all atoms in the file will be used for the alignment, even if they display 0.00 in the occupancy column.</a>
+<a name="47"><span class="lineNum">      47 </span>            : </a>
+<a name="48"><span class="lineNum">      48 </span>            : The ligand can be represented by one single atom or the center of mass (COM) of a group of atoms that should be</a>
+<a name="49"><span class="lineNum">      49 </span>            : provided by the user.</a>
+<a name="50"><span class="lineNum">      50 </span>            : </a>
+<a name="51"><span class="lineNum">      51 </span>            : By default FUNNEL_PS is computed taking into account periodic boundary conditions. Since PLUMED 2.5, molecules are</a>
+<a name="52"><span class="lineNum">      52 </span>            : rebuilt using a procedure that is equivalent to that done in \ref WHOLEMOLECULES. We note that this action is local</a>
+<a name="53"><span class="lineNum">      53 </span>            : to this colvar, thus it does not modify the coordinates stored in PLUMED. Moreover, FUNNEL_PS requires an ANCHOR atom</a>
+<a name="54"><span class="lineNum">      54 </span>            : to be specified in order to facilitate the reconstruction of periodic boundary conditions. This atom should be the</a>
+<a name="55"><span class="lineNum">      55 </span>            : closest macromolecule's atom to the ligand and it should reduce the risk of ligand &quot;warping&quot; in the simulation box.</a>
+<a name="56"><span class="lineNum">      56 </span>            : Nevertheless, we highly recommend to add to the PLUMED input file a custom line of \ref WHOLEMOLECULES, in order to</a>
+<a name="57"><span class="lineNum">      57 </span>            : be sure of reconstructing the ligand together with the macromolecule (please look the examples). In this case, the user</a>
+<a name="58"><span class="lineNum">      58 </span>            : can use the NOPBC flag to turn off the internal periodic boundary condition reconstruction.</a>
+<a name="59"><span class="lineNum">      59 </span>            : </a>
+<a name="60"><span class="lineNum">      60 </span>            : FUNNEL_PS is divided in two components (fps.lp and fps.ld) which evaluate the projection of the ligand along the funnel line</a>
+<a name="61"><span class="lineNum">      61 </span>            : and the distance from it, respectively. The values attributed to these two components are then used together with the</a>
+<a name="62"><span class="lineNum">      62 </span>            : potential file created by the \ref FUNNEL bias to define if the ligand is within or not in the funnel-shape restraint</a>
+<a name="63"><span class="lineNum">      63 </span>            : potential. In the latter case, the potential will force the ligand to enter within the funnel boundaries.</a>
+<a name="64"><span class="lineNum">      64 </span>            : </a>
+<a name="65"><span class="lineNum">      65 </span>            : \par Examples</a>
+<a name="66"><span class="lineNum">      66 </span>            : </a>
+<a name="67"><span class="lineNum">      67 </span>            : The following input tells plumed to print the FUNNEL_PS components for the COM of a ligand. The inputs are a reference structure,</a>
+<a name="68"><span class="lineNum">      68 </span>            : which is the structure used for the alignment, the COM of the molecule we want to track, and 2 points in the Cartesian space</a>
+<a name="69"><span class="lineNum">      69 </span>            : (i.e., x, y, and z) to draw the line representing the funnel axis.</a>
+<a name="70"><span class="lineNum">      70 </span>            : \plumedfile</a>
+<a name="71"><span class="lineNum">      71 </span>            : lig: COM ATOMS=2446,2447,2448,2449,2451</a>
+<a name="72"><span class="lineNum">      72 </span>            : fps: FUNNEL_PS REFERENCE=protein.pdb LIGAND=lig POINTS=5.3478,-0.7278,2.4746,7.3785,6.7364,-9.3624</a>
+<a name="73"><span class="lineNum">      73 </span>            : PRINT ARG=fps.lp,fps.ld</a>
+<a name="74"><span class="lineNum">      74 </span>            : \endplumedfile</a>
+<a name="75"><span class="lineNum">      75 </span>            : </a>
+<a name="76"><span class="lineNum">      76 </span>            : It is recommended to add a line to force the reconstruction of the periodic boundary conditions. In the following example,</a>
+<a name="77"><span class="lineNum">      77 </span>            : \ref WHOLEMOLECULES was added to make sure that the ligand was reconstructed together with the protein. The list contains</a>
+<a name="78"><span class="lineNum">      78 </span>            : all the atoms reported in the start.pdb file followed by the ANCHOR atom and the ligand. All atoms should be contained in the</a>
+<a name="79"><span class="lineNum">      79 </span>            : same entity and the correct order.</a>
+<a name="80"><span class="lineNum">      80 </span>            : \plumedfile</a>
+<a name="81"><span class="lineNum">      81 </span>            : WHOLEMOLECULES ENTITY0=54,75,212,228,239,258,311,328,348,372,383,402,421,463,487,503,519,657,674,690,714,897,914,934,953,964,</a>
+<a name="82"><span class="lineNum">      82 </span>            : 974,985,1007,1018,1037,1247,1264,1283,1302,1324,1689,1708,1727,1738,1962,1984,1994,2312,2329,2349,2467,2490,2500,2517,2524,2536,</a>
+<a name="83"><span class="lineNum">      83 </span>            : 2547,2554,2569,2575,2591,2607,2635,2657,2676,2693,2700,2719,2735,2746,2770,2777,2788,2795,2805,2815,2832,2854,2868,2898,2904,</a>
+<a name="84"><span class="lineNum">      84 </span>            : 2911,2927,2948,2962,2472,3221,3224,3225,3228,3229,3231,3233,3235,3237</a>
+<a name="85"><span class="lineNum">      85 </span>            : lig: COM ATOMS=3221,3224,3225,3228,3229,3231,3233,3235,3237</a>
+<a name="86"><span class="lineNum">      86 </span>            : fps: FUNNEL_PS LIGAND=lig REFERENCE=start.pdb ANCHOR=2472 POINTS=4.724,5.369,4.069,4.597,5.721,4.343</a>
+<a name="87"><span class="lineNum">      87 </span>            : PRINT ARG=fps.lp,fps.ld</a>
+<a name="88"><span class="lineNum">      88 </span>            : \endplumedfile</a>
+<a name="89"><span class="lineNum">      89 </span>            : </a>
+<a name="90"><span class="lineNum">      90 </span>            : */</a>
+<a name="91"><span class="lineNum">      91 </span>            : //+ENDPLUMEDOC</a>
+<a name="92"><span class="lineNum">      92 </span>            : </a>
+<a name="93"><span class="lineNum">      93 </span>            : </a>
+<a name="94"><span class="lineNum">      94 </span>            : class FUNNEL_PS : public Colvar {</a>
+<a name="95"><span class="lineNum">      95 </span>            : </a>
+<a name="96"><span class="lineNum">      96 </span>            :   // Those are arrays that I created for the colvar</a>
+<a name="97"><span class="lineNum">      97 </span>            :   std::vector&lt;AtomNumber&gt; ligand_com;</a>
+<a name="98"><span class="lineNum">      98 </span>            :   std::vector&lt;AtomNumber&gt; anchor;</a>
+<a name="99"><span class="lineNum">      99 </span>            :   std::vector&lt;AtomNumber&gt; numbers;</a>
+<a name="100"><span class="lineNum">     100 </span>            :   bool pbc;</a>
+<a name="101"><span class="lineNum">     101 </span>            :   PLMD::RMSD alignment;</a>
+<a name="102"><span class="lineNum">     102 </span>            :   PLMD::PDB pdb;</a>
+<a name="103"><span class="lineNum">     103 </span>            :   bool squared;</a>
+<a name="104"><span class="lineNum">     104 </span>            : private:</a>
+<a name="105"><span class="lineNum">     105 </span>            :   vector&lt;double&gt; points;</a>
+<a name="106"><span class="lineNum">     106 </span>            : public:</a>
+<a name="107"><span class="lineNum">     107 </span>            :   explicit FUNNEL_PS(const ActionOptions&amp;);</a>
+<a name="108"><span class="lineNum">     108 </span>            : // active methods:</a>
+<a name="109"><span class="lineNum">     109 </span>            :   virtual void calculate();</a>
+<a name="110"><span class="lineNum">     110 </span>            :   static void registerKeywords(Keywords&amp; keys);</a>
+<a name="111"><span class="lineNum">     111 </span>            : // I need a method in RMSDCoreCalc and these were requested</a>
+<a name="112"><span class="lineNum">     112 </span>            :   std::vector&lt;double&gt; align;</a>
+<a name="113"><span class="lineNum">     113 </span>            :   std::vector&lt;double&gt; displace;</a>
+<a name="114"><span class="lineNum">     114 </span>            : };</a>
+<a name="115"><span class="lineNum">     115 </span>            : </a>
+<a name="116"><span class="lineNum">     116 </span>            : using namespace std;</a>
+<a name="117"><span class="lineNum">     117 </span>            : </a>
+<a name="118"><span class="lineNum">     118 </span><span class="lineCov">      12619 : PLUMED_REGISTER_ACTION(FUNNEL_PS,&quot;FUNNEL_PS&quot;)</span></a>
+<a name="119"><span class="lineNum">     119 </span>            : </a>
+<a name="120"><span class="lineNum">     120 </span><span class="lineCov">          7 : void FUNNEL_PS::registerKeywords(Keywords&amp; keys) {</span></a>
+<a name="121"><span class="lineNum">     121 </span><span class="lineCov">          7 :   Colvar::registerKeywords( keys );</span></a>
+<a name="122"><span class="lineNum">     122 </span><span class="lineCov">         14 :   keys.add(&quot;compulsory&quot;,&quot;REFERENCE&quot;,&quot;a file in pdb format containing the structure you would like to align.&quot;);</span></a>
+<a name="123"><span class="lineNum">     123 </span><span class="lineCov">         14 :   keys.add(&quot;atoms&quot;,&quot;LIGAND&quot;,&quot;This MUST be a single atom, normally the COM of the ligand&quot;);</span></a>
+<a name="124"><span class="lineNum">     124 </span><span class="lineCov">         14 :   keys.add(&quot;atoms&quot;,&quot;ANCHOR&quot;,&quot;Closest protein atom to the ligand, picked to avoid pbc problems during the simulation&quot;);</span></a>
+<a name="125"><span class="lineNum">     125 </span><span class="lineCov">         14 :   keys.add(&quot;compulsory&quot;,&quot;POINTS&quot;,&quot;6 values defining x, y, and z of the 2 points used to construct the line. The order should be A_x,A_y,A_z,B_x,B_y,B_z.&quot;);</span></a>
+<a name="126"><span class="lineNum">     126 </span><span class="lineCov">         14 :   keys.addFlag(&quot;SQUARED-ROOT&quot;,false,&quot;Used to initialize the creation of the alignment variable&quot;);</span></a>
+<a name="127"><span class="lineNum">     127 </span><span class="lineCov">         14 :   keys.addOutputComponent(&quot;lp&quot;,&quot;default&quot;,&quot;the position along the funnel line&quot;);</span></a>
+<a name="128"><span class="lineNum">     128 </span><span class="lineCov">         14 :   keys.addOutputComponent(&quot;ld&quot;,&quot;default&quot;,&quot;the distance from the funnel line&quot;);</span></a>
+<a name="129"><span class="lineNum">     129 </span><span class="lineCov">          7 : }</span></a>
+<a name="130"><span class="lineNum">     130 </span>            : </a>
+<a name="131"><span class="lineNum">     131 </span><span class="lineCov">          5 : FUNNEL_PS::FUNNEL_PS(const ActionOptions&amp;ao):</span></a>
+<a name="132"><span class="lineNum">     132 </span>            :   PLUMED_COLVAR_INIT(ao),</a>
+<a name="133"><span class="lineNum">     133 </span><span class="lineCov">          5 :   pbc(true),squared(true)</span></a>
+<a name="134"><span class="lineNum">     134 </span>            : {</a>
+<a name="135"><span class="lineNum">     135 </span>            :   string reference;</a>
+<a name="136"><span class="lineNum">     136 </span><span class="lineCov">         10 :   parse(&quot;REFERENCE&quot;,reference);</span></a>
+<a name="137"><span class="lineNum">     137 </span>            :   string type;</a>
+<a name="138"><span class="lineNum">     138 </span><span class="lineCov">          5 :   type.assign(&quot;OPTIMAL&quot;);</span></a>
+<a name="139"><span class="lineNum">     139 </span><span class="lineCov">         10 :   parseAtomList(&quot;LIGAND&quot;,ligand_com);</span></a>
+<a name="140"><span class="lineNum">     140 </span><span class="lineCov">          5 :   if(ligand_com.size()!=1)</span></a>
+<a name="141"><span class="lineNum">     141 </span><span class="lineNoCov">          0 :     error(&quot;Number of specified atoms should be one, normally the COM of the ligand&quot;);</span></a>
+<a name="142"><span class="lineNum">     142 </span><span class="lineCov">          5 :   parseVector(&quot;POINTS&quot;,points);</span></a>
+<a name="143"><span class="lineNum">     143 </span><span class="lineCov">          5 :   bool nopbc=!pbc;</span></a>
+<a name="144"><span class="lineNum">     144 </span><span class="lineCov">          5 :   parseFlag(&quot;NOPBC&quot;,nopbc);</span></a>
+<a name="145"><span class="lineNum">     145 </span><span class="lineCov">          5 :   pbc=!nopbc;</span></a>
+<a name="146"><span class="lineNum">     146 </span>            :   bool sq;</a>
+<a name="147"><span class="lineNum">     147 </span><span class="lineCov">          5 :   parseFlag(&quot;SQUARED-ROOT&quot;,sq);</span></a>
+<a name="148"><span class="lineNum">     148 </span><span class="lineCov">          5 :   if (sq) {</span></a>
+<a name="149"><span class="lineNum">     149 </span><span class="lineNoCov">          0 :     squared=false;</span></a>
+<a name="150"><span class="lineNum">     150 </span>            :   }</a>
+<a name="151"><span class="lineNum">     151 </span><span class="lineCov">          5 :   parseAtomList(&quot;ANCHOR&quot;,anchor);</span></a>
+<a name="152"><span class="lineNum">     152 </span><span class="lineCov">          5 :   checkRead();</span></a>
+<a name="153"><span class="lineNum">     153 </span>            : </a>
+<a name="154"><span class="lineNum">     154 </span>            :   // read everything in ang and transform to nm if we are not in natural units</a>
+<a name="155"><span class="lineNum">     155 </span><span class="lineCov">         10 :   if( !pdb.read(reference,plumed.getAtoms().usingNaturalUnits(),0.1/ActionAtomistic::atoms.getUnits().getLength()) )</span></a>
+<a name="156"><span class="lineNum">     156 </span><span class="lineNoCov">          0 :     error(&quot;missing input file &quot; + reference );</span></a>
+<a name="157"><span class="lineNum">     157 </span>            : </a>
+<a name="158"><span class="lineNum">     158 </span>            :   bool remove_com=true;</a>
+<a name="159"><span class="lineNum">     159 </span>            :   bool normalize_weights=true;</a>
+<a name="160"><span class="lineNum">     160 </span>            :   // here displace is a simple vector of ones</a>
+<a name="161"><span class="lineNum">     161 </span><span class="lineCov">          5 :   align=pdb.getOccupancy();</span></a>
+<a name="162"><span class="lineNum">     162 </span><span class="lineCov">      16195 :   for(unsigned i=0; i&lt;align.size(); i++) {</span></a>
+<a name="163"><span class="lineNum">     163 </span><span class="lineCov">      16190 :     align[i]=1.;</span></a>
+<a name="164"><span class="lineNum">     164 </span>            :   } ;</a>
+<a name="165"><span class="lineNum">     165 </span><span class="lineCov">          5 :   displace=pdb.getBeta();</span></a>
+<a name="166"><span class="lineNum">     166 </span><span class="lineCov">      16195 :   for(unsigned i=0; i&lt;displace.size(); i++) {</span></a>
+<a name="167"><span class="lineNum">     167 </span><span class="lineCov">      16190 :     displace[i]=1.;</span></a>
+<a name="168"><span class="lineNum">     168 </span>            :   } ;</a>
+<a name="169"><span class="lineNum">     169 </span>            :   // reset again to reimpose uniform weights (safe to disable this)</a>
+<a name="170"><span class="lineNum">     170 </span><span class="lineCov">          5 :   alignment.set(align,displace,pdb.getPositions(),type,remove_com,normalize_weights);</span></a>
+<a name="171"><span class="lineNum">     171 </span>            : </a>
+<a name="172"><span class="lineNum">     172 </span>            : </a>
+<a name="173"><span class="lineNum">     173 </span>            : </a>
+<a name="174"><span class="lineNum">     174 </span>            :   // Array with inside both the structure to align and the atom to be aligned</a>
+<a name="175"><span class="lineNum">     175 </span><span class="lineCov">          5 :   numbers=pdb.getAtomNumbers();</span></a>
+<a name="176"><span class="lineNum">     176 </span><span class="lineCov">          5 :   numbers.push_back(anchor[0]);</span></a>
+<a name="177"><span class="lineNum">     177 </span><span class="lineCov">          5 :   numbers.push_back(ligand_com[0]);</span></a>
+<a name="178"><span class="lineNum">     178 </span>            : </a>
+<a name="179"><span class="lineNum">     179 </span><span class="lineCov">          5 :   log.printf(&quot;  average from file %s\n&quot;,reference.c_str());</span></a>
+<a name="180"><span class="lineNum">     180 </span><span class="lineCov">          5 :   log.printf(&quot;  method for alignment : %s \n&quot;,type.c_str() );</span></a>
+<a name="181"><span class="lineNum">     181 </span>            : </a>
+<a name="182"><span class="lineNum">     182 </span><span class="lineCov">          5 :   if(pbc) log.printf(&quot;  using periodic boundary conditions\n&quot;);</span></a>
+<a name="183"><span class="lineNum">     183 </span><span class="lineNoCov">          0 :   else    log.printf(&quot;  without periodic boundary conditions\n&quot;);</span></a>
+<a name="184"><span class="lineNum">     184 </span>            : </a>
+<a name="185"><span class="lineNum">     185 </span><span class="lineCov">          5 :   addComponentWithDerivatives(&quot;lp&quot;);</span></a>
+<a name="186"><span class="lineNum">     186 </span><span class="lineCov">          5 :   componentIsNotPeriodic(&quot;lp&quot;);</span></a>
+<a name="187"><span class="lineNum">     187 </span><span class="lineCov">          5 :   addComponentWithDerivatives(&quot;ld&quot;);</span></a>
+<a name="188"><span class="lineNum">     188 </span><span class="lineCov">          5 :   componentIsNotPeriodic(&quot;ld&quot;);</span></a>
+<a name="189"><span class="lineNum">     189 </span>            : </a>
+<a name="190"><span class="lineNum">     190 </span><span class="lineCov">          5 :   requestAtoms( numbers );</span></a>
+<a name="191"><span class="lineNum">     191 </span>            : </a>
+<a name="192"><span class="lineNum">     192 </span><span class="lineCov">          5 : }</span></a>
+<a name="193"><span class="lineNum">     193 </span>            : </a>
+<a name="194"><span class="lineNum">     194 </span>            : // calculator</a>
+<a name="195"><span class="lineNum">     195 </span><span class="lineCov">        150 : void FUNNEL_PS::calculate() {</span></a>
+<a name="196"><span class="lineNum">     196 </span>            : </a>
+<a name="197"><span class="lineNum">     197 </span><span class="lineCov">        150 :   if(pbc) makeWhole();</span></a>
+<a name="198"><span class="lineNum">     198 </span>            : </a>
+<a name="199"><span class="lineNum">     199 </span><span class="lineCov">        150 :   Tensor Rotation;</span></a>
+<a name="200"><span class="lineNum">     200 </span>            :   Matrix&lt;std::vector&lt;Vector&gt; &gt; drotdpos(3,3);</a>
+<a name="201"><span class="lineNum">     201 </span>            :   std::vector&lt;Vector&gt; alignedpos;</a>
+<a name="202"><span class="lineNum">     202 </span>            :   std::vector&lt;Vector&gt; centeredpos;</a>
+<a name="203"><span class="lineNum">     203 </span>            :   std::vector&lt;Vector&gt; centeredref;</a>
+<a name="204"><span class="lineNum">     204 </span>            :   std::vector&lt;Vector&gt; ddistdpos;</a>
+<a name="205"><span class="lineNum">     205 </span>            : </a>
+<a name="206"><span class="lineNum">     206 </span>            :   std::vector&lt;Vector&gt; buffer;</a>
+<a name="207"><span class="lineNum">     207 </span>            : </a>
+<a name="208"><span class="lineNum">     208 </span><span class="lineCov">        150 :   Vector centerreference;</span></a>
+<a name="209"><span class="lineNum">     209 </span><span class="lineCov">        150 :   Vector centerpositions;</span></a>
+<a name="210"><span class="lineNum">     210 </span>            : </a>
+<a name="211"><span class="lineNum">     211 </span>            :   // Created only to give the correct object to calc_FitElements</a>
+<a name="212"><span class="lineNum">     212 </span>            :   std::vector&lt;Vector&gt; sourceAllPositions;</a>
+<a name="213"><span class="lineNum">     213 </span>            :   std::vector&lt;Vector&gt; sourcePositions;</a>
+<a name="214"><span class="lineNum">     214 </span>            : </a>
+<a name="215"><span class="lineNum">     215 </span>            :   // SourcePositions contains only the coordinates of the COM of the ligand, we need only this point</a>
+<a name="216"><span class="lineNum">     216 </span><span class="lineCov">        150 :   sourceAllPositions=getPositions();</span></a>
+<a name="217"><span class="lineNum">     217 </span><span class="lineCov">        150 :   sourcePositions=sourceAllPositions;</span></a>
+<a name="218"><span class="lineNum">     218 </span><span class="lineCov">        150 :   sourcePositions.resize(sourcePositions.size()-2);// just the protein</span></a>
+<a name="219"><span class="lineNum">     219 </span>            : </a>
+<a name="220"><span class="lineNum">     220 </span>            :   // The two points that define the axis : this can be moved in the initialization</a>
+<a name="221"><span class="lineNum">     221 </span><span class="lineCov">        150 :   Vector p1 = VectorGeneric&lt;3&gt;(points[0],points[1],points[2]);</span></a>
+<a name="222"><span class="lineNum">     222 </span><span class="lineCov">        150 :   Vector p2 = VectorGeneric&lt;3&gt;(points[3],points[4],points[5]);</span></a>
+<a name="223"><span class="lineNum">     223 </span><span class="lineCov">        150 :   Vector s = p2 - p1;</span></a>
+<a name="224"><span class="lineNum">     224 </span>            : </a>
+<a name="225"><span class="lineNum">     225 </span>            :   // I call the method calc_FitElements that initializes all feature that I need</a>
+<a name="226"><span class="lineNum">     226 </span>            :   // except for centerreference that I need to calculate from scratch</a>
+<a name="227"><span class="lineNum">     227 </span>            :   // Buffer has no meaning but I had to fulfill the requirements of calc_FitElements</a>
+<a name="228"><span class="lineNum">     228 </span><span class="lineCov">        150 :   double rmsd = alignment.calc_FitElements( sourcePositions, Rotation, drotdpos, buffer, centerpositions, squared);</span></a>
+<a name="229"><span class="lineNum">     229 </span>            : </a>
+<a name="230"><span class="lineNum">     230 </span>            :   // To Plumed developers: it would be interesting to make the functions to calculate centers of mass public or protected</a>
+<a name="231"><span class="lineNum">     231 </span><span class="lineCov">        150 :   centerreference.zero();</span></a>
+<a name="232"><span class="lineNum">     232 </span><span class="lineCov">     485850 :   for(unsigned i=0; i&lt;pdb.size(); i++) {</span></a>
+<a name="233"><span class="lineNum">     233 </span><span class="lineCov">     485700 :     centerreference+=pdb.getPositions()[i]*align[i]/align.size();</span></a>
+<a name="234"><span class="lineNum">     234 </span>            :   }</a>
+<a name="235"><span class="lineNum">     235 </span>            : </a>
+<a name="236"><span class="lineNum">     236 </span>            :   /*</a>
+<a name="237"><span class="lineNum">     237 </span>            :   // I cancelled the additional lines in the library of RMSD.h, thus I am missing the center of the reference</a>
+<a name="238"><span class="lineNum">     238 </span>            :   // Creating variable kito to extract only the center of the reference, since no method is calling</a>
+<a name="239"><span class="lineNum">     239 </span>            :   // function getReferenceCenter()</a>
+<a name="240"><span class="lineNum">     240 </span>            :   PLMD::RMSDCoreData* kito; kito = new RMSDCoreData(align,displace,sourcePositions,pdb-&gt;getPositions());</a>
+<a name="241"><span class="lineNum">     241 </span>            :   centerreference = kito-&gt;getReferenceCenter();</a>
+<a name="242"><span class="lineNum">     242 </span>            :   delete kito;</a>
+<a name="243"><span class="lineNum">     243 </span>            :   */</a>
+<a name="244"><span class="lineNum">     244 </span>            : </a>
+<a name="245"><span class="lineNum">     245 </span>            :   // DEBUG</a>
+<a name="246"><span class="lineNum">     246 </span>            :   /*    log.printf(&quot; RMSD: %13.6lf\n&quot;,rmsd );</a>
+<a name="247"><span class="lineNum">     247 </span>            :       log.printf(&quot; cpos: %13.6lf %13.6lf %13.6lf\n&quot;,centerpositions[0],centerpositions[1],centerpositions[2] );</a>
+<a name="248"><span class="lineNum">     248 </span>            :       log.printf(&quot; Rotation: %13.6lf %13.6lf %13.6lf\n&quot;,Rotation[0][0],Rotation[0][1],Rotation[0][2] );</a>
+<a name="249"><span class="lineNum">     249 </span>            :       log.printf(&quot;           %13.6lf %13.6lf %13.6lf\n&quot;,Rotation[1][0],Rotation[1][1],Rotation[1][2] );</a>
+<a name="250"><span class="lineNum">     250 </span>            :       log.printf(&quot;           %13.6lf %13.6lf %13.6lf\n&quot;,Rotation[2][0],Rotation[2][1],Rotation[2][2] );</a>
+<a name="251"><span class="lineNum">     251 </span>            :   */</a>
+<a name="252"><span class="lineNum">     252 </span>            : </a>
+<a name="253"><span class="lineNum">     253 </span>            :   // the position is   Rot(ligand-com_prot_md)+ com_prot_ref</a>
+<a name="254"><span class="lineNum">     254 </span><span class="lineCov">        150 :   Vector ligand_centered =getPositions().back()-centerpositions;</span></a>
+<a name="255"><span class="lineNum">     255 </span><span class="lineCov">        150 :   Vector ligand_aligned =matmul(Rotation,ligand_centered);</span></a>
+<a name="256"><span class="lineNum">     256 </span><span class="lineCov">        150 :   Vector v = ligand_aligned +centerreference -p1;</span></a>
+<a name="257"><span class="lineNum">     257 </span>            : </a>
+<a name="258"><span class="lineNum">     258 </span>            :   // DEBUG</a>
+<a name="259"><span class="lineNum">     259 </span>            : //    log.printf(&quot; ligando: %13.6lf %13.6lf %13.6lf\n&quot;,getPositions().back()[0],getPositions().back()[1],getPositions().back()[2] );</a>
+<a name="260"><span class="lineNum">     260 </span>            : </a>
+<a name="261"><span class="lineNum">     261 </span>            :   //Projection vector v onto s</a>
+<a name="262"><span class="lineNum">     262 </span>            : </a>
+<a name="263"><span class="lineNum">     263 </span><span class="lineCov">        150 :   Vector prj = (dotProduct(s,v)/dotProduct(s,s))*s;</span></a>
+<a name="264"><span class="lineNum">     264 </span><span class="lineCov">        150 :   const double prj_length = prj.modulo() ;</span></a>
+<a name="265"><span class="lineNum">     265 </span>            :   const double inv_prj_length = 1.0/prj_length;</a>
+<a name="266"><span class="lineNum">     266 </span>            : </a>
+<a name="267"><span class="lineNum">     267 </span><span class="lineCov">        150 :   Vector height = v - prj;</span></a>
+<a name="268"><span class="lineNum">     268 </span><span class="lineCov">        150 :   const double prj_height = height.modulo() ;</span></a>
+<a name="269"><span class="lineNum">     269 </span><span class="lineCov">        150 :   const double inv_prj_height = 1.0/prj_height;</span></a>
+<a name="270"><span class="lineNum">     270 </span>            : </a>
+<a name="271"><span class="lineNum">     271 </span>            :   // derivative of the prj: only on the com of the ligand</a>
+<a name="272"><span class="lineNum">     272 </span><span class="lineCov">        150 :   Vector der_prj;</span></a>
+<a name="273"><span class="lineNum">     273 </span><span class="lineCov">        150 :   der_prj=s/s.modulo();</span></a>
+<a name="274"><span class="lineNum">     274 </span>            : </a>
+<a name="275"><span class="lineNum">     275 </span>            :   // derivative of the height: only on the com of the ligand</a>
+<a name="276"><span class="lineNum">     276 </span><span class="lineCov">        150 :   Vector der_height(inv_prj_height*(height[0]-(s[0]/s.modulo2())*dotProduct(height,s)),</span></a>
+<a name="277"><span class="lineNum">     277 </span><span class="lineCov">        150 :                     inv_prj_height*(height[1]-(s[1]/s.modulo2())*dotProduct(height,s)),</span></a>
+<a name="278"><span class="lineNum">     278 </span><span class="lineCov">        150 :                     inv_prj_height*(height[2]-(s[2]/s.modulo2())*dotProduct(height,s)));</span></a>
+<a name="279"><span class="lineNum">     279 </span>            : </a>
+<a name="280"><span class="lineNum">     280 </span><span class="lineCov">        150 :   Value* valuelp=getPntrToComponent(&quot;lp&quot;);</span></a>
+<a name="281"><span class="lineNum">     281 </span><span class="lineCov">        150 :   Value* valueld=getPntrToComponent(&quot;ld&quot;);</span></a>
+<a name="282"><span class="lineNum">     282 </span><span class="lineCov">        150 :   valuelp-&gt;set(dotProduct(s,v)/s.modulo()); // this includes the sign</span></a>
+<a name="283"><span class="lineNum">     283 </span>            :   valueld-&gt;set(prj_height);</a>
+<a name="284"><span class="lineNum">     284 </span>            : </a>
+<a name="285"><span class="lineNum">     285 </span>            :   // DEBUG</a>
+<a name="286"><span class="lineNum">     286 </span>            : //    log.printf(&quot; Dopo: %13.6lf  %13.6lf\n&quot;,dotProduct(s,v)/s.modulo(),prj_height );</a>
+<a name="287"><span class="lineNum">     287 </span>            : </a>
+<a name="288"><span class="lineNum">     288 </span><span class="lineCov">        150 :   setAtomsDerivatives(valuelp,getNumberOfAtoms()-1,matmul(transpose(Rotation),der_prj));</span></a>
+<a name="289"><span class="lineNum">     289 </span><span class="lineCov">        150 :   setAtomsDerivatives(valueld,getNumberOfAtoms()-1,matmul(transpose(Rotation),der_height));</span></a>
+<a name="290"><span class="lineNum">     290 </span>            : </a>
+<a name="291"><span class="lineNum">     291 </span><span class="lineCov">        150 :   Vector der_h;</span></a>
+<a name="292"><span class="lineNum">     292 </span><span class="lineCov">        150 :   Vector der_l;</span></a>
+<a name="293"><span class="lineNum">     293 </span><span class="lineCov">        150 :   double weight=1./float(getNumberOfAtoms()-2.);</span></a>
+<a name="294"><span class="lineNum">     294 </span>            : </a>
+<a name="295"><span class="lineNum">     295 </span><span class="lineCov">     485850 :   for(unsigned iat=0; iat&lt;getNumberOfAtoms()-2; iat++) {</span></a>
+<a name="296"><span class="lineNum">     296 </span><span class="lineCov">     485700 :     der_h.zero();</span></a>
+<a name="297"><span class="lineNum">     297 </span><span class="lineCov">     485700 :     der_l.zero();</span></a>
+<a name="298"><span class="lineNum">     298 </span><span class="lineCov">    1942800 :     for(unsigned a=0; a&lt;3; a++) {</span></a>
+<a name="299"><span class="lineNum">     299 </span><span class="lineCov">    5828400 :       for(unsigned b=0; b&lt;3; b++) {</span></a>
+<a name="300"><span class="lineNum">     300 </span><span class="lineCov">   17485200 :         for(unsigned g=0; g&lt;3; g++) {</span></a>
+<a name="301"><span class="lineNum">     301 </span><span class="lineCov">   13113900 :           der_h[a]+=der_height[b]*drotdpos[b][g][iat][a]*ligand_centered[g];</span></a>
+<a name="302"><span class="lineNum">     302 </span><span class="lineCov">   13113900 :           der_l[a]+=der_prj[b]*drotdpos[b][g][iat][a]*ligand_centered[g];</span></a>
+<a name="303"><span class="lineNum">     303 </span>            :         }</a>
+<a name="304"><span class="lineNum">     304 </span><span class="lineCov">    4371300 :         der_h[a]-=der_height[b]*Rotation[b][a]*weight;</span></a>
+<a name="305"><span class="lineNum">     305 </span><span class="lineCov">    4371300 :         der_l[a]-=der_prj[b]*Rotation[b][a]*weight;</span></a>
+<a name="306"><span class="lineNum">     306 </span>            :       }</a>
+<a name="307"><span class="lineNum">     307 </span>            :     }</a>
+<a name="308"><span class="lineNum">     308 </span><span class="lineCov">     485700 :     setAtomsDerivatives(valuelp,iat,der_l);</span></a>
+<a name="309"><span class="lineNum">     309 </span><span class="lineCov">     485700 :     setAtomsDerivatives(valueld,iat,der_h);</span></a>
+<a name="310"><span class="lineNum">     310 </span>            :   }</a>
+<a name="311"><span class="lineNum">     311 </span>            : </a>
+<a name="312"><span class="lineNum">     312 </span><span class="lineCov">        150 :   setBoxDerivativesNoPbc(valuelp);</span></a>
+<a name="313"><span class="lineNum">     313 </span><span class="lineCov">        150 :   setBoxDerivativesNoPbc(valueld);</span></a>
+<a name="314"><span class="lineNum">     314 </span>            : </a>
+<a name="315"><span class="lineNum">     315 </span><span class="lineCov">        150 : }</span></a>
+<a name="316"><span class="lineNum">     316 </span>            : </a>
+<a name="317"><span class="lineNum">     317 </span>            : }</a>
+<a name="318"><span class="lineNum">     318 </span>            : }</a>
+<a name="319"><span class="lineNum">     319 </span>            : </a>
+<a name="320"><span class="lineNum">     320 </span>            : </a>
+<a name="321"><span class="lineNum">     321 </span>            : </a>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="https://github.com/linux-test-project/lcov" target="_parent">LCOV version 1.16</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

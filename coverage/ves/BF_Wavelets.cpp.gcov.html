@@ -1,0 +1,494 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - plumed test coverage - ves/BF_Wavelets.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">ves</a> - BF_Wavelets.cpp<span style="font-size: 80%;"> (source / <a href="BF_Wavelets.cpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">plumed test coverage</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">119</td>
+            <td class="headerCovTableEntry">119</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2024-10-18 14:29:08</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">8</td>
+            <td class="headerCovTableEntry">8</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</a>
+<a name="2"><span class="lineNum">       2 </span>            :    Copyright (c) 2016-2021 The VES code team</a>
+<a name="3"><span class="lineNum">       3 </span>            :    (see the PEOPLE-VES file at the root of this folder for a list of names)</a>
+<a name="4"><span class="lineNum">       4 </span>            : </a>
+<a name="5"><span class="lineNum">       5 </span>            :    See http://www.ves-code.org for more information.</a>
+<a name="6"><span class="lineNum">       6 </span>            : </a>
+<a name="7"><span class="lineNum">       7 </span>            :    This file is part of VES code module.</a>
+<a name="8"><span class="lineNum">       8 </span>            : </a>
+<a name="9"><span class="lineNum">       9 </span>            :    The VES code module is free software: you can redistribute it and/or modify</a>
+<a name="10"><span class="lineNum">      10 </span>            :    it under the terms of the GNU Lesser General Public License as published by</a>
+<a name="11"><span class="lineNum">      11 </span>            :    the Free Software Foundation, either version 3 of the License, or</a>
+<a name="12"><span class="lineNum">      12 </span>            :    (at your option) any later version.</a>
+<a name="13"><span class="lineNum">      13 </span>            : </a>
+<a name="14"><span class="lineNum">      14 </span>            :    The VES code module is distributed in the hope that it will be useful,</a>
+<a name="15"><span class="lineNum">      15 </span>            :    but WITHOUT ANY WARRANTY; without even the implied warranty of</a>
+<a name="16"><span class="lineNum">      16 </span>            :    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</a>
+<a name="17"><span class="lineNum">      17 </span>            :    GNU Lesser General Public License for more details.</a>
+<a name="18"><span class="lineNum">      18 </span>            : </a>
+<a name="19"><span class="lineNum">      19 </span>            :    You should have received a copy of the GNU Lesser General Public License</a>
+<a name="20"><span class="lineNum">      20 </span>            :    along with the VES code module.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</a>
+<a name="21"><span class="lineNum">      21 </span>            : +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */</a>
+<a name="22"><span class="lineNum">      22 </span>            : </a>
+<a name="23"><span class="lineNum">      23 </span>            : </a>
+<a name="24"><span class="lineNum">      24 </span>            : #include &quot;BasisFunctions.h&quot;</a>
+<a name="25"><span class="lineNum">      25 </span>            : #include &quot;GridLinearInterpolation.h&quot;</a>
+<a name="26"><span class="lineNum">      26 </span>            : #include &quot;tools/Grid.h&quot;</a>
+<a name="27"><span class="lineNum">      27 </span>            : #include &quot;VesTools.h&quot;</a>
+<a name="28"><span class="lineNum">      28 </span>            : #include &quot;WaveletGrid.h&quot;</a>
+<a name="29"><span class="lineNum">      29 </span>            : #include &quot;core/ActionRegister.h&quot;</a>
+<a name="30"><span class="lineNum">      30 </span>            : #include &quot;tools/Exception.h&quot;</a>
+<a name="31"><span class="lineNum">      31 </span>            : #include &quot;core/PlumedMain.h&quot;</a>
+<a name="32"><span class="lineNum">      32 </span>            : </a>
+<a name="33"><span class="lineNum">      33 </span>            : </a>
+<a name="34"><span class="lineNum">      34 </span>            : namespace PLMD {</a>
+<a name="35"><span class="lineNum">      35 </span>            : namespace ves {</a>
+<a name="36"><span class="lineNum">      36 </span>            : </a>
+<a name="37"><span class="lineNum">      37 </span>            : </a>
+<a name="38"><span class="lineNum">      38 </span>            : //+PLUMEDOC VES_BASISF BF_WAVELETS</a>
+<a name="39"><span class="lineNum">      39 </span>            : /*</a>
+<a name="40"><span class="lineNum">      40 </span>            : Daubechies Wavelets basis functions.</a>
+<a name="41"><span class="lineNum">      41 </span>            : </a>
+<a name="42"><span class="lineNum">      42 </span>            : Note: at the moment only bases with a single level of scaling functions are usable, as multiscale optimization is not yet implemented.</a>
+<a name="43"><span class="lineNum">      43 </span>            : </a>
+<a name="44"><span class="lineNum">      44 </span>            : This basis set uses Daubechies Wavelets \cite daubechies_ten_1992 to construct a complete and orthogonal basis. See \cite ValssonPampel_Wavelets_2022 for full details.</a>
+<a name="45"><span class="lineNum">      45 </span>            : </a>
+<a name="46"><span class="lineNum">      46 </span>            : The basis set is based on using a pair of functions, the scaling function (or father wavelet) \f$\phi\f$ and the wavelet function (or mother wavelet) \f$\psi\f$.</a>
+<a name="47"><span class="lineNum">      47 </span>            : They are defined via the two-scale relations for scale \f$j\f$ and shift \f$k\f$:</a>
+<a name="48"><span class="lineNum">      48 </span>            : </a>
+<a name="49"><span class="lineNum">      49 </span>            : \f{align*}{</a>
+<a name="50"><span class="lineNum">      50 </span>            :   \phi_k^j \left(x\right) = 2^{-j/2} \phi \left( 2^{-j} x - k\right)\\</a>
+<a name="51"><span class="lineNum">      51 </span>            :   \psi_k^j \left(x\right) = 2^{-j/2} \psi \left( 2^{-j} x - k\right)</a>
+<a name="52"><span class="lineNum">      52 </span>            : \f}</a>
+<a name="53"><span class="lineNum">      53 </span>            : </a>
+<a name="54"><span class="lineNum">      54 </span>            : The exact properties are set by choosing filter coefficients, e.g. choosing \f$h_k\f$ for the father wavelet:</a>
+<a name="55"><span class="lineNum">      55 </span>            : </a>
+<a name="56"><span class="lineNum">      56 </span>            : \f[</a>
+<a name="57"><span class="lineNum">      57 </span>            :   \phi\left(x\right) = \sqrt{2} \sum_k h_k\, \phi \left( 2 x - k\right)</a>
+<a name="58"><span class="lineNum">      58 </span>            : \f]</a>
+<a name="59"><span class="lineNum">      59 </span>            : </a>
+<a name="60"><span class="lineNum">      60 </span>            : The filter coefficients by Daubechies result in an orthonormal basis of all integer shifted functions:</a>
+<a name="61"><span class="lineNum">      61 </span>            : \f[</a>
+<a name="62"><span class="lineNum">      62 </span>            :   \int \phi(x+i) \phi(x+j) \mathop{}\!\mathrm{d}x = \delta_{ij} \quad \text{for} \quad i,j \in \mathbb{Z}</a>
+<a name="63"><span class="lineNum">      63 </span>            : \f]</a>
+<a name="64"><span class="lineNum">      64 </span>            : </a>
+<a name="65"><span class="lineNum">      65 </span>            : Because no analytic formula for these wavelets exist, they are instead constructed iteratively on a grid.</a>
+<a name="66"><span class="lineNum">      66 </span>            : The method of construction is close to the &quot;Vector cascade algorithm&quot; described in \cite strang_wavelets_1997 .</a>
+<a name="67"><span class="lineNum">      67 </span>            : The needed filter coefficients of the scaling function are hardcoded, and were previously generated via a python script.</a>
+<a name="68"><span class="lineNum">      68 </span>            : Currently the &quot;maximum phase&quot; type (Db) and the &quot;least asymmetric&quot; (Sym) type are implemented.</a>
+<a name="69"><span class="lineNum">      69 </span>            : We recommend to use Symlets.</a>
+<a name="70"><span class="lineNum">      70 </span>            : </a>
+<a name="71"><span class="lineNum">      71 </span>            : As an example two adjacent basis functions of both Sym8 (ORDER=8, TYPE=SYMLET) and Db8 (ORDER=8, TYPE=DAUBECHIES) is shown in the figure.</a>
+<a name="72"><span class="lineNum">      72 </span>            : The full basis consists of shifted wavelets in the full specified interval.</a>
+<a name="73"><span class="lineNum">      73 </span>            : </a>
+<a name="74"><span class="lineNum">      74 </span>            : \image html ves_basisf-wavelets.png</a>
+<a name="75"><span class="lineNum">      75 </span>            : </a>
+<a name="76"><span class="lineNum">      76 </span>            : </a>
+<a name="77"><span class="lineNum">      77 </span>            : \par Specify the wavelet type</a>
+<a name="78"><span class="lineNum">      78 </span>            : </a>
+<a name="79"><span class="lineNum">      79 </span>            : The TYPE keyword sets the type of Wavelet, at the moment &quot;DAUBECHIES&quot; and &quot;SYMLETS&quot; are available.</a>
+<a name="80"><span class="lineNum">      80 </span>            : The specified ORDER of the basis corresponds to the number of vanishing moments of the wavelet, i.e. if TYPE was specified as &quot;DAUBECHIES&quot; an order of 8 results in Db8 wavelets.</a>
+<a name="81"><span class="lineNum">      81 </span>            : </a>
+<a name="82"><span class="lineNum">      82 </span>            : </a>
+<a name="83"><span class="lineNum">      83 </span>            : \par Specify the number of functions</a>
+<a name="84"><span class="lineNum">      84 </span>            : </a>
+<a name="85"><span class="lineNum">      85 </span>            : The resulting basis set consists of integer shifts of the wavelet with some scaling \f$j\f$,</a>
+<a name="86"><span class="lineNum">      86 </span>            : \f[</a>
+<a name="87"><span class="lineNum">      87 </span>            :   V(x) = \sum_i \alpha_i * \phi_i (x) = \sum_i \alpha_i * \phi(\frac{x+i}{j})</a>
+<a name="88"><span class="lineNum">      88 </span>            : \f]</a>
+<a name="89"><span class="lineNum">      89 </span>            : with the variational parameters \f$ \alpha \f$.</a>
+<a name="90"><span class="lineNum">      90 </span>            : Additionally a constant basis function is included.</a>
+<a name="91"><span class="lineNum">      91 </span>            : </a>
+<a name="92"><span class="lineNum">      92 </span>            : There are two different ways to specify the number of used basis functions implemented.</a>
+<a name="93"><span class="lineNum">      93 </span>            : You can either specify the scale or alternatively a fixed number of basis function.</a>
+<a name="94"><span class="lineNum">      94 </span>            : </a>
+<a name="95"><span class="lineNum">      95 </span>            : Coming from the multiresolution aspect of wavelets, you can set the scale of the father wavelets, i.e. the largest scale used for approximation.</a>
+<a name="96"><span class="lineNum">      96 </span>            : This can be done with the FUNCTION_LENGTH keyword.</a>
+<a name="97"><span class="lineNum">      97 </span>            : It should be given in the same units as the used CV and specifies the length (of the domain interval) of the individual father wavelet functions.</a>
+<a name="98"><span class="lineNum">      98 </span>            : </a>
+<a name="99"><span class="lineNum">      99 </span>            : Alternatively a fixed number of basis functions for the bias expansion can be specified with the NUM_BF keyword, which will set the scale automatically to match the desired number of functions.</a>
+<a name="100"><span class="lineNum">     100 </span>            : Note that this also includes the constant function.</a>
+<a name="101"><span class="lineNum">     101 </span>            : </a>
+<a name="102"><span class="lineNum">     102 </span>            : If you do not specify anything, it is assumed that the range of the bias should match the scale of the wavelet functions.</a>
+<a name="103"><span class="lineNum">     103 </span>            : More precise, the basis functions are scaled to match the specified size of the CV space (MINIMUM and MAXIMUM keywords).</a>
+<a name="104"><span class="lineNum">     104 </span>            : This has so far been a good initial choice.</a>
+<a name="105"><span class="lineNum">     105 </span>            : </a>
+<a name="106"><span class="lineNum">     106 </span>            : If the wavelets are scaled to match the CV range exactly there would be \f$4*\text{ORDER} -3\f$ basis functions whose domain is at least partially in this region.</a>
+<a name="107"><span class="lineNum">     107 </span>            : This number is adjusted if FUNCTION_LENGTH or NUM_BF is specified.</a>
+<a name="108"><span class="lineNum">     108 </span>            : Additionally, some of the shifted basis functions will not have significant contributions because of their function values being close to zero over the full range of the bias.</a>
+<a name="109"><span class="lineNum">     109 </span>            : These 'tail wavelets' can be omitted by using the TAILS_THRESHOLD keyword.</a>
+<a name="110"><span class="lineNum">     110 </span>            : This omits all shifted functions that have only function values smaller than a fraction of their maximum value inside the bias range.</a>
+<a name="111"><span class="lineNum">     111 </span>            : Using a value of e.g. 0.01 will already reduce the number of basis functions significantly.</a>
+<a name="112"><span class="lineNum">     112 </span>            : The default setting will not omit any tail wavelets (i.e. TAILS_THRESHOLD=0).</a>
+<a name="113"><span class="lineNum">     113 </span>            : </a>
+<a name="114"><span class="lineNum">     114 </span>            : The number of basis functions is then not easily determinable a priori but will be given in the logfile.</a>
+<a name="115"><span class="lineNum">     115 </span>            : Additionally the starting point (leftmost defined point) of the individual basis functions is printed.</a>
+<a name="116"><span class="lineNum">     116 </span>            : </a>
+<a name="117"><span class="lineNum">     117 </span>            : </a>
+<a name="118"><span class="lineNum">     118 </span>            : With the PERIODIC keyword the basis set can also be used to bias periodic CVs.</a>
+<a name="119"><span class="lineNum">     119 </span>            : Then the shift between the functions will be chosen such that the function at the left border and right border coincide.</a>
+<a name="120"><span class="lineNum">     120 </span>            : If the FUNCTION_LENGTH keyword is used together with PERIODIC, a smaller length might be chosen to satisfy this requirement.</a>
+<a name="121"><span class="lineNum">     121 </span>            : </a>
+<a name="122"><span class="lineNum">     122 </span>            : </a>
+<a name="123"><span class="lineNum">     123 </span>            : \par Grid</a>
+<a name="124"><span class="lineNum">     124 </span>            : </a>
+<a name="125"><span class="lineNum">     125 </span>            : The values of the wavelet function are generated on a grid.</a>
+<a name="126"><span class="lineNum">     126 </span>            : Using the cascade algorithm results in doubling the grid values for each iteration.</a>
+<a name="127"><span class="lineNum">     127 </span>            : This means that the grid size will always be a power of two multiplied by the number of coefficients (\f$ 2*\text{ORDER} -1\f$) for the specified wavelet.</a>
+<a name="128"><span class="lineNum">     128 </span>            : Using the MIN_GRID_SIZE keyword a lower bound for the number of grid points can be specified.</a>
+<a name="129"><span class="lineNum">     129 </span>            : By default at least 1,000 grid points are used.</a>
+<a name="130"><span class="lineNum">     130 </span>            : Function values in between grid points are calculated by linear interpolation.</a>
+<a name="131"><span class="lineNum">     131 </span>            : </a>
+<a name="132"><span class="lineNum">     132 </span>            : \par Optimization notes</a>
+<a name="133"><span class="lineNum">     133 </span>            : </a>
+<a name="134"><span class="lineNum">     134 </span>            : To avoid 'blind' optimization of the basis functions outside the currently sampled area, it is often beneficial to use the OPTIMIZATION_THRESHOLD keyword of the \ref VES_LINEAR_EXPANSION (set it to a small value, e.g. 1e-6)</a>
+<a name="135"><span class="lineNum">     135 </span>            : </a>
+<a name="136"><span class="lineNum">     136 </span>            : \par Examples</a>
+<a name="137"><span class="lineNum">     137 </span>            : </a>
+<a name="138"><span class="lineNum">     138 </span>            : </a>
+<a name="139"><span class="lineNum">     139 </span>            : First a very simple example that relies on the default values.</a>
+<a name="140"><span class="lineNum">     140 </span>            : We want to bias some CV in the range of 0 to 4.</a>
+<a name="141"><span class="lineNum">     141 </span>            : The wavelets will therefore be scaled to match that range.</a>
+<a name="142"><span class="lineNum">     142 </span>            : Using Db8 wavelets this results in 30 basis functions (including the constant one), with their starting points given by \f$ -14*\frac{4}{15}, -13*\frac{4}{15}, \cdots , 0 , \cdots, 13*\frac{4}{15}, 14*\frac{4}{15} \f$.</a>
+<a name="143"><span class="lineNum">     143 </span>            : \plumedfile</a>
+<a name="144"><span class="lineNum">     144 </span>            : BF_WAVELETS ...</a>
+<a name="145"><span class="lineNum">     145 </span>            :  ORDER=8</a>
+<a name="146"><span class="lineNum">     146 </span>            :  TYPE=DAUBECHIES</a>
+<a name="147"><span class="lineNum">     147 </span>            :  MINIMUM=0.0</a>
+<a name="148"><span class="lineNum">     148 </span>            :  MAXIMUM=4.0</a>
+<a name="149"><span class="lineNum">     149 </span>            :  LABEL=bf</a>
+<a name="150"><span class="lineNum">     150 </span>            : ... BF_WAVELETS</a>
+<a name="151"><span class="lineNum">     151 </span>            : \endplumedfile</a>
+<a name="152"><span class="lineNum">     152 </span>            : </a>
+<a name="153"><span class="lineNum">     153 </span>            : </a>
+<a name="154"><span class="lineNum">     154 </span>            : By omitting wavelets with only insignificant parts, we can reduce the number of basis functions. Using a threshold of 0.01 will in this example remove the 8 leftmost shifts, which we can check in the logfile.</a>
+<a name="155"><span class="lineNum">     155 </span>            : \plumedfile</a>
+<a name="156"><span class="lineNum">     156 </span>            : BF_WAVELETS ...</a>
+<a name="157"><span class="lineNum">     157 </span>            :  ORDER=8</a>
+<a name="158"><span class="lineNum">     158 </span>            :  TYPE=DAUBECHIES</a>
+<a name="159"><span class="lineNum">     159 </span>            :  MINIMUM=0.0</a>
+<a name="160"><span class="lineNum">     160 </span>            :  MAXIMUM=4.0</a>
+<a name="161"><span class="lineNum">     161 </span>            :  TAILS_THRESHOLD=0.01</a>
+<a name="162"><span class="lineNum">     162 </span>            :  LABEL=bf</a>
+<a name="163"><span class="lineNum">     163 </span>            : ... BF_WAVELETS</a>
+<a name="164"><span class="lineNum">     164 </span>            : \endplumedfile</a>
+<a name="165"><span class="lineNum">     165 </span>            : </a>
+<a name="166"><span class="lineNum">     166 </span>            : </a>
+<a name="167"><span class="lineNum">     167 </span>            : The length of the individual basis functions can also be adjusted to fit the specific problem.</a>
+<a name="168"><span class="lineNum">     168 </span>            : If for example the wavelets are instead scaled to length 3, there will be 35 basis functions, with leftmost points at \f$ -14*\frac{3}{15}, -13*\frac{3}{15}, \cdots, 0, \cdots, 18*\frac{3}{15}, 19*\frac{3}{15} \f$.</a>
+<a name="169"><span class="lineNum">     169 </span>            : \plumedfile</a>
+<a name="170"><span class="lineNum">     170 </span>            : BF_WAVELETS ...</a>
+<a name="171"><span class="lineNum">     171 </span>            :  ORDER=8</a>
+<a name="172"><span class="lineNum">     172 </span>            :  TYPE=DAUBECHIES</a>
+<a name="173"><span class="lineNum">     173 </span>            :  MINIMUM=0.0</a>
+<a name="174"><span class="lineNum">     174 </span>            :  MAXIMUM=4.0</a>
+<a name="175"><span class="lineNum">     175 </span>            :  FUNCTION_LENGTH=3</a>
+<a name="176"><span class="lineNum">     176 </span>            :  LABEL=bf</a>
+<a name="177"><span class="lineNum">     177 </span>            : ... BF_WAVELETS</a>
+<a name="178"><span class="lineNum">     178 </span>            : \endplumedfile</a>
+<a name="179"><span class="lineNum">     179 </span>            : </a>
+<a name="180"><span class="lineNum">     180 </span>            : </a>
+<a name="181"><span class="lineNum">     181 </span>            : Alternatively you can also specify the number of basis functions. Here we specify the usage of 40 Sym10 wavelet functions. We also used a custom minimum size for the grid and want it to be printed to a file with a specific numerical format.</a>
+<a name="182"><span class="lineNum">     182 </span>            : \plumedfile</a>
+<a name="183"><span class="lineNum">     183 </span>            : BF_WAVELETS ...</a>
+<a name="184"><span class="lineNum">     184 </span>            :  ORDER=10</a>
+<a name="185"><span class="lineNum">     185 </span>            :  TYPE=SYMLETS</a>
+<a name="186"><span class="lineNum">     186 </span>            :  MINIMUM=0.0</a>
+<a name="187"><span class="lineNum">     187 </span>            :  MAXIMUM=4.0</a>
+<a name="188"><span class="lineNum">     188 </span>            :  NUM_BF=40</a>
+<a name="189"><span class="lineNum">     189 </span>            :  MIN_GRID_SIZE=500</a>
+<a name="190"><span class="lineNum">     190 </span>            :  DUMP_WAVELET_GRID</a>
+<a name="191"><span class="lineNum">     191 </span>            :  WAVELET_FILE_FMT=%11.4f</a>
+<a name="192"><span class="lineNum">     192 </span>            :  LABEL=bf</a>
+<a name="193"><span class="lineNum">     193 </span>            : ... BF_WAVELETS</a>
+<a name="194"><span class="lineNum">     194 </span>            : \endplumedfile</a>
+<a name="195"><span class="lineNum">     195 </span>            : </a>
+<a name="196"><span class="lineNum">     196 </span>            : */</a>
+<a name="197"><span class="lineNum">     197 </span>            : //+ENDPLUMEDOC</a>
+<a name="198"><span class="lineNum">     198 </span>            : </a>
+<a name="199"><span class="lineNum">     199 </span>            : </a>
+<a name="200"><span class="lineNum">     200 </span>            : class BF_Wavelets : public BasisFunctions {</a>
+<a name="201"><span class="lineNum">     201 </span>            : private:</a>
+<a name="202"><span class="lineNum">     202 </span>            :   void setupLabels() override;</a>
+<a name="203"><span class="lineNum">     203 </span>            :   /// ptr to Grid that holds the Wavelet values and its derivative</a>
+<a name="204"><span class="lineNum">     204 </span>            :   std::unique_ptr&lt;Grid&gt; waveletGrid_;</a>
+<a name="205"><span class="lineNum">     205 </span>            :   /// calculate threshold for omitted tail wavelets</a>
+<a name="206"><span class="lineNum">     206 </span>            :   std::vector&lt;double&gt; getCutoffPoints(const double&amp; threshold);</a>
+<a name="207"><span class="lineNum">     207 </span>            :   /// scale factor of the individual BFs to match specified length</a>
+<a name="208"><span class="lineNum">     208 </span>            :   double scale_;</a>
+<a name="209"><span class="lineNum">     209 </span>            :   /// shift of the individual BFs</a>
+<a name="210"><span class="lineNum">     210 </span>            :   std::vector&lt;double&gt; shifts_;</a>
+<a name="211"><span class="lineNum">     211 </span>            : public:</a>
+<a name="212"><span class="lineNum">     212 </span>            :   static void registerKeywords( Keywords&amp;);</a>
+<a name="213"><span class="lineNum">     213 </span>            :   explicit BF_Wavelets(const ActionOptions&amp;);</a>
+<a name="214"><span class="lineNum">     214 </span>            :   void getAllValues(const double, double&amp;, bool&amp;, std::vector&lt;double&gt;&amp;, std::vector&lt;double&gt;&amp;) const override;</a>
+<a name="215"><span class="lineNum">     215 </span>            : };</a>
+<a name="216"><span class="lineNum">     216 </span>            : </a>
+<a name="217"><span class="lineNum">     217 </span>            : </a>
+<a name="218"><span class="lineNum">     218 </span><span class="lineCov">      12656 : PLUMED_REGISTER_ACTION(BF_Wavelets,&quot;BF_WAVELETS&quot;)</span></a>
+<a name="219"><span class="lineNum">     219 </span>            : </a>
+<a name="220"><span class="lineNum">     220 </span>            : </a>
+<a name="221"><span class="lineNum">     221 </span><span class="lineCov">         49 : void BF_Wavelets::registerKeywords(Keywords&amp; keys) {</span></a>
+<a name="222"><span class="lineNum">     222 </span><span class="lineCov">         49 :   BasisFunctions::registerKeywords(keys);</span></a>
+<a name="223"><span class="lineNum">     223 </span><span class="lineCov">         98 :   keys.add(&quot;compulsory&quot;,&quot;TYPE&quot;,&quot;Specify the wavelet type. Currently available are DAUBECHIES Wavelets with minimum phase and the more symmetric SYMLETS&quot;);</span></a>
+<a name="224"><span class="lineNum">     224 </span><span class="lineCov">         98 :   keys.add(&quot;optional&quot;,&quot;FUNCTION_LENGTH&quot;,&quot;The domain size of the individual basis functions. (length) This is used to alter the scaling of the basis functions. By default it is set to the total size of the interval. This also influences the number of actually used basis functions, as all shifted functions that are partially supported in the CV space are used.&quot;);</span></a>
+<a name="225"><span class="lineNum">     225 </span><span class="lineCov">         98 :   keys.add(&quot;optional&quot;,&quot;NUM_BF&quot;,&quot;The number of basis functions that should be used. Includes the constant one and N-1 shifted wavelets within the specified range. Cannot be used together with FUNCTION_LENGTH.&quot;);</span></a>
+<a name="226"><span class="lineNum">     226 </span><span class="lineCov">         98 :   keys.add(&quot;optional&quot;,&quot;TAILS_THRESHOLD&quot;,&quot;The threshold for cutting off tail wavelets as a fraction of the maximum value. All shifted wavelet functions that only have values smaller than the threshold in the bias range will be excluded from the basis set. Defaults to 0 (include all).&quot;);</span></a>
+<a name="227"><span class="lineNum">     227 </span><span class="lineCov">         98 :   keys.addFlag(&quot;MOTHER_WAVELET&quot;, false, &quot;If this flag is set mother wavelets will be used instead of the scaling function (father wavelet). Makes only sense for multiresolution, which is at the moment not usable.&quot;);</span></a>
+<a name="228"><span class="lineNum">     228 </span><span class="lineCov">         98 :   keys.add(&quot;optional&quot;,&quot;MIN_GRID_SIZE&quot;,&quot;The minimal number of grid bins of the Wavelet function. The true number depends also on the used wavelet type and will probably be larger. Defaults to 1000.&quot;);</span></a>
+<a name="229"><span class="lineNum">     229 </span><span class="lineCov">         98 :   keys.addFlag(&quot;DUMP_WAVELET_GRID&quot;, false, &quot;If this flag is set the grid with the wavelet values will be written to a file.  This file is called wavelet_grid.data.&quot;);</span></a>
+<a name="230"><span class="lineNum">     230 </span><span class="lineCov">         98 :   keys.add(&quot;optional&quot;,&quot;WAVELET_FILE_FMT&quot;,&quot;The number format of the wavelet grid values and derivatives written to file. By default it is %15.8f.\n&quot;);</span></a>
+<a name="231"><span class="lineNum">     231 </span><span class="lineCov">         98 :   keys.addFlag(&quot;PERIODIC&quot;, false, &quot;Use periodic version of basis set.&quot;);</span></a>
+<a name="232"><span class="lineNum">     232 </span><span class="lineCov">         49 :   keys.remove(&quot;NUMERICAL_INTEGRALS&quot;);</span></a>
+<a name="233"><span class="lineNum">     233 </span><span class="lineCov">         49 : }</span></a>
+<a name="234"><span class="lineNum">     234 </span>            : </a>
+<a name="235"><span class="lineNum">     235 </span>            : </a>
+<a name="236"><span class="lineNum">     236 </span><span class="lineCov">         47 : BF_Wavelets::BF_Wavelets(const ActionOptions&amp; ao):</span></a>
+<a name="237"><span class="lineNum">     237 </span>            :   PLUMED_VES_BASISFUNCTIONS_INIT(ao),</a>
+<a name="238"><span class="lineNum">     238 </span><span class="lineCov">         47 :   waveletGrid_(nullptr),</span></a>
+<a name="239"><span class="lineNum">     239 </span><span class="lineCov">         47 :   scale_(0.0)</span></a>
+<a name="240"><span class="lineNum">     240 </span>            : {</a>
+<a name="241"><span class="lineNum">     241 </span><span class="lineCov">         47 :   log.printf(&quot;  Wavelet basis functions, see and cite &quot;);</span></a>
+<a name="242"><span class="lineNum">     242 </span><span class="lineCov">         94 :   log &lt;&lt; plumed.cite(&quot;Pampel and Valsson, J. Chem. Theory Comput. 18, 4127-4141 (2022) - DOI:10.1021/acs.jctc.2c00197&quot;);</span></a>
+<a name="243"><span class="lineNum">     243 </span>            : </a>
+<a name="244"><span class="lineNum">     244 </span>            :   // parse properties for waveletGrid and set it up</a>
+<a name="245"><span class="lineNum">     245 </span>            :   bool use_mother_wavelet;</a>
+<a name="246"><span class="lineNum">     246 </span><span class="lineCov">         94 :   parseFlag(&quot;MOTHER_WAVELET&quot;, use_mother_wavelet);</span></a>
+<a name="247"><span class="lineNum">     247 </span>            : </a>
+<a name="248"><span class="lineNum">     248 </span>            :   std::string wavelet_type_str;</a>
+<a name="249"><span class="lineNum">     249 </span><span class="lineCov">         47 :   parse(&quot;TYPE&quot;, wavelet_type_str);</span></a>
+<a name="250"><span class="lineNum">     250 </span><span class="lineCov">         94 :   addKeywordToList(&quot;TYPE&quot;, wavelet_type_str);</span></a>
+<a name="251"><span class="lineNum">     251 </span>            : </a>
+<a name="252"><span class="lineNum">     252 </span><span class="lineCov">         47 :   unsigned min_grid_size = 1000;</span></a>
+<a name="253"><span class="lineNum">     253 </span><span class="lineCov">         47 :   parse(&quot;MIN_GRID_SIZE&quot;, min_grid_size);</span></a>
+<a name="254"><span class="lineNum">     254 </span><span class="lineCov">         83 :   if(min_grid_size != 1000) {addKeywordToList(&quot;MIN_GRID_SIZE&quot;,min_grid_size);}</span></a>
+<a name="255"><span class="lineNum">     255 </span>            : </a>
+<a name="256"><span class="lineNum">     256 </span><span class="lineCov">         94 :   waveletGrid_ = WaveletGrid::setupGrid(getOrder(), min_grid_size, use_mother_wavelet, WaveletGrid::stringToType(wavelet_type_str));</span></a>
+<a name="257"><span class="lineNum">     257 </span><span class="lineCov">         47 :   bool dump_wavelet_grid=false;</span></a>
+<a name="258"><span class="lineNum">     258 </span><span class="lineCov">         47 :   parseFlag(&quot;DUMP_WAVELET_GRID&quot;, dump_wavelet_grid);</span></a>
+<a name="259"><span class="lineNum">     259 </span><span class="lineCov">         47 :   if (dump_wavelet_grid) {</span></a>
+<a name="260"><span class="lineNum">     260 </span><span class="lineCov">         36 :     OFile wavelet_gridfile;</span></a>
+<a name="261"><span class="lineNum">     261 </span><span class="lineCov">         36 :     std::string fmt = &quot;%13.6f&quot;;</span></a>
+<a name="262"><span class="lineNum">     262 </span><span class="lineCov">         72 :     parse(&quot;WAVELET_FILE_FMT&quot;,fmt);</span></a>
+<a name="263"><span class="lineNum">     263 </span>            :     waveletGrid_-&gt;setOutputFmt(fmt); // property of grid not OFile determines fmt</a>
+<a name="264"><span class="lineNum">     264 </span><span class="lineCov">         36 :     wavelet_gridfile.link(*this);</span></a>
+<a name="265"><span class="lineNum">     265 </span><span class="lineCov">         36 :     wavelet_gridfile.enforceBackup();</span></a>
+<a name="266"><span class="lineNum">     266 </span><span class="lineCov">         72 :     wavelet_gridfile.open(getLabel()+&quot;.wavelet_grid.data&quot;);</span></a>
+<a name="267"><span class="lineNum">     267 </span><span class="lineCov">         36 :     waveletGrid_-&gt;writeToFile(wavelet_gridfile);</span></a>
+<a name="268"><span class="lineNum">     268 </span><span class="lineCov">         36 :   }</span></a>
+<a name="269"><span class="lineNum">     269 </span>            : </a>
+<a name="270"><span class="lineNum">     270 </span><span class="lineCov">         47 :   bool periodic = false;</span></a>
+<a name="271"><span class="lineNum">     271 </span><span class="lineCov">         47 :   parseFlag(&quot;PERIODIC&quot;,periodic);</span></a>
+<a name="272"><span class="lineNum">     272 </span><span class="lineCov">         51 :   if (periodic) {addKeywordToList(&quot;PERIODIC&quot;,periodic);}</span></a>
+<a name="273"><span class="lineNum">     273 </span>            : </a>
+<a name="274"><span class="lineNum">     274 </span>            :   // now set up properties of basis set</a>
+<a name="275"><span class="lineNum">     275 </span><span class="lineCov">         47 :   unsigned intrinsic_length = 2*getOrder() - 1; // length of unscaled wavelet</span></a>
+<a name="276"><span class="lineNum">     276 </span><span class="lineCov">         47 :   double bias_length = intervalMax() - intervalMin(); // intervalRange() is not yet set</span></a>
+<a name="277"><span class="lineNum">     277 </span>            : </a>
+<a name="278"><span class="lineNum">     278 </span>            :   // parse threshold for tail wavelets and get respective cutoff points</a>
+<a name="279"><span class="lineNum">     279 </span><span class="lineCov">         47 :   double threshold = 0.0;</span></a>
+<a name="280"><span class="lineNum">     280 </span><span class="lineCov">         47 :   std::vector&lt;double&gt; cutoffpoints (2);</span></a>
+<a name="281"><span class="lineNum">     281 </span><span class="lineCov">         47 :   parse(&quot;TAILS_THRESHOLD&quot;,threshold);</span></a>
+<a name="282"><span class="lineNum">     282 </span><span class="lineCov">         47 :   plumed_massert(threshold &lt; 1, &quot;TAILS_THRESHOLD should be significantly smaller than 1.&quot;);</span></a>
+<a name="283"><span class="lineNum">     283 </span><span class="lineCov">         47 :   if(threshold == 0.0) {</span></a>
+<a name="284"><span class="lineNum">     284 </span><span class="lineCov">         45 :     cutoffpoints = {0.0, static_cast&lt;double&gt;(intrinsic_length)};</span></a>
+<a name="285"><span class="lineNum">     285 </span>            :   }</a>
+<a name="286"><span class="lineNum">     286 </span>            :   else {</a>
+<a name="287"><span class="lineNum">     287 </span><span class="lineCov">          2 :     plumed_massert(!periodic, &quot;TAILS_THRESHOLD can't be used with the periodic wavelet variant&quot;);</span></a>
+<a name="288"><span class="lineNum">     288 </span><span class="lineCov">          2 :     addKeywordToList(&quot;TAILS_THRESHOLD&quot;,threshold);</span></a>
+<a name="289"><span class="lineNum">     289 </span><span class="lineCov">          4 :     cutoffpoints = getCutoffPoints(threshold);</span></a>
+<a name="290"><span class="lineNum">     290 </span>            :   };</a>
+<a name="291"><span class="lineNum">     291 </span>            : </a>
+<a name="292"><span class="lineNum">     292 </span><span class="lineCov">         47 :   double function_length = bias_length;</span></a>
+<a name="293"><span class="lineNum">     293 </span><span class="lineCov">         47 :   parse(&quot;FUNCTION_LENGTH&quot;,function_length);</span></a>
+<a name="294"><span class="lineNum">     294 </span><span class="lineCov">         47 :   if(function_length != bias_length) {</span></a>
+<a name="295"><span class="lineNum">     295 </span><span class="lineCov">          4 :     if (periodic) {  // shifted functions need to fit into interval exactly -&gt; reduce size if not</span></a>
+<a name="296"><span class="lineNum">     296 </span><span class="lineCov">          2 :       unsigned num_shifts = ceil(bias_length * intrinsic_length / function_length);</span></a>
+<a name="297"><span class="lineNum">     297 </span><span class="lineCov">          2 :       function_length = bias_length * intrinsic_length / num_shifts;</span></a>
+<a name="298"><span class="lineNum">     298 </span>            :     }</a>
+<a name="299"><span class="lineNum">     299 </span><span class="lineCov">          8 :     addKeywordToList(&quot;FUNCTION_LENGTH&quot;,function_length);</span></a>
+<a name="300"><span class="lineNum">     300 </span>            :   }</a>
+<a name="301"><span class="lineNum">     301 </span>            : </a>
+<a name="302"><span class="lineNum">     302 </span>            :   // determine number of BFs and needed scaling</a>
+<a name="303"><span class="lineNum">     303 </span><span class="lineCov">         47 :   unsigned num_BFs = 0;</span></a>
+<a name="304"><span class="lineNum">     304 </span><span class="lineCov">         47 :   parse(&quot;NUM_BF&quot;,num_BFs);</span></a>
+<a name="305"><span class="lineNum">     305 </span><span class="lineCov">         47 :   if(num_BFs == 0) { // get from function length</span></a>
+<a name="306"><span class="lineNum">     306 </span><span class="lineCov">         43 :     scale_ = intrinsic_length / function_length;</span></a>
+<a name="307"><span class="lineNum">     307 </span><span class="lineCov">         43 :     if (periodic) {</span></a>
+<a name="308"><span class="lineNum">     308 </span>            :       // this is the same value as num_shifts above + constant</a>
+<a name="309"><span class="lineNum">     309 </span><span class="lineCov">          2 :       num_BFs = static_cast&lt;unsigned&gt;(bias_length * scale_) + 1;</span></a>
+<a name="310"><span class="lineNum">     310 </span>            :     }</a>
+<a name="311"><span class="lineNum">     311 </span>            :     else {</a>
+<a name="312"><span class="lineNum">     312 </span><span class="lineCov">         41 :       num_BFs = 1; // constant one</span></a>
+<a name="313"><span class="lineNum">     313 </span>            :       // left shifts (w/o left cutoff) + right shifts - right cutoff - 1</a>
+<a name="314"><span class="lineNum">     314 </span><span class="lineCov">         41 :       num_BFs += static_cast&lt;unsigned&gt;(ceil(cutoffpoints[1] + (bias_length)*scale_ - cutoffpoints[0]) - 1);</span></a>
+<a name="315"><span class="lineNum">     315 </span>            :     }</a>
+<a name="316"><span class="lineNum">     316 </span>            :   }</a>
+<a name="317"><span class="lineNum">     317 </span>            :   else {</a>
+<a name="318"><span class="lineNum">     318 </span>            :     plumed_massert(num_BFs &gt; 0, &quot;The number of basis functions has to be positive (NUM_BF &gt; 0)&quot;);</a>
+<a name="319"><span class="lineNum">     319 </span>            :     // check does not work if function length was given as intrinsic length, but can't check for keyword use directly</a>
+<a name="320"><span class="lineNum">     320 </span><span class="lineCov">          4 :     plumed_massert(function_length==bias_length,&quot;The keywords \&quot;NUM_BF\&quot; and \&quot;FUNCTION_LENGTH\&quot; cannot be used at the same time&quot;);</span></a>
+<a name="321"><span class="lineNum">     321 </span><span class="lineCov">          4 :     addKeywordToList(&quot;NUM_BF&quot;,num_BFs);</span></a>
+<a name="322"><span class="lineNum">     322 </span>            : </a>
+<a name="323"><span class="lineNum">     323 </span><span class="lineCov">          4 :     if (periodic) {  // inverted num_BFs calculation from where FUNCTION_LENGTH is specified</span></a>
+<a name="324"><span class="lineNum">     324 </span><span class="lineCov">          2 :       scale_ = (num_BFs  - 1) / bias_length ;</span></a>
+<a name="325"><span class="lineNum">     325 </span>            :     }</a>
+<a name="326"><span class="lineNum">     326 </span>            :     else {</a>
+<a name="327"><span class="lineNum">     327 </span><span class="lineCov">          2 :       double cutoff_length = cutoffpoints[1] - cutoffpoints [0];</span></a>
+<a name="328"><span class="lineNum">     328 </span><span class="lineCov">          2 :       double intrinsic_bias_length = num_BFs - cutoff_length + 1; // length of bias in intrinsic scale of wavelets</span></a>
+<a name="329"><span class="lineNum">     329 </span><span class="lineCov">          2 :       scale_ = intrinsic_bias_length / bias_length;</span></a>
+<a name="330"><span class="lineNum">     330 </span>            :     }</a>
+<a name="331"><span class="lineNum">     331 </span>            :   }</a>
+<a name="332"><span class="lineNum">     332 </span>            : </a>
+<a name="333"><span class="lineNum">     333 </span><span class="lineCov">         47 :   setNumberOfBasisFunctions(num_BFs);</span></a>
+<a name="334"><span class="lineNum">     334 </span>            : </a>
+<a name="335"><span class="lineNum">     335 </span>            :   // now set up the starting points of the basis functions</a>
+<a name="336"><span class="lineNum">     336 </span><span class="lineCov">         47 :   shifts_.push_back(0.0); // constant BF – never used, just for clearer notation</span></a>
+<a name="337"><span class="lineNum">     337 </span><span class="lineCov">       1908 :   for(unsigned int i = 1; i &lt; getNumberOfBasisFunctions(); ++i) {</span></a>
+<a name="338"><span class="lineNum">     338 </span><span class="lineCov">       1861 :     shifts_.push_back(-intervalMin()*scale_ + cutoffpoints[1] - i);</span></a>
+<a name="339"><span class="lineNum">     339 </span>            :   }</a>
+<a name="340"><span class="lineNum">     340 </span>            : </a>
+<a name="341"><span class="lineNum">     341 </span>            :   // set some properties</a>
+<a name="342"><span class="lineNum">     342 </span><span class="lineCov">         47 :   setIntrinsicInterval(0.0,intrinsic_length);</span></a>
+<a name="343"><span class="lineNum">     343 </span><span class="lineCov">         47 :   periodic ? setPeriodic() : setNonPeriodic();</span></a>
+<a name="344"><span class="lineNum">     344 </span>            :   setIntervalBounded();</a>
+<a name="345"><span class="lineNum">     345 </span>            :   setType(wavelet_type_str);</a>
+<a name="346"><span class="lineNum">     346 </span><span class="lineCov">         47 :   setDescription(&quot;Wavelets as localized basis functions&quot;);</span></a>
+<a name="347"><span class="lineNum">     347 </span><span class="lineCov">         47 :   setupBF();</span></a>
+<a name="348"><span class="lineNum">     348 </span><span class="lineCov">         47 :   checkRead();</span></a>
+<a name="349"><span class="lineNum">     349 </span>            : </a>
+<a name="350"><span class="lineNum">     350 </span><span class="lineCov">         47 :   log.printf(&quot;  Each basisfunction spans %f in CV space\n&quot;, intrinsic_length/scale_);</span></a>
+<a name="351"><span class="lineNum">     351 </span><span class="lineCov">         47 : }</span></a>
+<a name="352"><span class="lineNum">     352 </span>            : </a>
+<a name="353"><span class="lineNum">     353 </span>            : </a>
+<a name="354"><span class="lineNum">     354 </span><span class="lineCov">      62249 : void BF_Wavelets::getAllValues(const double arg, double&amp; argT, bool&amp; inside_range, std::vector&lt;double&gt;&amp; values, std::vector&lt;double&gt;&amp; derivs) const {</span></a>
+<a name="355"><span class="lineNum">     355 </span><span class="lineCov">      62249 :   argT=checkIfArgumentInsideInterval(arg,inside_range);</span></a>
+<a name="356"><span class="lineNum">     356 </span>            :   //</a>
+<a name="357"><span class="lineNum">     357 </span><span class="lineCov">      62249 :   values[0]=1.0;</span></a>
+<a name="358"><span class="lineNum">     358 </span><span class="lineCov">      62249 :   derivs[0]=0.0;</span></a>
+<a name="359"><span class="lineNum">     359 </span><span class="lineCov">    2315762 :   for(unsigned int i = 1; i &lt; getNumberOfBasisFunctions(); ++i) {</span></a>
+<a name="360"><span class="lineNum">     360 </span>            :     // scale and shift argument to match current wavelet</a>
+<a name="361"><span class="lineNum">     361 </span><span class="lineCov">    2253513 :     double x = shifts_[i] + argT*scale_;</span></a>
+<a name="362"><span class="lineNum">     362 </span><span class="lineCov">    2253513 :     if (arePeriodic()) { // periodic interval [0,intervalRange*scale]</span></a>
+<a name="363"><span class="lineNum">     363 </span><span class="lineCov">     171766 :       x = x - floor(x/(intervalRange()*scale_))*intervalRange()*scale_;</span></a>
+<a name="364"><span class="lineNum">     364 </span>            :     }</a>
+<a name="365"><span class="lineNum">     365 </span>            : </a>
+<a name="366"><span class="lineNum">     366 </span><span class="lineCov">    2253513 :     if (x &lt; 0 || x &gt;= intrinsicIntervalMax()) { // Wavelets are 0 outside the defined range</span></a>
+<a name="367"><span class="lineNum">     367 </span><span class="lineCov">     989659 :       values[i] = 0.0; derivs[i] = 0.0;</span></a>
+<a name="368"><span class="lineNum">     368 </span>            :     }</a>
+<a name="369"><span class="lineNum">     369 </span>            :     else {</a>
+<a name="370"><span class="lineNum">     370 </span><span class="lineCov">    1263854 :       std::vector&lt;double&gt; temp_deriv (1);</span></a>
+<a name="371"><span class="lineNum">     371 </span><span class="lineCov">    1263854 :       values[i] = GridLinearInterpolation::getGridValueAndDerivativesWithLinearInterpolation(waveletGrid_.get(), {x}, temp_deriv);</span></a>
+<a name="372"><span class="lineNum">     372 </span><span class="lineCov">    1263854 :       derivs[i] = temp_deriv[0] * scale_; // scale derivative</span></a>
+<a name="373"><span class="lineNum">     373 </span>            :     }</a>
+<a name="374"><span class="lineNum">     374 </span>            :   }</a>
+<a name="375"><span class="lineNum">     375 </span><span class="lineCov">      67885 :   if(!inside_range) {for(auto&amp; deriv : derivs) {deriv=0.0;}}</span></a>
+<a name="376"><span class="lineNum">     376 </span><span class="lineCov">      62249 : }</span></a>
+<a name="377"><span class="lineNum">     377 </span>            : </a>
+<a name="378"><span class="lineNum">     378 </span>            : </a>
+<a name="379"><span class="lineNum">     379 </span>            : // returns left and right cutoff point of Wavelet</a>
+<a name="380"><span class="lineNum">     380 </span>            : // threshold is a percent value of maximum</a>
+<a name="381"><span class="lineNum">     381 </span><span class="lineCov">          2 : std::vector&lt;double&gt; BF_Wavelets::getCutoffPoints(const double&amp; threshold) {</span></a>
+<a name="382"><span class="lineNum">     382 </span><span class="lineCov">          2 :   double threshold_value = threshold * waveletGrid_-&gt;getMaxValue();</span></a>
+<a name="383"><span class="lineNum">     383 </span>            :   std::vector&lt;double&gt; cutoffpoints;</a>
+<a name="384"><span class="lineNum">     384 </span>            : </a>
+<a name="385"><span class="lineNum">     385 </span><span class="lineCov">        475 :   for (size_t i = 0; i &lt; waveletGrid_-&gt;getSize(); ++i) {</span></a>
+<a name="386"><span class="lineNum">     386 </span><span class="lineCov">        475 :     if (fabs(waveletGrid_-&gt;getValue(i)) &gt;= threshold_value) {</span></a>
+<a name="387"><span class="lineNum">     387 </span><span class="lineCov">          2 :       cutoffpoints.push_back(waveletGrid_-&gt;getPoint(i)[0]);</span></a>
+<a name="388"><span class="lineNum">     388 </span><span class="lineCov">          2 :       break;</span></a>
+<a name="389"><span class="lineNum">     389 </span>            :     }</a>
+<a name="390"><span class="lineNum">     390 </span>            :   }</a>
+<a name="391"><span class="lineNum">     391 </span>            : </a>
+<a name="392"><span class="lineNum">     392 </span><span class="lineCov">       1073 :   for (int i = waveletGrid_-&gt;getSize() - 1; i &gt;= 0; --i) {</span></a>
+<a name="393"><span class="lineNum">     393 </span><span class="lineCov">       1073 :     if (fabs(waveletGrid_-&gt;getValue(i)) &gt;= threshold_value) {</span></a>
+<a name="394"><span class="lineNum">     394 </span><span class="lineCov">          2 :       cutoffpoints.push_back(waveletGrid_-&gt;getPoint(i)[0]);</span></a>
+<a name="395"><span class="lineNum">     395 </span><span class="lineCov">          2 :       break;</span></a>
+<a name="396"><span class="lineNum">     396 </span>            :     }</a>
+<a name="397"><span class="lineNum">     397 </span>            :   }</a>
+<a name="398"><span class="lineNum">     398 </span>            : </a>
+<a name="399"><span class="lineNum">     399 </span><span class="lineCov">          2 :   return cutoffpoints;</span></a>
+<a name="400"><span class="lineNum">     400 </span>            : }</a>
+<a name="401"><span class="lineNum">     401 </span>            : </a>
+<a name="402"><span class="lineNum">     402 </span>            : </a>
+<a name="403"><span class="lineNum">     403 </span>            : // labels according to minimum position in CV space</a>
+<a name="404"><span class="lineNum">     404 </span><span class="lineCov">         47 : void BF_Wavelets::setupLabels() {</span></a>
+<a name="405"><span class="lineNum">     405 </span><span class="lineCov">         47 :   setLabel(0,&quot;const&quot;);</span></a>
+<a name="406"><span class="lineNum">     406 </span><span class="lineCov">       1908 :   for(unsigned int i=1; i &lt; getNumberOfBasisFunctions(); i++) {</span></a>
+<a name="407"><span class="lineNum">     407 </span><span class="lineCov">       1861 :     double pos = -shifts_[i]/scale_;</span></a>
+<a name="408"><span class="lineNum">     408 </span><span class="lineCov">       1861 :     if (arePeriodic()) {</span></a>
+<a name="409"><span class="lineNum">     409 </span><span class="lineCov">         88 :       pos = pos - floor((pos-intervalMin())/intervalRange())*intervalRange();</span></a>
+<a name="410"><span class="lineNum">     410 </span>            :     }</a>
+<a name="411"><span class="lineNum">     411 </span><span class="lineCov">       1861 :     std::string is; Tools::convert(pos, is);</span></a>
+<a name="412"><span class="lineNum">     412 </span><span class="lineCov">       3722 :     setLabel(i,&quot;i=&quot;+is);</span></a>
+<a name="413"><span class="lineNum">     413 </span>            :   }</a>
+<a name="414"><span class="lineNum">     414 </span><span class="lineCov">         47 : }</span></a>
+<a name="415"><span class="lineNum">     415 </span>            : </a>
+<a name="416"><span class="lineNum">     416 </span>            : </a>
+<a name="417"><span class="lineNum">     417 </span>            : }</a>
+<a name="418"><span class="lineNum">     418 </span>            : }</a>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="https://github.com/linux-test-project/lcov" target="_parent">LCOV version 1.16</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

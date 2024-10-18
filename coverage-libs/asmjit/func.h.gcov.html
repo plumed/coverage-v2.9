@@ -1,0 +1,1403 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - plumed test coverage (other modules) - asmjit/func.h</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">asmjit</a> - func.h<span style="font-size: 80%;"> (source / <a href="func.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">plumed test coverage (other modules)</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">68</td>
+            <td class="headerCovTableEntry">97</td>
+            <td class="headerCovTableEntryLo">70.1 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2024-10-18 14:29:10</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</a>
+<a name="2"><span class="lineNum">       2 </span>            : Copyright (c) 2008-2017, Petr Kobalicek</a>
+<a name="3"><span class="lineNum">       3 </span>            : </a>
+<a name="4"><span class="lineNum">       4 </span>            : This software is provided 'as-is', without any express or implied</a>
+<a name="5"><span class="lineNum">       5 </span>            : warranty. In no event will the authors be held liable for any damages</a>
+<a name="6"><span class="lineNum">       6 </span>            : arising from the use of this software.</a>
+<a name="7"><span class="lineNum">       7 </span>            : </a>
+<a name="8"><span class="lineNum">       8 </span>            : Permission is granted to anyone to use this software for any purpose,</a>
+<a name="9"><span class="lineNum">       9 </span>            : including commercial applications, and to alter it and redistribute it</a>
+<a name="10"><span class="lineNum">      10 </span>            : freely, subject to the following restrictions:</a>
+<a name="11"><span class="lineNum">      11 </span>            : </a>
+<a name="12"><span class="lineNum">      12 </span>            : 1. The origin of this software must not be misrepresented; you must not</a>
+<a name="13"><span class="lineNum">      13 </span>            :    claim that you wrote the original software. If you use this software</a>
+<a name="14"><span class="lineNum">      14 </span>            :    in a product, an acknowledgment in the product documentation would be</a>
+<a name="15"><span class="lineNum">      15 </span>            :    appreciated but is not required.</a>
+<a name="16"><span class="lineNum">      16 </span>            : 2. Altered source versions must be plainly marked as such, and must not be</a>
+<a name="17"><span class="lineNum">      17 </span>            :    misrepresented as being the original software.</a>
+<a name="18"><span class="lineNum">      18 </span>            : 3. This notice may not be removed or altered from any source distribution.</a>
+<a name="19"><span class="lineNum">      19 </span>            : +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */</a>
+<a name="20"><span class="lineNum">      20 </span>            : #ifndef __PLUMED_asmjit_func_h</a>
+<a name="21"><span class="lineNum">      21 </span>            : #define __PLUMED_asmjit_func_h</a>
+<a name="22"><span class="lineNum">      22 </span>            : #ifdef __PLUMED_HAS_ASMJIT</a>
+<a name="23"><span class="lineNum">      23 </span>            : #pragma GCC diagnostic push</a>
+<a name="24"><span class="lineNum">      24 </span>            : #pragma GCC diagnostic ignored &quot;-Wpedantic&quot;</a>
+<a name="25"><span class="lineNum">      25 </span>            : // [AsmJit]</a>
+<a name="26"><span class="lineNum">      26 </span>            : // Complete x86/x64 JIT and Remote Assembler for C++.</a>
+<a name="27"><span class="lineNum">      27 </span>            : //</a>
+<a name="28"><span class="lineNum">      28 </span>            : // [License]</a>
+<a name="29"><span class="lineNum">      29 </span>            : // Zlib - See LICENSE.md file in the package.</a>
+<a name="30"><span class="lineNum">      30 </span>            : </a>
+<a name="31"><span class="lineNum">      31 </span>            : // [Guard]</a>
+<a name="32"><span class="lineNum">      32 </span>            : #ifndef _ASMJIT_BASE_FUNC_H</a>
+<a name="33"><span class="lineNum">      33 </span>            : #define _ASMJIT_BASE_FUNC_H</a>
+<a name="34"><span class="lineNum">      34 </span>            : </a>
+<a name="35"><span class="lineNum">      35 </span>            : #include &quot;./asmjit_build.h&quot;</a>
+<a name="36"><span class="lineNum">      36 </span>            : </a>
+<a name="37"><span class="lineNum">      37 </span>            : // [Dependencies]</a>
+<a name="38"><span class="lineNum">      38 </span>            : #include &quot;./arch.h&quot;</a>
+<a name="39"><span class="lineNum">      39 </span>            : #include &quot;./operand.h&quot;</a>
+<a name="40"><span class="lineNum">      40 </span>            : #include &quot;./utils.h&quot;</a>
+<a name="41"><span class="lineNum">      41 </span>            : </a>
+<a name="42"><span class="lineNum">      42 </span>            : // [Api-Begin]</a>
+<a name="43"><span class="lineNum">      43 </span>            : #include &quot;./asmjit_apibegin.h&quot;</a>
+<a name="44"><span class="lineNum">      44 </span>            : </a>
+<a name="45"><span class="lineNum">      45 </span>            : namespace PLMD {</a>
+<a name="46"><span class="lineNum">      46 </span>            : namespace asmjit {</a>
+<a name="47"><span class="lineNum">      47 </span>            : </a>
+<a name="48"><span class="lineNum">      48 </span>            : //! \addtogroup asmjit_base</a>
+<a name="49"><span class="lineNum">      49 </span>            : //! \{</a>
+<a name="50"><span class="lineNum">      50 </span>            : </a>
+<a name="51"><span class="lineNum">      51 </span>            : // ============================================================================</a>
+<a name="52"><span class="lineNum">      52 </span>            : // [Forward Declarations]</a>
+<a name="53"><span class="lineNum">      53 </span>            : // ============================================================================</a>
+<a name="54"><span class="lineNum">      54 </span>            : </a>
+<a name="55"><span class="lineNum">      55 </span>            : class CodeEmitter;</a>
+<a name="56"><span class="lineNum">      56 </span>            : </a>
+<a name="57"><span class="lineNum">      57 </span>            : // ============================================================================</a>
+<a name="58"><span class="lineNum">      58 </span>            : // [asmjit::CallConv]</a>
+<a name="59"><span class="lineNum">      59 </span>            : // ============================================================================</a>
+<a name="60"><span class="lineNum">      60 </span>            : </a>
+<a name="61"><span class="lineNum">      61 </span>            : //! Function calling convention.</a>
+<a name="62"><span class="lineNum">      62 </span>            : //!</a>
+<a name="63"><span class="lineNum">      63 </span>            : //! Function calling convention is a scheme that defines how function parameters</a>
+<a name="64"><span class="lineNum">      64 </span>            : //! are passed and how function returns its result. AsmJit defines a variety of</a>
+<a name="65"><span class="lineNum">      65 </span>            : //! architecture and OS specific calling conventions and also provides a compile</a>
+<a name="66"><span class="lineNum">      66 </span>            : //! time detection to make JIT code-generation easier.</a>
+<a name="67"><span class="lineNum">      67 </span>            : struct CallConv {</a>
+<a name="68"><span class="lineNum">      68 </span>            :   //! Calling convention id.</a>
+<a name="69"><span class="lineNum">      69 </span>            :   ASMJIT_ENUM(Id) {</a>
+<a name="70"><span class="lineNum">      70 </span>            :     //! None or invalid (can't be used).</a>
+<a name="71"><span class="lineNum">      71 </span>            :     kIdNone = 0,</a>
+<a name="72"><span class="lineNum">      72 </span>            : </a>
+<a name="73"><span class="lineNum">      73 </span>            :     // ------------------------------------------------------------------------</a>
+<a name="74"><span class="lineNum">      74 </span>            :     // [Universal]</a>
+<a name="75"><span class="lineNum">      75 </span>            :     // ------------------------------------------------------------------------</a>
+<a name="76"><span class="lineNum">      76 </span>            : </a>
+<a name="77"><span class="lineNum">      77 </span>            :     // TODO: To make this possible we need to know target ARCH and ABI.</a>
+<a name="78"><span class="lineNum">      78 </span>            : </a>
+<a name="79"><span class="lineNum">      79 </span>            :     /*</a>
+<a name="80"><span class="lineNum">      80 </span>            : </a>
+<a name="81"><span class="lineNum">      81 </span>            :     // Universal calling conventions are applicable to any target and are</a>
+<a name="82"><span class="lineNum">      82 </span>            :     // converted to target dependent conventions at runtime. The purpose of</a>
+<a name="83"><span class="lineNum">      83 </span>            :     // these conventions is to make using functions less target dependent.</a>
+<a name="84"><span class="lineNum">      84 </span>            : </a>
+<a name="85"><span class="lineNum">      85 </span>            :     kIdCDecl = 1,</a>
+<a name="86"><span class="lineNum">      86 </span>            :     kIdStdCall = 2,</a>
+<a name="87"><span class="lineNum">      87 </span>            :     kIdFastCall = 3,</a>
+<a name="88"><span class="lineNum">      88 </span>            : </a>
+<a name="89"><span class="lineNum">      89 </span>            :     //! AsmJit specific calling convention designed for calling functions</a>
+<a name="90"><span class="lineNum">      90 </span>            :     //! inside a multimedia code like that don't use many registers internally,</a>
+<a name="91"><span class="lineNum">      91 </span>            :     //! but are long enough to be called and not inlined. These functions are</a>
+<a name="92"><span class="lineNum">      92 </span>            :     //! usually used to calculate trigonometric functions, logarithms, etc...</a>
+<a name="93"><span class="lineNum">      93 </span>            :     kIdFastEval2 = 10,</a>
+<a name="94"><span class="lineNum">      94 </span>            :     kIdFastEval3 = 11,</a>
+<a name="95"><span class="lineNum">      95 </span>            :     kIdFastEval4 = 12,</a>
+<a name="96"><span class="lineNum">      96 </span>            :     */</a>
+<a name="97"><span class="lineNum">      97 </span>            : </a>
+<a name="98"><span class="lineNum">      98 </span>            :     // ------------------------------------------------------------------------</a>
+<a name="99"><span class="lineNum">      99 </span>            :     // [X86]</a>
+<a name="100"><span class="lineNum">     100 </span>            :     // ------------------------------------------------------------------------</a>
+<a name="101"><span class="lineNum">     101 </span>            : </a>
+<a name="102"><span class="lineNum">     102 </span>            :     //! X86 `__cdecl` calling convention (used by C runtime and libraries).</a>
+<a name="103"><span class="lineNum">     103 </span>            :     kIdX86CDecl = 16,</a>
+<a name="104"><span class="lineNum">     104 </span>            :     //! X86 `__stdcall` calling convention (used mostly by WinAPI).</a>
+<a name="105"><span class="lineNum">     105 </span>            :     kIdX86StdCall = 17,</a>
+<a name="106"><span class="lineNum">     106 </span>            :     //! X86 `__thiscall` calling convention (MSVC/Intel).</a>
+<a name="107"><span class="lineNum">     107 </span>            :     kIdX86MsThisCall = 18,</a>
+<a name="108"><span class="lineNum">     108 </span>            :     //! X86 `__fastcall` convention (MSVC/Intel).</a>
+<a name="109"><span class="lineNum">     109 </span>            :     kIdX86MsFastCall = 19,</a>
+<a name="110"><span class="lineNum">     110 </span>            :     //! X86 `__fastcall` convention (GCC and Clang).</a>
+<a name="111"><span class="lineNum">     111 </span>            :     kIdX86GccFastCall = 20,</a>
+<a name="112"><span class="lineNum">     112 </span>            :     //! X86 `regparm(1)` convention (GCC and Clang).</a>
+<a name="113"><span class="lineNum">     113 </span>            :     kIdX86GccRegParm1 = 21,</a>
+<a name="114"><span class="lineNum">     114 </span>            :     //! X86 `regparm(2)` convention (GCC and Clang).</a>
+<a name="115"><span class="lineNum">     115 </span>            :     kIdX86GccRegParm2 = 22,</a>
+<a name="116"><span class="lineNum">     116 </span>            :     //! X86 `regparm(3)` convention (GCC and Clang).</a>
+<a name="117"><span class="lineNum">     117 </span>            :     kIdX86GccRegParm3 = 23,</a>
+<a name="118"><span class="lineNum">     118 </span>            : </a>
+<a name="119"><span class="lineNum">     119 </span>            :     kIdX86FastEval2 = 29,</a>
+<a name="120"><span class="lineNum">     120 </span>            :     kIdX86FastEval3 = 30,</a>
+<a name="121"><span class="lineNum">     121 </span>            :     kIdX86FastEval4 = 31,</a>
+<a name="122"><span class="lineNum">     122 </span>            : </a>
+<a name="123"><span class="lineNum">     123 </span>            :     //! X64 calling convention defined by WIN64-ABI.</a>
+<a name="124"><span class="lineNum">     124 </span>            :     //!</a>
+<a name="125"><span class="lineNum">     125 </span>            :     //! Links:</a>
+<a name="126"><span class="lineNum">     126 </span>            :     //!   * &lt;http://msdn.microsoft.com/en-us/library/9b372w95.aspx&gt;.</a>
+<a name="127"><span class="lineNum">     127 </span>            :     kIdX86Win64 = 32,</a>
+<a name="128"><span class="lineNum">     128 </span>            :     //! X64 calling convention used by Unix platforms (SYSV/AMD64-ABI).</a>
+<a name="129"><span class="lineNum">     129 </span>            :     kIdX86SysV64 = 33,</a>
+<a name="130"><span class="lineNum">     130 </span>            : </a>
+<a name="131"><span class="lineNum">     131 </span>            :     kIdX64FastEval2 = 45,</a>
+<a name="132"><span class="lineNum">     132 </span>            :     kIdX64FastEval3 = 46,</a>
+<a name="133"><span class="lineNum">     133 </span>            :     kIdX64FastEval4 = 47,</a>
+<a name="134"><span class="lineNum">     134 </span>            : </a>
+<a name="135"><span class="lineNum">     135 </span>            :     // ------------------------------------------------------------------------</a>
+<a name="136"><span class="lineNum">     136 </span>            :     // [ARM]</a>
+<a name="137"><span class="lineNum">     137 </span>            :     // ------------------------------------------------------------------------</a>
+<a name="138"><span class="lineNum">     138 </span>            : </a>
+<a name="139"><span class="lineNum">     139 </span>            :     //! Legacy calling convention, floating point arguments are passed via GP registers.</a>
+<a name="140"><span class="lineNum">     140 </span>            :     kIdArm32SoftFP = 48,</a>
+<a name="141"><span class="lineNum">     141 </span>            :     //! Modern calling convention, uses VFP registers to pass floating point arguments.</a>
+<a name="142"><span class="lineNum">     142 </span>            :     kIdArm32HardFP = 49,</a>
+<a name="143"><span class="lineNum">     143 </span>            : </a>
+<a name="144"><span class="lineNum">     144 </span>            :     // ------------------------------------------------------------------------</a>
+<a name="145"><span class="lineNum">     145 </span>            :     // [Internal]</a>
+<a name="146"><span class="lineNum">     146 </span>            :     // ------------------------------------------------------------------------</a>
+<a name="147"><span class="lineNum">     147 </span>            : </a>
+<a name="148"><span class="lineNum">     148 </span>            :     _kIdX86Start = 16,   //!&lt; \internal</a>
+<a name="149"><span class="lineNum">     149 </span>            :     _kIdX86End = 31,     //!&lt; \internal</a>
+<a name="150"><span class="lineNum">     150 </span>            : </a>
+<a name="151"><span class="lineNum">     151 </span>            :     _kIdX64Start = 32,  //!&lt; \internal</a>
+<a name="152"><span class="lineNum">     152 </span>            :     _kIdX64End = 47,    //!&lt; \internal</a>
+<a name="153"><span class="lineNum">     153 </span>            : </a>
+<a name="154"><span class="lineNum">     154 </span>            :     _kIdArmStart = 48,  //!&lt; \internal</a>
+<a name="155"><span class="lineNum">     155 </span>            :     _kIdArmEnd = 49,    //!&lt; \internal</a>
+<a name="156"><span class="lineNum">     156 </span>            : </a>
+<a name="157"><span class="lineNum">     157 </span>            :     // ------------------------------------------------------------------------</a>
+<a name="158"><span class="lineNum">     158 </span>            :     // [Host]</a>
+<a name="159"><span class="lineNum">     159 </span>            :     // ------------------------------------------------------------------------</a>
+<a name="160"><span class="lineNum">     160 </span>            : </a>
+<a name="161"><span class="lineNum">     161 </span>            : #if defined(ASMJIT_DOCGEN)</a>
+<a name="162"><span class="lineNum">     162 </span>            :     //! Default calling convention based on the current C++ compiler's settings.</a>
+<a name="163"><span class="lineNum">     163 </span>            :     //!</a>
+<a name="164"><span class="lineNum">     164 </span>            :     //! NOTE: This should be always the same as `kIdHostCDecl`, but some</a>
+<a name="165"><span class="lineNum">     165 </span>            :     //! compilers allow to override the default calling convention. Overriding</a>
+<a name="166"><span class="lineNum">     166 </span>            :     //! is not detected at the moment.</a>
+<a name="167"><span class="lineNum">     167 </span>            :     kIdHost          = DETECTED_AT_COMPILE_TIME,</a>
+<a name="168"><span class="lineNum">     168 </span>            : </a>
+<a name="169"><span class="lineNum">     169 </span>            :     //! Default CDECL calling convention based on the current C++ compiler's settings.</a>
+<a name="170"><span class="lineNum">     170 </span>            :     kIdHostCDecl     = DETECTED_AT_COMPILE_TIME,</a>
+<a name="171"><span class="lineNum">     171 </span>            : </a>
+<a name="172"><span class="lineNum">     172 </span>            :     //! Default STDCALL calling convention based on the current C++ compiler's settings.</a>
+<a name="173"><span class="lineNum">     173 </span>            :     //!</a>
+<a name="174"><span class="lineNum">     174 </span>            :     //! NOTE: If not defined by the host then it's the same as `kIdHostCDecl`.</a>
+<a name="175"><span class="lineNum">     175 </span>            :     kIdHostStdCall   = DETECTED_AT_COMPILE_TIME,</a>
+<a name="176"><span class="lineNum">     176 </span>            : </a>
+<a name="177"><span class="lineNum">     177 </span>            :     //! Compatibility for `__fastcall` calling convention.</a>
+<a name="178"><span class="lineNum">     178 </span>            :     //!</a>
+<a name="179"><span class="lineNum">     179 </span>            :     //! NOTE: If not defined by the host then it's the same as `kIdHostCDecl`.</a>
+<a name="180"><span class="lineNum">     180 </span>            :     kIdHostFastCall  = DETECTED_AT_COMPILE_TIME</a>
+<a name="181"><span class="lineNum">     181 </span>            : #elif ASMJIT_ARCH_X86</a>
+<a name="182"><span class="lineNum">     182 </span>            :     kIdHost          = kIdX86CDecl,</a>
+<a name="183"><span class="lineNum">     183 </span>            :     kIdHostCDecl     = kIdX86CDecl,</a>
+<a name="184"><span class="lineNum">     184 </span>            :     kIdHostStdCall   = kIdX86StdCall,</a>
+<a name="185"><span class="lineNum">     185 </span>            :     kIdHostFastCall  = ASMJIT_CC_MSC   ? kIdX86MsFastCall  :</a>
+<a name="186"><span class="lineNum">     186 </span>            :                        ASMJIT_CC_GCC   ? kIdX86GccFastCall :</a>
+<a name="187"><span class="lineNum">     187 </span>            :                        ASMJIT_CC_CLANG ? kIdX86GccFastCall : kIdNone,</a>
+<a name="188"><span class="lineNum">     188 </span>            :     kIdHostFastEval2 = kIdX86FastEval2,</a>
+<a name="189"><span class="lineNum">     189 </span>            :     kIdHostFastEval3 = kIdX86FastEval3,</a>
+<a name="190"><span class="lineNum">     190 </span>            :     kIdHostFastEval4 = kIdX86FastEval4</a>
+<a name="191"><span class="lineNum">     191 </span>            : #elif ASMJIT_ARCH_X64</a>
+<a name="192"><span class="lineNum">     192 </span>            :     kIdHost          = ASMJIT_OS_WINDOWS ? kIdX86Win64 : kIdX86SysV64,</a>
+<a name="193"><span class="lineNum">     193 </span>            :     kIdHostCDecl     = kIdHost, // Doesn't exist, redirected to host.</a>
+<a name="194"><span class="lineNum">     194 </span>            :     kIdHostStdCall   = kIdHost, // Doesn't exist, redirected to host.</a>
+<a name="195"><span class="lineNum">     195 </span>            :     kIdHostFastCall  = kIdHost, // Doesn't exist, redirected to host.</a>
+<a name="196"><span class="lineNum">     196 </span>            :     kIdHostFastEval2 = kIdX64FastEval2,</a>
+<a name="197"><span class="lineNum">     197 </span>            :     kIdHostFastEval3 = kIdX64FastEval3,</a>
+<a name="198"><span class="lineNum">     198 </span>            :     kIdHostFastEval4 = kIdX64FastEval4</a>
+<a name="199"><span class="lineNum">     199 </span>            : #elif ASMJIT_ARCH_ARM32</a>
+<a name="200"><span class="lineNum">     200 </span>            : # if defined(__SOFTFP__)</a>
+<a name="201"><span class="lineNum">     201 </span>            :     kIdHost          = kIdArm32SoftFP,</a>
+<a name="202"><span class="lineNum">     202 </span>            : # else</a>
+<a name="203"><span class="lineNum">     203 </span>            :     kIdHost          = kIdArm32HardFP,</a>
+<a name="204"><span class="lineNum">     204 </span>            : # endif</a>
+<a name="205"><span class="lineNum">     205 </span>            :     // These don't exist on ARM.</a>
+<a name="206"><span class="lineNum">     206 </span>            :     kIdHostCDecl     = kIdHost, // Doesn't exist, redirected to host.</a>
+<a name="207"><span class="lineNum">     207 </span>            :     kIdHostStdCall   = kIdHost, // Doesn't exist, redirected to host.</a>
+<a name="208"><span class="lineNum">     208 </span>            :     kIdHostFastCall  = kIdHost  // Doesn't exist, redirected to host.</a>
+<a name="209"><span class="lineNum">     209 </span>            : #else</a>
+<a name="210"><span class="lineNum">     210 </span>            : # error &quot;[asmjit] Couldn't determine the target's calling convention.&quot;</a>
+<a name="211"><span class="lineNum">     211 </span>            : #endif</a>
+<a name="212"><span class="lineNum">     212 </span>            :   };</a>
+<a name="213"><span class="lineNum">     213 </span>            : </a>
+<a name="214"><span class="lineNum">     214 </span>            :   //! Calling convention algorithm.</a>
+<a name="215"><span class="lineNum">     215 </span>            :   //!</a>
+<a name="216"><span class="lineNum">     216 </span>            :   //! This is AsmJit specific. It basically describes how should AsmJit convert</a>
+<a name="217"><span class="lineNum">     217 </span>            :   //! the function arguments defined by `FuncSignature` into register ids or</a>
+<a name="218"><span class="lineNum">     218 </span>            :   //! stack offsets. The default algorithm is a standard algorithm that assigns</a>
+<a name="219"><span class="lineNum">     219 </span>            :   //! registers first, and then assigns stack. The Win64 algorithm does register</a>
+<a name="220"><span class="lineNum">     220 </span>            :   //! shadowing as defined by `WIN64` calling convention - it applies to 64-bit</a>
+<a name="221"><span class="lineNum">     221 </span>            :   //! calling conventions only.</a>
+<a name="222"><span class="lineNum">     222 </span>            :   ASMJIT_ENUM(Algorithm) {</a>
+<a name="223"><span class="lineNum">     223 </span>            :     kAlgorithmDefault    = 0,            //!&lt; Default algorithm (cross-platform).</a>
+<a name="224"><span class="lineNum">     224 </span>            :     kAlgorithmWin64      = 1             //!&lt; WIN64 specific algorithm.</a>
+<a name="225"><span class="lineNum">     225 </span>            :   };</a>
+<a name="226"><span class="lineNum">     226 </span>            : </a>
+<a name="227"><span class="lineNum">     227 </span>            :   //! Calling convention flags.</a>
+<a name="228"><span class="lineNum">     228 </span>            :   ASMJIT_ENUM(Flags) {</a>
+<a name="229"><span class="lineNum">     229 </span>            :     kFlagCalleePopsStack = 0x01,         //!&lt; Callee is responsible for cleaning up the stack.</a>
+<a name="230"><span class="lineNum">     230 </span>            :     kFlagPassFloatsByVec = 0x02,         //!&lt; Pass F32 and F64 arguments by VEC128 register.</a>
+<a name="231"><span class="lineNum">     231 </span>            :     kFlagVectorCall      = 0x04,         //!&lt; This is a '__vectorcall' calling convention.</a>
+<a name="232"><span class="lineNum">     232 </span>            :     kFlagIndirectVecArgs = 0x08          //!&lt; Pass vector arguments indirectly (as a pointer).</a>
+<a name="233"><span class="lineNum">     233 </span>            :   };</a>
+<a name="234"><span class="lineNum">     234 </span>            : </a>
+<a name="235"><span class="lineNum">     235 </span>            :   //! Internal limits of AsmJit/CallConv.</a>
+<a name="236"><span class="lineNum">     236 </span>            :   ASMJIT_ENUM(Limits) {</a>
+<a name="237"><span class="lineNum">     237 </span>            :     kMaxVRegKinds        = Globals::kMaxVRegKinds,</a>
+<a name="238"><span class="lineNum">     238 </span>            :     kNumRegArgsPerKind   = 8</a>
+<a name="239"><span class="lineNum">     239 </span>            :   };</a>
+<a name="240"><span class="lineNum">     240 </span>            : </a>
+<a name="241"><span class="lineNum">     241 </span>            :   //! Passed registers' order.</a>
+<a name="242"><span class="lineNum">     242 </span>            :   union RegOrder {</a>
+<a name="243"><span class="lineNum">     243 </span>            :     uint8_t id[kNumRegArgsPerKind];      //!&lt; Passed registers, ordered.</a>
+<a name="244"><span class="lineNum">     244 </span>            :     uint32_t packed[(kNumRegArgsPerKind + 3) / 4];</a>
+<a name="245"><span class="lineNum">     245 </span>            :   };</a>
+<a name="246"><span class="lineNum">     246 </span>            : </a>
+<a name="247"><span class="lineNum">     247 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="248"><span class="lineNum">     248 </span>            :   // [Utilities]</a>
+<a name="249"><span class="lineNum">     249 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="250"><span class="lineNum">     250 </span>            : </a>
+<a name="251"><span class="lineNum">     251 </span><span class="lineCov">       3744 :   static ASMJIT_INLINE bool isX86Family(uint32_t ccId) noexcept { return ccId &gt;= _kIdX86Start &amp;&amp; ccId &lt;= _kIdX64End; }</span></a>
+<a name="252"><span class="lineNum">     252 </span>            :   static ASMJIT_INLINE bool isArmFamily(uint32_t ccId) noexcept { return ccId &gt;= _kIdArmStart &amp;&amp; ccId &lt;= _kIdArmEnd; }</a>
+<a name="253"><span class="lineNum">     253 </span>            : </a>
+<a name="254"><span class="lineNum">     254 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="255"><span class="lineNum">     255 </span>            :   // [Init / Reset]</a>
+<a name="256"><span class="lineNum">     256 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="257"><span class="lineNum">     257 </span>            : </a>
+<a name="258"><span class="lineNum">     258 </span>            :   ASMJIT_API Error init(uint32_t ccId) noexcept;</a>
+<a name="259"><span class="lineNum">     259 </span>            : </a>
+<a name="260"><span class="lineNum">     260 </span>            :   ASMJIT_INLINE void reset() noexcept {</a>
+<a name="261"><span class="lineNum">     261 </span>            :     ::memset(this, 0, sizeof(*this));</a>
+<a name="262"><span class="lineNum">     262 </span><span class="lineCov">       3744 :     ::memset(_passedOrder, 0xFF, sizeof(_passedOrder));</span></a>
+<a name="263"><span class="lineNum">     263 </span>            :   }</a>
+<a name="264"><span class="lineNum">     264 </span>            : </a>
+<a name="265"><span class="lineNum">     265 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="266"><span class="lineNum">     266 </span>            :   // [Accessors]</a>
+<a name="267"><span class="lineNum">     267 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="268"><span class="lineNum">     268 </span>            : </a>
+<a name="269"><span class="lineNum">     269 </span>            :   //! Get calling convention id, see \ref Id.</a>
+<a name="270"><span class="lineNum">     270 </span><span class="lineCov">       2004 :   ASMJIT_INLINE uint32_t getId() const noexcept { return _id; }</span></a>
+<a name="271"><span class="lineNum">     271 </span>            :   //! Set calling convention id, see \ref Id.</a>
+<a name="272"><span class="lineNum">     272 </span><span class="lineCov">       3744 :   ASMJIT_INLINE void setId(uint32_t id) noexcept { _id = static_cast&lt;uint8_t&gt;(id); }</span></a>
+<a name="273"><span class="lineNum">     273 </span>            : </a>
+<a name="274"><span class="lineNum">     274 </span>            :   //! Get architecture type.</a>
+<a name="275"><span class="lineNum">     275 </span><span class="lineCov">       5748 :   ASMJIT_INLINE uint32_t getArchType() const noexcept { return _archType; }</span></a>
+<a name="276"><span class="lineNum">     276 </span>            :   //! Set architecture type.</a>
+<a name="277"><span class="lineNum">     277 </span><span class="lineCov">       3744 :   ASMJIT_INLINE void setArchType(uint32_t archType) noexcept { _archType = static_cast&lt;uint8_t&gt;(archType); }</span></a>
+<a name="278"><span class="lineNum">     278 </span>            : </a>
+<a name="279"><span class="lineNum">     279 </span>            :   //! Get calling convention algorithm, see \ref Algorithm.</a>
+<a name="280"><span class="lineNum">     280 </span><span class="lineCov">       3744 :   ASMJIT_INLINE uint32_t getAlgorithm() const noexcept { return _algorithm; }</span></a>
+<a name="281"><span class="lineNum">     281 </span>            :   //! Set calling convention algorithm, see \ref Algorithm.</a>
+<a name="282"><span class="lineNum">     282 </span><span class="lineNoCov">          0 :   ASMJIT_INLINE void setAlgorithm(uint32_t algorithm) noexcept { _algorithm = static_cast&lt;uint8_t&gt;(algorithm); }</span></a>
+<a name="283"><span class="lineNum">     283 </span>            : </a>
+<a name="284"><span class="lineNum">     284 </span>            :   //! Get if the calling convention has the given `flag` set.</a>
+<a name="285"><span class="lineNum">     285 </span><span class="lineCov">       5286 :   ASMJIT_INLINE bool hasFlag(uint32_t flag) const noexcept { return (_flags &amp; flag) != 0; }</span></a>
+<a name="286"><span class="lineNum">     286 </span>            :   //! Get calling convention flags, see \ref Flags.</a>
+<a name="287"><span class="lineNum">     287 </span>            :   ASMJIT_INLINE uint32_t getFlags() const noexcept { return _flags; }</a>
+<a name="288"><span class="lineNum">     288 </span>            :   //! Add calling convention flags, see \ref Flags.</a>
+<a name="289"><span class="lineNum">     289 </span><span class="lineNoCov">          0 :   ASMJIT_INLINE void setFlags(uint32_t flag) noexcept { _flags = flag; };</span></a>
+<a name="290"><span class="lineNum">     290 </span>            :   //! Add calling convention flags, see \ref Flags.</a>
+<a name="291"><span class="lineNum">     291 </span>            :   ASMJIT_INLINE void addFlags(uint32_t flag) noexcept { _flags |= flag; };</a>
+<a name="292"><span class="lineNum">     292 </span>            : </a>
+<a name="293"><span class="lineNum">     293 </span>            :   //! Get a natural stack alignment.</a>
+<a name="294"><span class="lineNum">     294 </span><span class="lineCov">       6012 :   ASMJIT_INLINE uint32_t getNaturalStackAlignment() const noexcept { return _naturalStackAlignment; }</span></a>
+<a name="295"><span class="lineNum">     295 </span>            : </a>
+<a name="296"><span class="lineNum">     296 </span>            :   //! Set a natural stack alignment.</a>
+<a name="297"><span class="lineNum">     297 </span>            :   //!</a>
+<a name="298"><span class="lineNum">     298 </span>            :   //! This function can be used to override the default stack alignment in case</a>
+<a name="299"><span class="lineNum">     299 </span>            :   //! that you know that it's alignment is different. For example it allows to</a>
+<a name="300"><span class="lineNum">     300 </span>            :   //! implement custom calling conventions that guarantee higher stack alignment.</a>
+<a name="301"><span class="lineNum">     301 </span>            :   ASMJIT_INLINE void setNaturalStackAlignment(uint32_t value) noexcept {</a>
+<a name="302"><span class="lineNum">     302 </span>            :     ASMJIT_ASSERT(value &lt; 256);</a>
+<a name="303"><span class="lineNum">     303 </span><span class="lineCov">       3744 :     _naturalStackAlignment = static_cast&lt;uint8_t&gt;(value);</span></a>
+<a name="304"><span class="lineNum">     304 </span><span class="lineNoCov">          0 :   }</span></a>
+<a name="305"><span class="lineNum">     305 </span>            : </a>
+<a name="306"><span class="lineNum">     306 </span>            :   //! Get if this calling convention specifies 'SpillZone'.</a>
+<a name="307"><span class="lineNum">     307 </span>            :   ASMJIT_INLINE bool hasSpillZone() const noexcept { return _spillZoneSize != 0; }</a>
+<a name="308"><span class="lineNum">     308 </span>            :   //! Get size of 'SpillZone'.</a>
+<a name="309"><span class="lineNum">     309 </span><span class="lineCov">       2004 :   ASMJIT_INLINE uint32_t getSpillZoneSize() const noexcept { return _spillZoneSize; }</span></a>
+<a name="310"><span class="lineNum">     310 </span>            :   //! Set size of 'SpillZone'.</a>
+<a name="311"><span class="lineNum">     311 </span><span class="lineNoCov">          0 :   ASMJIT_INLINE void setSpillZoneSize(uint32_t size) noexcept { _spillZoneSize = static_cast&lt;uint8_t&gt;(size); }</span></a>
+<a name="312"><span class="lineNum">     312 </span>            : </a>
+<a name="313"><span class="lineNum">     313 </span>            :   //! Get if this calling convention specifies 'RedZone'.</a>
+<a name="314"><span class="lineNum">     314 </span>            :   ASMJIT_INLINE bool hasRedZone() const noexcept { return _redZoneSize != 0; }</a>
+<a name="315"><span class="lineNum">     315 </span>            :   //! Get size of 'RedZone'.</a>
+<a name="316"><span class="lineNum">     316 </span>            :   ASMJIT_INLINE uint32_t getRedZoneSize() const noexcept { return _redZoneSize; }</a>
+<a name="317"><span class="lineNum">     317 </span>            :   //! Set size of 'RedZone'.</a>
+<a name="318"><span class="lineNum">     318 </span><span class="lineCov">       3744 :   ASMJIT_INLINE void setRedZoneSize(uint32_t size) noexcept { _redZoneSize = static_cast&lt;uint16_t&gt;(size); }</span></a>
+<a name="319"><span class="lineNum">     319 </span>            : </a>
+<a name="320"><span class="lineNum">     320 </span>            :   ASMJIT_INLINE const uint8_t* getPassedOrder(uint32_t kind) const noexcept {</a>
+<a name="321"><span class="lineNum">     321 </span>            :     ASMJIT_ASSERT(kind &lt; kMaxVRegKinds);</a>
+<a name="322"><span class="lineNum">     322 </span>            :     return _passedOrder[kind].id;</a>
+<a name="323"><span class="lineNum">     323 </span>            :   }</a>
+<a name="324"><span class="lineNum">     324 </span>            : </a>
+<a name="325"><span class="lineNum">     325 </span>            :   ASMJIT_INLINE uint32_t getPassedRegs(uint32_t kind) const noexcept {</a>
+<a name="326"><span class="lineNum">     326 </span>            :     ASMJIT_ASSERT(kind &lt; kMaxVRegKinds);</a>
+<a name="327"><span class="lineNum">     327 </span><span class="lineCov">      11760 :     return _passedRegs[kind];</span></a>
+<a name="328"><span class="lineNum">     328 </span>            :   }</a>
+<a name="329"><span class="lineNum">     329 </span>            : </a>
+<a name="330"><span class="lineNum">     330 </span>            :   ASMJIT_INLINE void _setPassedPacked(uint32_t kind, uint32_t p0, uint32_t p1) noexcept {</a>
+<a name="331"><span class="lineNum">     331 </span>            :     ASMJIT_ASSERT(kind &lt; kMaxVRegKinds);</a>
+<a name="332"><span class="lineNum">     332 </span>            : </a>
+<a name="333"><span class="lineNum">     333 </span><span class="lineCov">       3744 :     _passedOrder[kind].packed[0] = p0;</span></a>
+<a name="334"><span class="lineNum">     334 </span><span class="lineCov">       3744 :     _passedOrder[kind].packed[1] = p1;</span></a>
+<a name="335"><span class="lineNum">     335 </span>            :   }</a>
+<a name="336"><span class="lineNum">     336 </span>            : </a>
+<a name="337"><span class="lineNum">     337 </span>            :   ASMJIT_INLINE void setPassedToNone(uint32_t kind) noexcept {</a>
+<a name="338"><span class="lineNum">     338 </span>            :     ASMJIT_ASSERT(kind &lt; kMaxVRegKinds);</a>
+<a name="339"><span class="lineNum">     339 </span>            : </a>
+<a name="340"><span class="lineNum">     340 </span>            :     _setPassedPacked(kind, ASMJIT_PACK32_4x8(0xFF, 0xFF, 0xFF, 0xFF),</a>
+<a name="341"><span class="lineNum">     341 </span>            :                            ASMJIT_PACK32_4x8(0xFF, 0xFF, 0xFF, 0xFF));</a>
+<a name="342"><span class="lineNum">     342 </span>            :     _passedRegs[kind] = 0;</a>
+<a name="343"><span class="lineNum">     343 </span>            :   }</a>
+<a name="344"><span class="lineNum">     344 </span>            : </a>
+<a name="345"><span class="lineNum">     345 </span>            :   ASMJIT_INLINE void setPassedOrder(uint32_t kind, uint32_t a0, uint32_t a1 = 0xFF, uint32_t a2 = 0xFF, uint32_t a3 = 0xFF, uint32_t a4 = 0xFF, uint32_t a5 = 0xFF, uint32_t a6 = 0xFF, uint32_t a7 = 0xFF) noexcept {</a>
+<a name="346"><span class="lineNum">     346 </span>            :     ASMJIT_ASSERT(kind &lt; kMaxVRegKinds);</a>
+<a name="347"><span class="lineNum">     347 </span>            : </a>
+<a name="348"><span class="lineNum">     348 </span>            :     _setPassedPacked(kind, ASMJIT_PACK32_4x8(a0, a1, a2, a3),</a>
+<a name="349"><span class="lineNum">     349 </span>            :                            ASMJIT_PACK32_4x8(a4, a5, a6, a7));</a>
+<a name="350"><span class="lineNum">     350 </span>            : </a>
+<a name="351"><span class="lineNum">     351 </span>            :     // NOTE: This should always be called with all arguments known at compile</a>
+<a name="352"><span class="lineNum">     352 </span>            :     // time, so even if it looks scary it should be translated to a single</a>
+<a name="353"><span class="lineNum">     353 </span>            :     // instruction.</a>
+<a name="354"><span class="lineNum">     354 </span><span class="lineNoCov">          0 :     _passedRegs[kind] = (a0 != 0xFF ? 1U &lt;&lt; a0 : 0U) |</span></a>
+<a name="355"><span class="lineNum">     355 </span>            :                         (a1 != 0xFF ? 1U &lt;&lt; a1 : 0U) |</a>
+<a name="356"><span class="lineNum">     356 </span>            :                         (a2 != 0xFF ? 1U &lt;&lt; a2 : 0U) |</a>
+<a name="357"><span class="lineNum">     357 </span>            :                         (a3 != 0xFF ? 1U &lt;&lt; a3 : 0U) |</a>
+<a name="358"><span class="lineNum">     358 </span>            :                         (a4 != 0xFF ? 1U &lt;&lt; a4 : 0U) |</a>
+<a name="359"><span class="lineNum">     359 </span>            :                         (a5 != 0xFF ? 1U &lt;&lt; a5 : 0U) |</a>
+<a name="360"><span class="lineNum">     360 </span>            :                         (a6 != 0xFF ? 1U &lt;&lt; a6 : 0U) |</a>
+<a name="361"><span class="lineNum">     361 </span>            :                         (a7 != 0xFF ? 1U &lt;&lt; a7 : 0U) ;</a>
+<a name="362"><span class="lineNum">     362 </span>            :   }</a>
+<a name="363"><span class="lineNum">     363 </span>            : </a>
+<a name="364"><span class="lineNum">     364 </span>            :   ASMJIT_INLINE uint32_t getPreservedRegs(uint32_t kind) const noexcept {</a>
+<a name="365"><span class="lineNum">     365 </span>            :     ASMJIT_ASSERT(kind &lt; kMaxVRegKinds);</a>
+<a name="366"><span class="lineNum">     366 </span><span class="lineCov">       9756 :     return _preservedRegs[kind];</span></a>
+<a name="367"><span class="lineNum">     367 </span>            :   }</a>
+<a name="368"><span class="lineNum">     368 </span>            : </a>
+<a name="369"><span class="lineNum">     369 </span>            : </a>
+<a name="370"><span class="lineNum">     370 </span>            :   ASMJIT_INLINE void setPreservedRegs(uint32_t kind, uint32_t regs) noexcept {</a>
+<a name="371"><span class="lineNum">     371 </span>            :     ASMJIT_ASSERT(kind &lt; kMaxVRegKinds);</a>
+<a name="372"><span class="lineNum">     372 </span><span class="lineNoCov">          0 :     _preservedRegs[kind] = regs;</span></a>
+<a name="373"><span class="lineNum">     373 </span><span class="lineCov">       3744 :   }</span></a>
+<a name="374"><span class="lineNum">     374 </span>            : </a>
+<a name="375"><span class="lineNum">     375 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="376"><span class="lineNum">     376 </span>            :   // [Members]</a>
+<a name="377"><span class="lineNum">     377 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="378"><span class="lineNum">     378 </span>            : </a>
+<a name="379"><span class="lineNum">     379 </span>            :   uint8_t _id;                           //!&lt; Calling convention id, see \ref Id.</a>
+<a name="380"><span class="lineNum">     380 </span>            :   uint8_t _archType;                     //!&lt; Architecture type (see \ref ArchInfo::Type).</a>
+<a name="381"><span class="lineNum">     381 </span>            :   uint8_t _algorithm;                    //!&lt; Calling convention algorithm.</a>
+<a name="382"><span class="lineNum">     382 </span>            :   uint8_t _flags;                        //!&lt; Calling convention flags.</a>
+<a name="383"><span class="lineNum">     383 </span>            : </a>
+<a name="384"><span class="lineNum">     384 </span>            :   uint8_t _naturalStackAlignment;        //!&lt; Natural stack alignment as defined by OS/ABI.</a>
+<a name="385"><span class="lineNum">     385 </span>            :   uint8_t _spillZoneSize;                //!&lt; Spill zone size (WIN64 == 32 bytes).</a>
+<a name="386"><span class="lineNum">     386 </span>            :   uint16_t _redZoneSize;                 //!&lt; Red zone size (AMD64 == 128 bytes).</a>
+<a name="387"><span class="lineNum">     387 </span>            : </a>
+<a name="388"><span class="lineNum">     388 </span>            :   RegOrder _passedOrder[kMaxVRegKinds];  //!&lt; Passed registers' order, per kind.</a>
+<a name="389"><span class="lineNum">     389 </span>            :   uint32_t _passedRegs[kMaxVRegKinds];   //!&lt; Mask of all passed registers, per kind.</a>
+<a name="390"><span class="lineNum">     390 </span>            :   uint32_t _preservedRegs[kMaxVRegKinds];//!&lt; Mask of all preserved registers, per kind.</a>
+<a name="391"><span class="lineNum">     391 </span>            : };</a>
+<a name="392"><span class="lineNum">     392 </span>            : </a>
+<a name="393"><span class="lineNum">     393 </span>            : // ============================================================================</a>
+<a name="394"><span class="lineNum">     394 </span>            : // [asmjit::FuncArgIndex]</a>
+<a name="395"><span class="lineNum">     395 </span>            : // ============================================================================</a>
+<a name="396"><span class="lineNum">     396 </span>            : </a>
+<a name="397"><span class="lineNum">     397 </span>            : //! Function argument index (lo/hi).</a>
+<a name="398"><span class="lineNum">     398 </span>            : ASMJIT_ENUM(FuncArgIndex) {</a>
+<a name="399"><span class="lineNum">     399 </span>            :   //! Maximum number of function arguments supported by AsmJit.</a>
+<a name="400"><span class="lineNum">     400 </span>            :   kFuncArgCount = 16,</a>
+<a name="401"><span class="lineNum">     401 </span>            :   //! Extended maximum number of arguments (used internally).</a>
+<a name="402"><span class="lineNum">     402 </span>            :   kFuncArgCountLoHi = kFuncArgCount * 2,</a>
+<a name="403"><span class="lineNum">     403 </span>            : </a>
+<a name="404"><span class="lineNum">     404 </span>            :   //! Index to the LO part of function argument (default).</a>
+<a name="405"><span class="lineNum">     405 </span>            :   //!</a>
+<a name="406"><span class="lineNum">     406 </span>            :   //! This value is typically omitted and added only if there is HI argument</a>
+<a name="407"><span class="lineNum">     407 </span>            :   //! accessed.</a>
+<a name="408"><span class="lineNum">     408 </span>            :   kFuncArgLo = 0,</a>
+<a name="409"><span class="lineNum">     409 </span>            : </a>
+<a name="410"><span class="lineNum">     410 </span>            :   //! Index to the HI part of function argument.</a>
+<a name="411"><span class="lineNum">     411 </span>            :   //!</a>
+<a name="412"><span class="lineNum">     412 </span>            :   //! HI part of function argument depends on target architecture. On x86 it's</a>
+<a name="413"><span class="lineNum">     413 </span>            :   //! typically used to transfer 64-bit integers (they form a pair of 32-bit</a>
+<a name="414"><span class="lineNum">     414 </span>            :   //! integers).</a>
+<a name="415"><span class="lineNum">     415 </span>            :   kFuncArgHi = kFuncArgCount</a>
+<a name="416"><span class="lineNum">     416 </span>            : };</a>
+<a name="417"><span class="lineNum">     417 </span>            : </a>
+<a name="418"><span class="lineNum">     418 </span>            : // ============================================================================</a>
+<a name="419"><span class="lineNum">     419 </span>            : // [asmjit::FuncSignature]</a>
+<a name="420"><span class="lineNum">     420 </span>            : // ============================================================================</a>
+<a name="421"><span class="lineNum">     421 </span>            : </a>
+<a name="422"><span class="lineNum">     422 </span>            : //! Function signature.</a>
+<a name="423"><span class="lineNum">     423 </span>            : //!</a>
+<a name="424"><span class="lineNum">     424 </span>            : //! Contains information about function return type, count of arguments and</a>
+<a name="425"><span class="lineNum">     425 </span>            : //! their TypeIds. Function signature is a low level structure which doesn't</a>
+<a name="426"><span class="lineNum">     426 </span>            : //! contain platform specific or calling convention specific information.</a>
+<a name="427"><span class="lineNum">     427 </span>            : struct FuncSignature {</a>
+<a name="428"><span class="lineNum">     428 </span>            :   enum {</a>
+<a name="429"><span class="lineNum">     429 </span>            :     //! Doesn't have variable number of arguments (`...`).</a>
+<a name="430"><span class="lineNum">     430 </span>            :     kNoVarArgs = 0xFF</a>
+<a name="431"><span class="lineNum">     431 </span>            :   };</a>
+<a name="432"><span class="lineNum">     432 </span>            : </a>
+<a name="433"><span class="lineNum">     433 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="434"><span class="lineNum">     434 </span>            :   // [Init / Reset]</a>
+<a name="435"><span class="lineNum">     435 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="436"><span class="lineNum">     436 </span>            : </a>
+<a name="437"><span class="lineNum">     437 </span>            :   //! Initialize the function signature.</a>
+<a name="438"><span class="lineNum">     438 </span>            :   ASMJIT_INLINE void init(uint32_t ccId, uint32_t ret, const uint8_t* args, uint32_t argCount) noexcept {</a>
+<a name="439"><span class="lineNum">     439 </span>            :     ASMJIT_ASSERT(ccId &lt;= 0xFF);</a>
+<a name="440"><span class="lineNum">     440 </span>            :     ASMJIT_ASSERT(argCount &lt;= 0xFF);</a>
+<a name="441"><span class="lineNum">     441 </span>            : </a>
+<a name="442"><span class="lineNum">     442 </span><span class="lineCov">       3744 :     _callConv = static_cast&lt;uint8_t&gt;(ccId);</span></a>
+<a name="443"><span class="lineNum">     443 </span><span class="lineCov">       3744 :     _argCount = static_cast&lt;uint8_t&gt;(argCount);</span></a>
+<a name="444"><span class="lineNum">     444 </span><span class="lineCov">       3744 :     _vaIndex = kNoVarArgs;</span></a>
+<a name="445"><span class="lineNum">     445 </span><span class="lineCov">       3744 :     _ret = ret;</span></a>
+<a name="446"><span class="lineNum">     446 </span><span class="lineCov">       3744 :     _args = args;</span></a>
+<a name="447"><span class="lineNum">     447 </span>            :   }</a>
+<a name="448"><span class="lineNum">     448 </span>            : </a>
+<a name="449"><span class="lineNum">     449 </span>            :   ASMJIT_INLINE void reset() noexcept {</a>
+<a name="450"><span class="lineNum">     450 </span>            :     memset(this, 0, sizeof(*this));</a>
+<a name="451"><span class="lineNum">     451 </span>            :   }</a>
+<a name="452"><span class="lineNum">     452 </span>            : </a>
+<a name="453"><span class="lineNum">     453 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="454"><span class="lineNum">     454 </span>            :   // [Accessors]</a>
+<a name="455"><span class="lineNum">     455 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="456"><span class="lineNum">     456 </span>            : </a>
+<a name="457"><span class="lineNum">     457 </span>            :   //! Get the function's calling convention.</a>
+<a name="458"><span class="lineNum">     458 </span><span class="lineCov">       3744 :   ASMJIT_INLINE uint32_t getCallConv() const noexcept { return _callConv; }</span></a>
+<a name="459"><span class="lineNum">     459 </span>            : </a>
+<a name="460"><span class="lineNum">     460 </span>            :   //! Get if the function has variable number of arguments (...).</a>
+<a name="461"><span class="lineNum">     461 </span>            :   ASMJIT_INLINE bool hasVarArgs() const noexcept { return _vaIndex != kNoVarArgs; }</a>
+<a name="462"><span class="lineNum">     462 </span>            :   //! Get the variable arguments (...) index, `kNoVarArgs` if none.</a>
+<a name="463"><span class="lineNum">     463 </span>            :   ASMJIT_INLINE uint32_t getVAIndex() const noexcept { return _vaIndex; }</a>
+<a name="464"><span class="lineNum">     464 </span>            : </a>
+<a name="465"><span class="lineNum">     465 </span>            :   //! Get the number of function arguments.</a>
+<a name="466"><span class="lineNum">     466 </span><span class="lineCov">       5484 :   ASMJIT_INLINE uint32_t getArgCount() const noexcept { return _argCount; }</span></a>
+<a name="467"><span class="lineNum">     467 </span>            : </a>
+<a name="468"><span class="lineNum">     468 </span>            :   ASMJIT_INLINE bool hasRet() const noexcept { return _ret != TypeId::kVoid; }</a>
+<a name="469"><span class="lineNum">     469 </span>            :   //! Get the return value type.</a>
+<a name="470"><span class="lineNum">     470 </span><span class="lineCov">       3744 :   ASMJIT_INLINE uint32_t getRet() const noexcept { return _ret; }</span></a>
+<a name="471"><span class="lineNum">     471 </span>            : </a>
+<a name="472"><span class="lineNum">     472 </span>            :   //! Get the type of the argument at index `i`.</a>
+<a name="473"><span class="lineNum">     473 </span>            :   ASMJIT_INLINE uint32_t getArg(uint32_t i) const noexcept {</a>
+<a name="474"><span class="lineNum">     474 </span>            :     ASMJIT_ASSERT(i &lt; _argCount);</a>
+<a name="475"><span class="lineNum">     475 </span>            :     return _args[i];</a>
+<a name="476"><span class="lineNum">     476 </span>            :   }</a>
+<a name="477"><span class="lineNum">     477 </span>            :   //! Get the array of function arguments' types.</a>
+<a name="478"><span class="lineNum">     478 </span><span class="lineCov">       3744 :   ASMJIT_INLINE const uint8_t* getArgs() const noexcept { return _args; }</span></a>
+<a name="479"><span class="lineNum">     479 </span>            : </a>
+<a name="480"><span class="lineNum">     480 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="481"><span class="lineNum">     481 </span>            :   // [Members]</a>
+<a name="482"><span class="lineNum">     482 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="483"><span class="lineNum">     483 </span>            : </a>
+<a name="484"><span class="lineNum">     484 </span>            :   uint8_t _callConv;                     //!&lt; Calling convention id.</a>
+<a name="485"><span class="lineNum">     485 </span>            :   uint8_t _argCount;                     //!&lt; Count of arguments.</a>
+<a name="486"><span class="lineNum">     486 </span>            :   uint8_t _vaIndex;                      //!&lt; Index to a first vararg or `kNoVarArgs`.</a>
+<a name="487"><span class="lineNum">     487 </span>            :   uint8_t _ret;                          //!&lt; TypeId of a return value.</a>
+<a name="488"><span class="lineNum">     488 </span>            :   const uint8_t* _args;                  //!&lt; TypeIds of function arguments.</a>
+<a name="489"><span class="lineNum">     489 </span>            : };</a>
+<a name="490"><span class="lineNum">     490 </span>            : </a>
+<a name="491"><span class="lineNum">     491 </span>            : // ============================================================================</a>
+<a name="492"><span class="lineNum">     492 </span>            : // [asmjit::FuncSignatureT]</a>
+<a name="493"><span class="lineNum">     493 </span>            : // ============================================================================</a>
+<a name="494"><span class="lineNum">     494 </span>            : </a>
+<a name="495"><span class="lineNum">     495 </span>            : //! \internal</a>
+<a name="496"><span class="lineNum">     496 </span>            : #define T(TYPE) TypeIdOf&lt;TYPE&gt;::kTypeId</a>
+<a name="497"><span class="lineNum">     497 </span>            : namespace { // unnamed namespace to avoid unique global symbols</a>
+<a name="498"><span class="lineNum">     498 </span>            : </a>
+<a name="499"><span class="lineNum">     499 </span>            : //! Static function signature (no arguments).</a>
+<a name="500"><span class="lineNum">     500 </span>            : template&lt;typename RET&gt;</a>
+<a name="501"><span class="lineNum">     501 </span>            : class FuncSignature0 : public FuncSignature {</a>
+<a name="502"><span class="lineNum">     502 </span>            : public:</a>
+<a name="503"><span class="lineNum">     503 </span><span class="lineCov">       2004 :   ASMJIT_INLINE FuncSignature0(uint32_t ccId = CallConv::kIdHost) noexcept {</span></a>
+<a name="504"><span class="lineNum">     504 </span>            :     init(ccId, T(RET), nullptr, 0);</a>
+<a name="505"><span class="lineNum">     505 </span>            :   }</a>
+<a name="506"><span class="lineNum">     506 </span>            : };</a>
+<a name="507"><span class="lineNum">     507 </span>            : </a>
+<a name="508"><span class="lineNum">     508 </span>            : //! Static function signature (1 argument).</a>
+<a name="509"><span class="lineNum">     509 </span>            : template&lt;typename RET, typename A0&gt;</a>
+<a name="510"><span class="lineNum">     510 </span>            : class FuncSignature1 : public FuncSignature {</a>
+<a name="511"><span class="lineNum">     511 </span>            : public:</a>
+<a name="512"><span class="lineNum">     512 </span><span class="lineCov">       1518 :   ASMJIT_INLINE FuncSignature1(uint32_t ccId = CallConv::kIdHost) noexcept {</span></a>
+<a name="513"><span class="lineNum">     513 </span>            :     static const uint8_t args[] = { T(A0) };</a>
+<a name="514"><span class="lineNum">     514 </span>            :     init(ccId, T(RET), args, ASMJIT_ARRAY_SIZE(args));</a>
+<a name="515"><span class="lineNum">     515 </span>            :   }</a>
+<a name="516"><span class="lineNum">     516 </span>            : };</a>
+<a name="517"><span class="lineNum">     517 </span>            : </a>
+<a name="518"><span class="lineNum">     518 </span>            : //! Static function signature (2 arguments).</a>
+<a name="519"><span class="lineNum">     519 </span>            : template&lt;typename RET, typename A0, typename A1&gt;</a>
+<a name="520"><span class="lineNum">     520 </span>            : class FuncSignature2 : public FuncSignature {</a>
+<a name="521"><span class="lineNum">     521 </span>            : public:</a>
+<a name="522"><span class="lineNum">     522 </span><span class="lineCov">        222 :   ASMJIT_INLINE FuncSignature2(uint32_t ccId = CallConv::kIdHost) noexcept {</span></a>
+<a name="523"><span class="lineNum">     523 </span>            :     static const uint8_t args[] = { T(A0), T(A1) };</a>
+<a name="524"><span class="lineNum">     524 </span>            :     init(ccId, T(RET), args, ASMJIT_ARRAY_SIZE(args));</a>
+<a name="525"><span class="lineNum">     525 </span>            :   }</a>
+<a name="526"><span class="lineNum">     526 </span>            : };</a>
+<a name="527"><span class="lineNum">     527 </span>            : </a>
+<a name="528"><span class="lineNum">     528 </span>            : //! Static function signature (3 arguments).</a>
+<a name="529"><span class="lineNum">     529 </span>            : template&lt;typename RET, typename A0, typename A1, typename A2&gt;</a>
+<a name="530"><span class="lineNum">     530 </span>            : class FuncSignature3 : public FuncSignature {</a>
+<a name="531"><span class="lineNum">     531 </span>            : public:</a>
+<a name="532"><span class="lineNum">     532 </span>            :   ASMJIT_INLINE FuncSignature3(uint32_t ccId = CallConv::kIdHost) noexcept {</a>
+<a name="533"><span class="lineNum">     533 </span>            :     static const uint8_t args[] = { T(A0), T(A1), T(A2) };</a>
+<a name="534"><span class="lineNum">     534 </span>            :     init(ccId, T(RET), args, ASMJIT_ARRAY_SIZE(args));</a>
+<a name="535"><span class="lineNum">     535 </span>            :   }</a>
+<a name="536"><span class="lineNum">     536 </span>            : };</a>
+<a name="537"><span class="lineNum">     537 </span>            : </a>
+<a name="538"><span class="lineNum">     538 </span>            : //! Static function signature (4 arguments).</a>
+<a name="539"><span class="lineNum">     539 </span>            : template&lt;typename RET, typename A0, typename A1, typename A2, typename A3&gt;</a>
+<a name="540"><span class="lineNum">     540 </span>            : class FuncSignature4 : public FuncSignature {</a>
+<a name="541"><span class="lineNum">     541 </span>            : public:</a>
+<a name="542"><span class="lineNum">     542 </span>            :   ASMJIT_INLINE FuncSignature4(uint32_t ccId = CallConv::kIdHost) noexcept {</a>
+<a name="543"><span class="lineNum">     543 </span>            :     static const uint8_t args[] = { T(A0), T(A1), T(A2), T(A3) };</a>
+<a name="544"><span class="lineNum">     544 </span>            :     init(ccId, T(RET), args, ASMJIT_ARRAY_SIZE(args));</a>
+<a name="545"><span class="lineNum">     545 </span>            :   }</a>
+<a name="546"><span class="lineNum">     546 </span>            : };</a>
+<a name="547"><span class="lineNum">     547 </span>            : </a>
+<a name="548"><span class="lineNum">     548 </span>            : //! Static function signature (5 arguments).</a>
+<a name="549"><span class="lineNum">     549 </span>            : template&lt;typename RET, typename A0, typename A1, typename A2, typename A3, typename A4&gt;</a>
+<a name="550"><span class="lineNum">     550 </span>            : class FuncSignature5 : public FuncSignature {</a>
+<a name="551"><span class="lineNum">     551 </span>            : public:</a>
+<a name="552"><span class="lineNum">     552 </span>            :   ASMJIT_INLINE FuncSignature5(uint32_t ccId = CallConv::kIdHost) noexcept {</a>
+<a name="553"><span class="lineNum">     553 </span>            :     static const uint8_t args[] = { T(A0), T(A1), T(A2), T(A3), T(A4) };</a>
+<a name="554"><span class="lineNum">     554 </span>            :     init(ccId, T(RET), args, ASMJIT_ARRAY_SIZE(args));</a>
+<a name="555"><span class="lineNum">     555 </span>            :   }</a>
+<a name="556"><span class="lineNum">     556 </span>            : };</a>
+<a name="557"><span class="lineNum">     557 </span>            : </a>
+<a name="558"><span class="lineNum">     558 </span>            : //! Static function signature (6 arguments).</a>
+<a name="559"><span class="lineNum">     559 </span>            : template&lt;typename RET, typename A0, typename A1, typename A2, typename A3, typename A4, typename A5&gt;</a>
+<a name="560"><span class="lineNum">     560 </span>            : class FuncSignature6 : public FuncSignature {</a>
+<a name="561"><span class="lineNum">     561 </span>            : public:</a>
+<a name="562"><span class="lineNum">     562 </span>            :   ASMJIT_INLINE FuncSignature6(uint32_t ccId = CallConv::kIdHost) noexcept {</a>
+<a name="563"><span class="lineNum">     563 </span>            :     static const uint8_t args[] = { T(A0), T(A1), T(A2), T(A3), T(A4), T(A5) };</a>
+<a name="564"><span class="lineNum">     564 </span>            :     init(ccId, T(RET), args, ASMJIT_ARRAY_SIZE(args));</a>
+<a name="565"><span class="lineNum">     565 </span>            :   }</a>
+<a name="566"><span class="lineNum">     566 </span>            : };</a>
+<a name="567"><span class="lineNum">     567 </span>            : </a>
+<a name="568"><span class="lineNum">     568 </span>            : //! Static function signature (7 arguments).</a>
+<a name="569"><span class="lineNum">     569 </span>            : template&lt;typename RET, typename A0, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6&gt;</a>
+<a name="570"><span class="lineNum">     570 </span>            : class FuncSignature7 : public FuncSignature {</a>
+<a name="571"><span class="lineNum">     571 </span>            : public:</a>
+<a name="572"><span class="lineNum">     572 </span>            :   ASMJIT_INLINE FuncSignature7(uint32_t ccId = CallConv::kIdHost) noexcept {</a>
+<a name="573"><span class="lineNum">     573 </span>            :     static const uint8_t args[] = { T(A0), T(A1), T(A2), T(A3), T(A4), T(A5), T(A6) };</a>
+<a name="574"><span class="lineNum">     574 </span>            :     init(ccId, T(RET), args, ASMJIT_ARRAY_SIZE(args));</a>
+<a name="575"><span class="lineNum">     575 </span>            :   }</a>
+<a name="576"><span class="lineNum">     576 </span>            : };</a>
+<a name="577"><span class="lineNum">     577 </span>            : </a>
+<a name="578"><span class="lineNum">     578 </span>            : //! Static function signature (8 arguments).</a>
+<a name="579"><span class="lineNum">     579 </span>            : template&lt;typename RET, typename A0, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7&gt;</a>
+<a name="580"><span class="lineNum">     580 </span>            : class FuncSignature8 : public FuncSignature {</a>
+<a name="581"><span class="lineNum">     581 </span>            : public:</a>
+<a name="582"><span class="lineNum">     582 </span>            :   ASMJIT_INLINE FuncSignature8(uint32_t ccId = CallConv::kIdHost) noexcept {</a>
+<a name="583"><span class="lineNum">     583 </span>            :     static const uint8_t args[] = { T(A0), T(A1), T(A2), T(A3), T(A4), T(A5), T(A6), T(A7) };</a>
+<a name="584"><span class="lineNum">     584 </span>            :     init(ccId, T(RET), args, ASMJIT_ARRAY_SIZE(args));</a>
+<a name="585"><span class="lineNum">     585 </span>            :   }</a>
+<a name="586"><span class="lineNum">     586 </span>            : };</a>
+<a name="587"><span class="lineNum">     587 </span>            : </a>
+<a name="588"><span class="lineNum">     588 </span>            : //! Static function signature (9 arguments).</a>
+<a name="589"><span class="lineNum">     589 </span>            : template&lt;typename RET, typename A0, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7, typename A8&gt;</a>
+<a name="590"><span class="lineNum">     590 </span>            : class FuncSignature9 : public FuncSignature {</a>
+<a name="591"><span class="lineNum">     591 </span>            : public:</a>
+<a name="592"><span class="lineNum">     592 </span>            :   ASMJIT_INLINE FuncSignature9(uint32_t ccId = CallConv::kIdHost) noexcept {</a>
+<a name="593"><span class="lineNum">     593 </span>            :     static const uint8_t args[] = { T(A0), T(A1), T(A2), T(A3), T(A4), T(A5), T(A6), T(A7), T(A8) };</a>
+<a name="594"><span class="lineNum">     594 </span>            :     init(ccId, T(RET), args, ASMJIT_ARRAY_SIZE(args));</a>
+<a name="595"><span class="lineNum">     595 </span>            :   }</a>
+<a name="596"><span class="lineNum">     596 </span>            : };</a>
+<a name="597"><span class="lineNum">     597 </span>            : </a>
+<a name="598"><span class="lineNum">     598 </span>            : //! Static function signature (10 arguments).</a>
+<a name="599"><span class="lineNum">     599 </span>            : template&lt;typename RET, typename A0, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7, typename A8, typename A9&gt;</a>
+<a name="600"><span class="lineNum">     600 </span>            : class FuncSignature10 : public FuncSignature {</a>
+<a name="601"><span class="lineNum">     601 </span>            : public:</a>
+<a name="602"><span class="lineNum">     602 </span>            :   ASMJIT_INLINE FuncSignature10(uint32_t ccId = CallConv::kIdHost) noexcept {</a>
+<a name="603"><span class="lineNum">     603 </span>            :     static const uint8_t args[] = { T(A0), T(A1), T(A2), T(A3), T(A4), T(A5), T(A6), T(A7), T(A8), T(A9) };</a>
+<a name="604"><span class="lineNum">     604 </span>            :     init(ccId, T(RET), args, ASMJIT_ARRAY_SIZE(args));</a>
+<a name="605"><span class="lineNum">     605 </span>            :   }</a>
+<a name="606"><span class="lineNum">     606 </span>            : };</a>
+<a name="607"><span class="lineNum">     607 </span>            : </a>
+<a name="608"><span class="lineNum">     608 </span>            : #if ASMJIT_CC_HAS_VARIADIC_TEMPLATES</a>
+<a name="609"><span class="lineNum">     609 </span>            : //! Static function signature (variadic).</a>
+<a name="610"><span class="lineNum">     610 </span>            : template&lt;typename RET, typename... ARGS&gt;</a>
+<a name="611"><span class="lineNum">     611 </span>            : class FuncSignatureT : public FuncSignature {</a>
+<a name="612"><span class="lineNum">     612 </span>            : public:</a>
+<a name="613"><span class="lineNum">     613 </span>            :   ASMJIT_INLINE FuncSignatureT(uint32_t ccId = CallConv::kIdHost) noexcept {</a>
+<a name="614"><span class="lineNum">     614 </span>            :     static const uint8_t args[] = { (T(ARGS))... };</a>
+<a name="615"><span class="lineNum">     615 </span>            :     init(ccId, T(RET), args, ASMJIT_ARRAY_SIZE(args));</a>
+<a name="616"><span class="lineNum">     616 </span>            :   }</a>
+<a name="617"><span class="lineNum">     617 </span>            : };</a>
+<a name="618"><span class="lineNum">     618 </span>            : #endif // ASMJIT_CC_HAS_VARIADIC_TEMPLATES</a>
+<a name="619"><span class="lineNum">     619 </span>            : </a>
+<a name="620"><span class="lineNum">     620 </span>            : }</a>
+<a name="621"><span class="lineNum">     621 </span>            : #undef T</a>
+<a name="622"><span class="lineNum">     622 </span>            : </a>
+<a name="623"><span class="lineNum">     623 </span>            : // ============================================================================</a>
+<a name="624"><span class="lineNum">     624 </span>            : // [asmjit::FuncSignatureX]</a>
+<a name="625"><span class="lineNum">     625 </span>            : // ============================================================================</a>
+<a name="626"><span class="lineNum">     626 </span>            : </a>
+<a name="627"><span class="lineNum">     627 </span>            : //! Dynamic function signature.</a>
+<a name="628"><span class="lineNum">     628 </span>            : class FuncSignatureX : public FuncSignature {</a>
+<a name="629"><span class="lineNum">     629 </span>            : public:</a>
+<a name="630"><span class="lineNum">     630 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="631"><span class="lineNum">     631 </span>            :   // [Construction / Destruction]</a>
+<a name="632"><span class="lineNum">     632 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="633"><span class="lineNum">     633 </span>            : </a>
+<a name="634"><span class="lineNum">     634 </span>            :   ASMJIT_INLINE FuncSignatureX(uint32_t ccId = CallConv::kIdHost) noexcept {</a>
+<a name="635"><span class="lineNum">     635 </span>            :     init(ccId, TypeId::kVoid, _builderArgList, 0);</a>
+<a name="636"><span class="lineNum">     636 </span>            :   }</a>
+<a name="637"><span class="lineNum">     637 </span>            : </a>
+<a name="638"><span class="lineNum">     638 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="639"><span class="lineNum">     639 </span>            :   // [Accessors]</a>
+<a name="640"><span class="lineNum">     640 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="641"><span class="lineNum">     641 </span>            : </a>
+<a name="642"><span class="lineNum">     642 </span>            :   ASMJIT_INLINE void setCallConv(uint32_t ccId) noexcept {</a>
+<a name="643"><span class="lineNum">     643 </span>            :     ASMJIT_ASSERT(ccId &lt;= 0xFF);</a>
+<a name="644"><span class="lineNum">     644 </span>            :     _callConv = static_cast&lt;uint8_t&gt;(ccId);</a>
+<a name="645"><span class="lineNum">     645 </span>            :   }</a>
+<a name="646"><span class="lineNum">     646 </span>            : </a>
+<a name="647"><span class="lineNum">     647 </span>            :   //! Set the return type to `retType`.</a>
+<a name="648"><span class="lineNum">     648 </span>            :   ASMJIT_INLINE void setRet(uint32_t retType) noexcept { _ret = retType; }</a>
+<a name="649"><span class="lineNum">     649 </span>            :   //! Set the return type based on `T`.</a>
+<a name="650"><span class="lineNum">     650 </span>            :   template&lt;typename T&gt;</a>
+<a name="651"><span class="lineNum">     651 </span>            :   ASMJIT_INLINE void setRetT() noexcept { setRet(TypeIdOf&lt;T&gt;::kTypeId); }</a>
+<a name="652"><span class="lineNum">     652 </span>            : </a>
+<a name="653"><span class="lineNum">     653 </span>            :   //! Set the argument at index `i` to the `type`</a>
+<a name="654"><span class="lineNum">     654 </span>            :   ASMJIT_INLINE void setArg(uint32_t i, uint32_t type) noexcept {</a>
+<a name="655"><span class="lineNum">     655 </span>            :     ASMJIT_ASSERT(i &lt; _argCount);</a>
+<a name="656"><span class="lineNum">     656 </span>            :     _builderArgList[i] = type;</a>
+<a name="657"><span class="lineNum">     657 </span>            :   }</a>
+<a name="658"><span class="lineNum">     658 </span>            :   //! Set the argument at index `i` to the type based on `T`.</a>
+<a name="659"><span class="lineNum">     659 </span>            :   template&lt;typename T&gt;</a>
+<a name="660"><span class="lineNum">     660 </span>            :   ASMJIT_INLINE void setArgT(uint32_t i) noexcept { setArg(i, TypeIdOf&lt;T&gt;::kTypeId); }</a>
+<a name="661"><span class="lineNum">     661 </span>            : </a>
+<a name="662"><span class="lineNum">     662 </span>            :   //! Append an argument of `type` to the function prototype.</a>
+<a name="663"><span class="lineNum">     663 </span>            :   ASMJIT_INLINE void addArg(uint32_t type) noexcept {</a>
+<a name="664"><span class="lineNum">     664 </span>            :     ASMJIT_ASSERT(_argCount &lt; kFuncArgCount);</a>
+<a name="665"><span class="lineNum">     665 </span>            :     _builderArgList[_argCount++] = static_cast&lt;uint8_t&gt;(type);</a>
+<a name="666"><span class="lineNum">     666 </span>            :   }</a>
+<a name="667"><span class="lineNum">     667 </span>            :   //! Append an argument of type based on `T` to the function prototype.</a>
+<a name="668"><span class="lineNum">     668 </span>            :   template&lt;typename T&gt;</a>
+<a name="669"><span class="lineNum">     669 </span>            :   ASMJIT_INLINE void addArgT() noexcept { addArg(TypeIdOf&lt;T&gt;::kTypeId); }</a>
+<a name="670"><span class="lineNum">     670 </span>            : </a>
+<a name="671"><span class="lineNum">     671 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="672"><span class="lineNum">     672 </span>            :   // [Members]</a>
+<a name="673"><span class="lineNum">     673 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="674"><span class="lineNum">     674 </span>            : </a>
+<a name="675"><span class="lineNum">     675 </span>            :   uint8_t _builderArgList[kFuncArgCount];</a>
+<a name="676"><span class="lineNum">     676 </span>            : };</a>
+<a name="677"><span class="lineNum">     677 </span>            : </a>
+<a name="678"><span class="lineNum">     678 </span>            : // ============================================================================</a>
+<a name="679"><span class="lineNum">     679 </span>            : // [asmjit::FuncDetail]</a>
+<a name="680"><span class="lineNum">     680 </span>            : // ============================================================================</a>
+<a name="681"><span class="lineNum">     681 </span>            : </a>
+<a name="682"><span class="lineNum">     682 </span>            : //! Function detail - CallConv and expanded FuncSignature.</a>
+<a name="683"><span class="lineNum">     683 </span>            : //!</a>
+<a name="684"><span class="lineNum">     684 </span>            : //! Function details is architecture and OS dependent representation of function.</a>
+<a name="685"><span class="lineNum">     685 </span>            : //! It contains calling convention and expanded function signature so all</a>
+<a name="686"><span class="lineNum">     686 </span>            : //! arguments have assigned either register type &amp; id or stack address.</a>
+<a name="687"><span class="lineNum">     687 </span>            : class FuncDetail {</a>
+<a name="688"><span class="lineNum">     688 </span>            : public:</a>
+<a name="689"><span class="lineNum">     689 </span>            :   ASMJIT_ENUM(Limits) {</a>
+<a name="690"><span class="lineNum">     690 </span>            :     kMaxVRegKinds = Globals::kMaxVRegKinds</a>
+<a name="691"><span class="lineNum">     691 </span>            :   };</a>
+<a name="692"><span class="lineNum">     692 </span>            : </a>
+<a name="693"><span class="lineNum">     693 </span>            :   //! Argument or return value as defined by `FuncSignature`, but with register</a>
+<a name="694"><span class="lineNum">     694 </span>            :   //! or stack address (and other metadata) assigned.</a>
+<a name="695"><span class="lineNum">     695 </span>            :   struct Value {</a>
+<a name="696"><span class="lineNum">     696 </span>            :     ASMJIT_ENUM(Parts) {</a>
+<a name="697"><span class="lineNum">     697 </span>            :       kTypeIdShift      = 24,</a>
+<a name="698"><span class="lineNum">     698 </span>            :       kTypeIdMask       = 0xFF000000U,</a>
+<a name="699"><span class="lineNum">     699 </span>            : </a>
+<a name="700"><span class="lineNum">     700 </span>            :       kRegTypeShift     = 8,</a>
+<a name="701"><span class="lineNum">     701 </span>            :       kRegTypeMask      = 0x0000FF00U,</a>
+<a name="702"><span class="lineNum">     702 </span>            : </a>
+<a name="703"><span class="lineNum">     703 </span>            :       kRegIdShift       = 0,</a>
+<a name="704"><span class="lineNum">     704 </span>            :       kRegIdMask        = 0x000000FFU,</a>
+<a name="705"><span class="lineNum">     705 </span>            : </a>
+<a name="706"><span class="lineNum">     706 </span>            :       kStackOffsetShift = 0,</a>
+<a name="707"><span class="lineNum">     707 </span>            :       kStackOffsetMask  = 0x0000FFFFU,</a>
+<a name="708"><span class="lineNum">     708 </span>            : </a>
+<a name="709"><span class="lineNum">     709 </span>            :       kIsByReg          = 0x00010000U,</a>
+<a name="710"><span class="lineNum">     710 </span>            :       kIsByStack        = 0x00020000U,</a>
+<a name="711"><span class="lineNum">     711 </span>            :       kIsIndirect       = 0x00040000U</a>
+<a name="712"><span class="lineNum">     712 </span>            :     };</a>
+<a name="713"><span class="lineNum">     713 </span>            : </a>
+<a name="714"><span class="lineNum">     714 </span>            :     //! Get if this value is initialized (i.e. contains a valid data).</a>
+<a name="715"><span class="lineNum">     715 </span>            :     ASMJIT_INLINE bool isInitialized() const noexcept { return _value != 0; }</a>
+<a name="716"><span class="lineNum">     716 </span>            :     //! Initialize this in/out by a given `typeId`.</a>
+<a name="717"><span class="lineNum">     717 </span><span class="lineCov">       5706 :     ASMJIT_INLINE void initTypeId(uint32_t typeId) noexcept { _value = typeId &lt;&lt; kTypeIdShift; }</span></a>
+<a name="718"><span class="lineNum">     718 </span>            :     //! Initialize this in/out by a given `typeId`, `regType`, and `regId`.</a>
+<a name="719"><span class="lineNum">     719 </span>            :     ASMJIT_INLINE void initReg(uint32_t typeId, uint32_t regType, uint32_t regId) noexcept {</a>
+<a name="720"><span class="lineNum">     720 </span><span class="lineCov">       1542 :       _value = (typeId &lt;&lt; kTypeIdShift) | (regType &lt;&lt; kRegTypeShift) | (regId &lt;&lt; kRegIdShift) | kIsByReg;</span></a>
+<a name="721"><span class="lineNum">     721 </span><span class="lineNoCov">          0 :     }</span></a>
+<a name="722"><span class="lineNum">     722 </span>            :     //! Initialize this in/out by a given `typeId` and `offset`.</a>
+<a name="723"><span class="lineNum">     723 </span>            :     ASMJIT_INLINE void initStack(uint32_t typeId, uint32_t stackOffset) noexcept {</a>
+<a name="724"><span class="lineNum">     724 </span>            :       _value = (typeId &lt;&lt; kTypeIdShift) | (stackOffset &lt;&lt; kStackOffsetShift) | kIsByStack;</a>
+<a name="725"><span class="lineNum">     725 </span>            :     }</a>
+<a name="726"><span class="lineNum">     726 </span>            :     //! Reset the value to its uninitialized and unassigned state.</a>
+<a name="727"><span class="lineNum">     727 </span>            :     ASMJIT_INLINE void reset() noexcept { _value = 0; }</a>
+<a name="728"><span class="lineNum">     728 </span>            : </a>
+<a name="729"><span class="lineNum">     729 </span>            :     ASMJIT_INLINE void assignToReg(uint32_t regType, uint32_t regId) noexcept {</a>
+<a name="730"><span class="lineNum">     730 </span>            :       ASMJIT_ASSERT(!isAssigned());</a>
+<a name="731"><span class="lineNum">     731 </span><span class="lineCov">        420 :       _value |= (regType &lt;&lt; kRegTypeShift) | (regId &lt;&lt; kRegIdShift) | kIsByReg;</span></a>
+<a name="732"><span class="lineNum">     732 </span><span class="lineCov">       3744 :     }</span></a>
+<a name="733"><span class="lineNum">     733 </span>            : </a>
+<a name="734"><span class="lineNum">     734 </span>            :     ASMJIT_INLINE void assignToStack(int32_t offset) noexcept {</a>
+<a name="735"><span class="lineNum">     735 </span>            :       ASMJIT_ASSERT(!isAssigned());</a>
+<a name="736"><span class="lineNum">     736 </span><span class="lineNoCov">          0 :       _value |= (offset &lt;&lt; kStackOffsetShift) | kIsByStack;</span></a>
+<a name="737"><span class="lineNum">     737 </span>            :     }</a>
+<a name="738"><span class="lineNum">     738 </span>            : </a>
+<a name="739"><span class="lineNum">     739 </span>            :     //! Get if this argument is passed by register.</a>
+<a name="740"><span class="lineNum">     740 </span><span class="lineCov">       6762 :     ASMJIT_INLINE bool byReg() const noexcept { return (_value &amp; kIsByReg) != 0; }</span></a>
+<a name="741"><span class="lineNum">     741 </span>            :     //! Get if this argument is passed by stack.</a>
+<a name="742"><span class="lineNum">     742 </span><span class="lineNoCov">          0 :     ASMJIT_INLINE bool byStack() const noexcept { return (_value &amp; kIsByStack) != 0; }</span></a>
+<a name="743"><span class="lineNum">     743 </span>            :     //! Get if this argument is passed by register.</a>
+<a name="744"><span class="lineNum">     744 </span><span class="lineNoCov">          0 :     ASMJIT_INLINE bool isAssigned() const noexcept { return (_value &amp; (kIsByReg | kIsByStack)) != 0; }</span></a>
+<a name="745"><span class="lineNum">     745 </span>            :     //! Get if this argument is passed through a pointer (used by WIN64 to pass XMM|YMM|ZMM).</a>
+<a name="746"><span class="lineNum">     746 </span>            :     ASMJIT_INLINE bool isIndirect() const noexcept { return (_value &amp; kIsIndirect) != 0; }</a>
+<a name="747"><span class="lineNum">     747 </span>            : </a>
+<a name="748"><span class="lineNum">     748 </span>            :     //! Get virtual type of this argument or return value.</a>
+<a name="749"><span class="lineNum">     749 </span><span class="lineCov">       6126 :     ASMJIT_INLINE uint32_t getTypeId() const noexcept { return _value &gt;&gt; kTypeIdShift; }</span></a>
+<a name="750"><span class="lineNum">     750 </span>            :     //! Get a register type of the register used to pass the argument or return the value.</a>
+<a name="751"><span class="lineNum">     751 </span><span class="lineCov">       7026 :     ASMJIT_INLINE uint32_t getRegType() const noexcept { return (_value &amp; kRegTypeMask) &gt;&gt; kRegTypeShift; }</span></a>
+<a name="752"><span class="lineNum">     752 </span>            :     //! Get a physical id of the register used to pass the argument or return the value.</a>
+<a name="753"><span class="lineNum">     753 </span><span class="lineCov">       7446 :     ASMJIT_INLINE uint32_t getRegId() const noexcept { return (_value &amp; kRegIdMask) &gt;&gt; kRegIdShift; }</span></a>
+<a name="754"><span class="lineNum">     754 </span>            :     //! Get a stack offset of this argument (always positive).</a>
+<a name="755"><span class="lineNum">     755 </span><span class="lineNoCov">          0 :     ASMJIT_INLINE int32_t getStackOffset() const noexcept { return (_value &amp; kStackOffsetMask) &gt;&gt; kStackOffsetShift; }</span></a>
+<a name="756"><span class="lineNum">     756 </span>            : </a>
+<a name="757"><span class="lineNum">     757 </span>            :     uint32_t _value;</a>
+<a name="758"><span class="lineNum">     758 </span>            :   };</a>
+<a name="759"><span class="lineNum">     759 </span>            : </a>
+<a name="760"><span class="lineNum">     760 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="761"><span class="lineNum">     761 </span>            :   // [Construction / Destruction]</a>
+<a name="762"><span class="lineNum">     762 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="763"><span class="lineNum">     763 </span>            : </a>
+<a name="764"><span class="lineNum">     764 </span><span class="lineCov">       3744 :   ASMJIT_INLINE FuncDetail() noexcept { reset(); }</span></a>
+<a name="765"><span class="lineNum">     765 </span>            :   ASMJIT_INLINE FuncDetail(const FuncDetail&amp; other) noexcept {</a>
+<a name="766"><span class="lineNum">     766 </span>            :     ::memcpy(this, &amp;other, sizeof(*this));</a>
+<a name="767"><span class="lineNum">     767 </span>            :   }</a>
+<a name="768"><span class="lineNum">     768 </span>            : </a>
+<a name="769"><span class="lineNum">     769 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="770"><span class="lineNum">     770 </span>            :   // [Init / Reset]</a>
+<a name="771"><span class="lineNum">     771 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="772"><span class="lineNum">     772 </span>            : </a>
+<a name="773"><span class="lineNum">     773 </span>            :   //! Initialize this `FuncDetail` to the given signature.</a>
+<a name="774"><span class="lineNum">     774 </span>            :   ASMJIT_API Error init(const FuncSignature&amp; sign);</a>
+<a name="775"><span class="lineNum">     775 </span>            :   ASMJIT_INLINE void reset() noexcept { ::memset(this, 0, sizeof(*this)); }</a>
+<a name="776"><span class="lineNum">     776 </span>            : </a>
+<a name="777"><span class="lineNum">     777 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="778"><span class="lineNum">     778 </span>            :   // [Accessors - Calling Convention]</a>
+<a name="779"><span class="lineNum">     779 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="780"><span class="lineNum">     780 </span>            : </a>
+<a name="781"><span class="lineNum">     781 </span>            :   //! Get the function's calling convention, see `CallConv`.</a>
+<a name="782"><span class="lineNum">     782 </span>            :   ASMJIT_INLINE const CallConv&amp; getCallConv() const noexcept { return _callConv; }</a>
+<a name="783"><span class="lineNum">     783 </span>            : </a>
+<a name="784"><span class="lineNum">     784 </span>            :   //! Get CallConv flags, see \ref CallConv::Flags.</a>
+<a name="785"><span class="lineNum">     785 </span>            :   ASMJIT_INLINE uint32_t getFlags() const noexcept { return _callConv.getFlags(); }</a>
+<a name="786"><span class="lineNum">     786 </span>            :   //! Check if a CallConv `flag` is set, see \ref CallConv::Flags.</a>
+<a name="787"><span class="lineNum">     787 </span>            :   ASMJIT_INLINE bool hasFlag(uint32_t ccFlag) const noexcept { return _callConv.hasFlag(ccFlag); }</a>
+<a name="788"><span class="lineNum">     788 </span>            : </a>
+<a name="789"><span class="lineNum">     789 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="790"><span class="lineNum">     790 </span>            :   // [Accessors - Arguments and Return]</a>
+<a name="791"><span class="lineNum">     791 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="792"><span class="lineNum">     792 </span>            : </a>
+<a name="793"><span class="lineNum">     793 </span>            :   //! Get count of function return values.</a>
+<a name="794"><span class="lineNum">     794 </span><span class="lineCov">       3744 :   ASMJIT_INLINE uint32_t getRetCount() const noexcept { return _retCount; }</span></a>
+<a name="795"><span class="lineNum">     795 </span>            :   //! Get the number of function arguments.</a>
+<a name="796"><span class="lineNum">     796 </span><span class="lineCov">      13194 :   ASMJIT_INLINE uint32_t getArgCount() const noexcept { return _argCount; }</span></a>
+<a name="797"><span class="lineNum">     797 </span>            : </a>
+<a name="798"><span class="lineNum">     798 </span>            :   //! Get whether the function has a return value.</a>
+<a name="799"><span class="lineNum">     799 </span><span class="lineCov">       2004 :   ASMJIT_INLINE bool hasRet() const noexcept { return _retCount != 0; }</span></a>
+<a name="800"><span class="lineNum">     800 </span>            :   //! Get function return value.</a>
+<a name="801"><span class="lineNum">     801 </span>            :   ASMJIT_INLINE Value&amp; getRet(size_t index = 0) noexcept {</a>
+<a name="802"><span class="lineNum">     802 </span>            :     ASMJIT_ASSERT(index &lt; ASMJIT_ARRAY_SIZE(_rets));</a>
+<a name="803"><span class="lineNum">     803 </span>            :     return _rets[index];</a>
+<a name="804"><span class="lineNum">     804 </span>            :   }</a>
+<a name="805"><span class="lineNum">     805 </span>            :   //! Get function return value (const).</a>
+<a name="806"><span class="lineNum">     806 </span>            :   ASMJIT_INLINE const Value&amp; getRet(size_t index = 0) const noexcept {</a>
+<a name="807"><span class="lineNum">     807 </span>            :     ASMJIT_ASSERT(index &lt; ASMJIT_ARRAY_SIZE(_rets));</a>
+<a name="808"><span class="lineNum">     808 </span><span class="lineNoCov">          0 :     return _rets[index];</span></a>
+<a name="809"><span class="lineNum">     809 </span>            :   }</a>
+<a name="810"><span class="lineNum">     810 </span>            : </a>
+<a name="811"><span class="lineNum">     811 </span>            :   //! Get function arguments array.</a>
+<a name="812"><span class="lineNum">     812 </span>            :   ASMJIT_INLINE Value* getArgs() noexcept { return _args; }</a>
+<a name="813"><span class="lineNum">     813 </span>            :   //! Get function arguments array (const).</a>
+<a name="814"><span class="lineNum">     814 </span>            :   ASMJIT_INLINE const Value* getArgs() const noexcept { return _args; }</a>
+<a name="815"><span class="lineNum">     815 </span>            : </a>
+<a name="816"><span class="lineNum">     816 </span>            :   ASMJIT_INLINE bool hasArg(size_t index) const noexcept {</a>
+<a name="817"><span class="lineNum">     817 </span>            :     ASMJIT_ASSERT(index &lt; kFuncArgCountLoHi);</a>
+<a name="818"><span class="lineNum">     818 </span>            :     return _args[index].isInitialized();</a>
+<a name="819"><span class="lineNum">     819 </span>            :   }</a>
+<a name="820"><span class="lineNum">     820 </span>            : </a>
+<a name="821"><span class="lineNum">     821 </span>            :   //! Get function argument at index `index`.</a>
+<a name="822"><span class="lineNum">     822 </span>            :   ASMJIT_INLINE Value&amp; getArg(size_t index) noexcept {</a>
+<a name="823"><span class="lineNum">     823 </span>            :     ASMJIT_ASSERT(index &lt; kFuncArgCountLoHi);</a>
+<a name="824"><span class="lineNum">     824 </span>            :     return _args[index];</a>
+<a name="825"><span class="lineNum">     825 </span>            :   }</a>
+<a name="826"><span class="lineNum">     826 </span>            : </a>
+<a name="827"><span class="lineNum">     827 </span>            :   //! Get function argument at index `index`.</a>
+<a name="828"><span class="lineNum">     828 </span>            :   ASMJIT_INLINE const Value&amp; getArg(size_t index) const noexcept {</a>
+<a name="829"><span class="lineNum">     829 </span>            :     ASMJIT_ASSERT(index &lt; kFuncArgCountLoHi);</a>
+<a name="830"><span class="lineNum">     830 </span><span class="lineNoCov">          0 :     return _args[index];</span></a>
+<a name="831"><span class="lineNum">     831 </span>            :   }</a>
+<a name="832"><span class="lineNum">     832 </span>            : </a>
+<a name="833"><span class="lineNum">     833 </span>            :   ASMJIT_INLINE void resetArg(size_t index) noexcept {</a>
+<a name="834"><span class="lineNum">     834 </span>            :     ASMJIT_ASSERT(index &lt; kFuncArgCountLoHi);</a>
+<a name="835"><span class="lineNum">     835 </span>            :     _args[index].reset();</a>
+<a name="836"><span class="lineNum">     836 </span>            :   }</a>
+<a name="837"><span class="lineNum">     837 </span>            : </a>
+<a name="838"><span class="lineNum">     838 </span>            :   //! Get if the function passes one or more argument by stack.</a>
+<a name="839"><span class="lineNum">     839 </span>            :   ASMJIT_INLINE bool hasStackArgs() const noexcept { return _argStackSize != 0; }</a>
+<a name="840"><span class="lineNum">     840 </span>            :   //! Get stack size needed for function arguments passed on the stack.</a>
+<a name="841"><span class="lineNum">     841 </span><span class="lineNoCov">          0 :   ASMJIT_INLINE uint32_t getArgStackSize() const noexcept { return _argStackSize; }</span></a>
+<a name="842"><span class="lineNum">     842 </span>            : </a>
+<a name="843"><span class="lineNum">     843 </span>            :   ASMJIT_INLINE uint32_t getNaturalStackAlignment() const noexcept { return _callConv.getNaturalStackAlignment(); }</a>
+<a name="844"><span class="lineNum">     844 </span>            :   ASMJIT_INLINE uint32_t getSpillZoneSize() const noexcept { return _callConv.getSpillZoneSize(); }</a>
+<a name="845"><span class="lineNum">     845 </span>            :   ASMJIT_INLINE uint32_t getRedZoneSize() const noexcept { return _callConv.getRedZoneSize(); }</a>
+<a name="846"><span class="lineNum">     846 </span>            : </a>
+<a name="847"><span class="lineNum">     847 </span>            :   ASMJIT_INLINE uint32_t getPassedRegs(uint32_t kind) const noexcept { return _callConv.getPassedRegs(kind); }</a>
+<a name="848"><span class="lineNum">     848 </span>            :   ASMJIT_INLINE uint32_t getPreservedRegs(uint32_t kind) const noexcept { return _callConv.getPreservedRegs(kind); }</a>
+<a name="849"><span class="lineNum">     849 </span>            : </a>
+<a name="850"><span class="lineNum">     850 </span>            :   ASMJIT_INLINE uint32_t getUsedRegs(uint32_t kind) const noexcept {</a>
+<a name="851"><span class="lineNum">     851 </span>            :     ASMJIT_ASSERT(kind &lt; kMaxVRegKinds);</a>
+<a name="852"><span class="lineNum">     852 </span><span class="lineCov">       5484 :     return _usedRegs[kind];</span></a>
+<a name="853"><span class="lineNum">     853 </span>            :   }</a>
+<a name="854"><span class="lineNum">     854 </span>            : </a>
+<a name="855"><span class="lineNum">     855 </span>            :   ASMJIT_INLINE void addUsedRegs(uint32_t kind, uint32_t regs) noexcept {</a>
+<a name="856"><span class="lineNum">     856 </span>            :     ASMJIT_ASSERT(kind &lt; kMaxVRegKinds);</a>
+<a name="857"><span class="lineNum">     857 </span><span class="lineCov">       1962 :     _usedRegs[kind] |= regs;</span></a>
+<a name="858"><span class="lineNum">     858 </span><span class="lineNoCov">          0 :   }</span></a>
+<a name="859"><span class="lineNum">     859 </span>            : </a>
+<a name="860"><span class="lineNum">     860 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="861"><span class="lineNum">     861 </span>            :   // [Members]</a>
+<a name="862"><span class="lineNum">     862 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="863"><span class="lineNum">     863 </span>            : </a>
+<a name="864"><span class="lineNum">     864 </span>            :   CallConv _callConv;                    //!&lt; Calling convention.</a>
+<a name="865"><span class="lineNum">     865 </span>            :   uint8_t _argCount;                     //!&lt; Number of function arguments.</a>
+<a name="866"><span class="lineNum">     866 </span>            :   uint8_t _retCount;                     //!&lt; Number of function return values.</a>
+<a name="867"><span class="lineNum">     867 </span>            :   uint32_t _usedRegs[kMaxVRegKinds];     //!&lt; Registers that contains arguments (signature dependent).</a>
+<a name="868"><span class="lineNum">     868 </span>            :   uint32_t _argStackSize;                //!&lt; Size of arguments passed by stack.</a>
+<a name="869"><span class="lineNum">     869 </span>            :   Value _rets[2];                        //!&lt; Function return values.</a>
+<a name="870"><span class="lineNum">     870 </span>            :   Value _args[kFuncArgCountLoHi];        //!&lt; Function arguments.</a>
+<a name="871"><span class="lineNum">     871 </span>            : };</a>
+<a name="872"><span class="lineNum">     872 </span>            : </a>
+<a name="873"><span class="lineNum">     873 </span>            : // ============================================================================</a>
+<a name="874"><span class="lineNum">     874 </span>            : // [asmjit::FuncFrameInfo]</a>
+<a name="875"><span class="lineNum">     875 </span>            : // ============================================================================</a>
+<a name="876"><span class="lineNum">     876 </span>            : </a>
+<a name="877"><span class="lineNum">     877 </span>            : //! Function-frame information.</a>
+<a name="878"><span class="lineNum">     878 </span>            : //!</a>
+<a name="879"><span class="lineNum">     879 </span>            : //! This structure can be used to create a function frame in a cross-platform</a>
+<a name="880"><span class="lineNum">     880 </span>            : //! way. It contains information about the function's stack to be used and</a>
+<a name="881"><span class="lineNum">     881 </span>            : //! registers to be saved and restored. Based on this information in can</a>
+<a name="882"><span class="lineNum">     882 </span>            : //! calculate the optimal layout of a function as \ref FuncFrameLayout.</a>
+<a name="883"><span class="lineNum">     883 </span>            : struct FuncFrameInfo {</a>
+<a name="884"><span class="lineNum">     884 </span>            :   ASMJIT_ENUM(Limits) {</a>
+<a name="885"><span class="lineNum">     885 </span>            :     kMaxVRegKinds = Globals::kMaxVRegKinds</a>
+<a name="886"><span class="lineNum">     886 </span>            :   };</a>
+<a name="887"><span class="lineNum">     887 </span>            : </a>
+<a name="888"><span class="lineNum">     888 </span>            :   //! Attributes.</a>
+<a name="889"><span class="lineNum">     889 </span>            :   //!</a>
+<a name="890"><span class="lineNum">     890 </span>            :   //! Attributes are designed in a way that all are initially false, and user</a>
+<a name="891"><span class="lineNum">     891 </span>            :   //! or function-frame finalizer sets them when necessary. Architecture-specific</a>
+<a name="892"><span class="lineNum">     892 </span>            :   //! attributes are prefixed with the architecture name.</a>
+<a name="893"><span class="lineNum">     893 </span>            :   ASMJIT_ENUM(Attributes) {</a>
+<a name="894"><span class="lineNum">     894 </span>            :     kAttrPreserveFP       = 0x00000001U, //!&lt; Preserve frame pointer (EBP|RBP).</a>
+<a name="895"><span class="lineNum">     895 </span>            :     kAttrCompactPE        = 0x00000002U, //!&lt; Use smaller, but possibly slower prolog/epilog.</a>
+<a name="896"><span class="lineNum">     896 </span>            :     kAttrHasCalls         = 0x00000004U, //!&lt; Function calls other functions (is not leaf).</a>
+<a name="897"><span class="lineNum">     897 </span>            : </a>
+<a name="898"><span class="lineNum">     898 </span>            :     kX86AttrAlignedVecSR  = 0x00010000U, //!&lt; Use aligned save/restore of VEC regs.</a>
+<a name="899"><span class="lineNum">     899 </span>            :     kX86AttrMmxCleanup    = 0x00020000U, //!&lt; Emit EMMS instruction in epilog (X86).</a>
+<a name="900"><span class="lineNum">     900 </span>            :     kX86AttrAvxCleanup    = 0x00040000U, //!&lt; Emit VZEROUPPER instruction in epilog (X86).</a>
+<a name="901"><span class="lineNum">     901 </span>            :     kX86AttrAvxEnabled    = 0x00080000U  //!&lt; Use AVX instead of SSE for all operations (X86).</a>
+<a name="902"><span class="lineNum">     902 </span>            :   };</a>
+<a name="903"><span class="lineNum">     903 </span>            : </a>
+<a name="904"><span class="lineNum">     904 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="905"><span class="lineNum">     905 </span>            :   // [Construction / Destruction]</a>
+<a name="906"><span class="lineNum">     906 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="907"><span class="lineNum">     907 </span>            : </a>
+<a name="908"><span class="lineNum">     908 </span><span class="lineCov">       2004 :   ASMJIT_INLINE FuncFrameInfo() noexcept { reset(); }</span></a>
+<a name="909"><span class="lineNum">     909 </span>            : </a>
+<a name="910"><span class="lineNum">     910 </span>            :   ASMJIT_INLINE FuncFrameInfo(const FuncFrameInfo&amp; other) noexcept {</a>
+<a name="911"><span class="lineNum">     911 </span>            :     ::memcpy(this, &amp;other, sizeof(*this));</a>
+<a name="912"><span class="lineNum">     912 </span>            :   }</a>
+<a name="913"><span class="lineNum">     913 </span>            : </a>
+<a name="914"><span class="lineNum">     914 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="915"><span class="lineNum">     915 </span>            :   // [Init / Reset]</a>
+<a name="916"><span class="lineNum">     916 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="917"><span class="lineNum">     917 </span>            : </a>
+<a name="918"><span class="lineNum">     918 </span>            :   ASMJIT_INLINE void reset() noexcept {</a>
+<a name="919"><span class="lineNum">     919 </span>            :     ::memset(this, 0, sizeof(*this));</a>
+<a name="920"><span class="lineNum">     920 </span><span class="lineCov">       2004 :     _stackArgsRegId = Globals::kInvalidRegId;</span></a>
+<a name="921"><span class="lineNum">     921 </span>            :   }</a>
+<a name="922"><span class="lineNum">     922 </span>            : </a>
+<a name="923"><span class="lineNum">     923 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="924"><span class="lineNum">     924 </span>            :   // [Accessors]</a>
+<a name="925"><span class="lineNum">     925 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="926"><span class="lineNum">     926 </span>            : </a>
+<a name="927"><span class="lineNum">     927 </span>            :   //! Get frame-info flags, see \ref Attributes.</a>
+<a name="928"><span class="lineNum">     928 </span>            :   ASMJIT_INLINE uint32_t getAttributes() const noexcept { return _attributes; }</a>
+<a name="929"><span class="lineNum">     929 </span>            :   //! Check if a frame-info `flag` is set, see \ref Attributes.</a>
+<a name="930"><span class="lineNum">     930 </span>            :   ASMJIT_INLINE bool hasAttribute(uint32_t attr) const noexcept { return (_attributes &amp; attr) != 0; }</a>
+<a name="931"><span class="lineNum">     931 </span>            :   //! Add `flags` to the frame-info, see \ref Attributes.</a>
+<a name="932"><span class="lineNum">     932 </span>            :   ASMJIT_INLINE void addAttributes(uint32_t attrs) noexcept { _attributes |= attrs; }</a>
+<a name="933"><span class="lineNum">     933 </span>            :   //! Clear `flags` from the frame-info, see \ref Attributes.</a>
+<a name="934"><span class="lineNum">     934 </span>            :   ASMJIT_INLINE void clearAttributes(uint32_t attrs) noexcept { _attributes &amp;= ~attrs; }</a>
+<a name="935"><span class="lineNum">     935 </span>            : </a>
+<a name="936"><span class="lineNum">     936 </span>            :   //! Get if the function preserves frame pointer (EBP|ESP on X86).</a>
+<a name="937"><span class="lineNum">     937 </span><span class="lineCov">       6012 :   ASMJIT_INLINE bool hasPreservedFP() const noexcept { return (_attributes &amp; kAttrPreserveFP) != 0; }</span></a>
+<a name="938"><span class="lineNum">     938 </span>            :   //! Enable preserved frame pointer.</a>
+<a name="939"><span class="lineNum">     939 </span>            :   ASMJIT_INLINE void enablePreservedFP() noexcept { _attributes |= kAttrPreserveFP; }</a>
+<a name="940"><span class="lineNum">     940 </span>            :   //! Disable preserved frame pointer.</a>
+<a name="941"><span class="lineNum">     941 </span>            :   ASMJIT_INLINE void disablePreservedFP() noexcept { _attributes &amp;= ~kAttrPreserveFP; }</a>
+<a name="942"><span class="lineNum">     942 </span>            : </a>
+<a name="943"><span class="lineNum">     943 </span>            :   //! Get if the function prolog and epilog should be compacted (as small as possible).</a>
+<a name="944"><span class="lineNum">     944 </span>            :   ASMJIT_INLINE bool hasCompactPE() const noexcept { return (_attributes &amp; kAttrCompactPE) != 0; }</a>
+<a name="945"><span class="lineNum">     945 </span>            :   //! Enable compact prolog/epilog.</a>
+<a name="946"><span class="lineNum">     946 </span>            :   ASMJIT_INLINE void enableCompactPE() noexcept { _attributes |= kAttrCompactPE; }</a>
+<a name="947"><span class="lineNum">     947 </span>            :   //! Disable compact prolog/epilog.</a>
+<a name="948"><span class="lineNum">     948 </span>            :   ASMJIT_INLINE void disableCompactPE() noexcept { _attributes &amp;= ~kAttrCompactPE; }</a>
+<a name="949"><span class="lineNum">     949 </span>            : </a>
+<a name="950"><span class="lineNum">     950 </span>            :   //! Get if the function calls other functions.</a>
+<a name="951"><span class="lineNum">     951 </span><span class="lineCov">       1016 :   ASMJIT_INLINE bool hasCalls() const noexcept { return (_attributes &amp; kAttrHasCalls) != 0; }</span></a>
+<a name="952"><span class="lineNum">     952 </span>            :   //! Set `kFlagHasCalls` to true.</a>
+<a name="953"><span class="lineNum">     953 </span><span class="lineCov">       1740 :   ASMJIT_INLINE void enableCalls() noexcept { _attributes |= kAttrHasCalls; }</span></a>
+<a name="954"><span class="lineNum">     954 </span>            :   //! Set `kFlagHasCalls` to false.</a>
+<a name="955"><span class="lineNum">     955 </span>            :   ASMJIT_INLINE void disableCalls() noexcept { _attributes &amp;= ~kAttrHasCalls; }</a>
+<a name="956"><span class="lineNum">     956 </span>            : </a>
+<a name="957"><span class="lineNum">     957 </span>            :   //! Get if the function contains MMX cleanup - 'emms' instruction in epilog.</a>
+<a name="958"><span class="lineNum">     958 </span><span class="lineCov">       2004 :   ASMJIT_INLINE bool hasMmxCleanup() const noexcept { return (_attributes &amp; kX86AttrMmxCleanup) != 0; }</span></a>
+<a name="959"><span class="lineNum">     959 </span>            :   //! Enable MMX cleanup.</a>
+<a name="960"><span class="lineNum">     960 </span>            :   ASMJIT_INLINE void enableMmxCleanup() noexcept { _attributes |= kX86AttrMmxCleanup; }</a>
+<a name="961"><span class="lineNum">     961 </span>            :   //! Disable MMX cleanup.</a>
+<a name="962"><span class="lineNum">     962 </span>            :   ASMJIT_INLINE void disableMmxCleanup() noexcept { _attributes &amp;= ~kX86AttrMmxCleanup; }</a>
+<a name="963"><span class="lineNum">     963 </span>            : </a>
+<a name="964"><span class="lineNum">     964 </span>            :   //! Get if the function contains AVX cleanup - 'vzeroupper' instruction in epilog.</a>
+<a name="965"><span class="lineNum">     965 </span><span class="lineCov">       2004 :   ASMJIT_INLINE bool hasAvxCleanup() const noexcept { return (_attributes &amp; kX86AttrAvxCleanup) != 0; }</span></a>
+<a name="966"><span class="lineNum">     966 </span>            :   //! Enable AVX cleanup.</a>
+<a name="967"><span class="lineNum">     967 </span>            :   ASMJIT_INLINE void enableAvxCleanup() noexcept { _attributes |= kX86AttrAvxCleanup; }</a>
+<a name="968"><span class="lineNum">     968 </span>            :   //! Disable AVX cleanup.</a>
+<a name="969"><span class="lineNum">     969 </span>            :   ASMJIT_INLINE void disableAvxCleanup() noexcept { _attributes &amp;= ~kX86AttrAvxCleanup; }</a>
+<a name="970"><span class="lineNum">     970 </span>            : </a>
+<a name="971"><span class="lineNum">     971 </span>            :   //! Get if the function contains AVX cleanup - 'vzeroupper' instruction in epilog.</a>
+<a name="972"><span class="lineNum">     972 </span><span class="lineCov">       2004 :   ASMJIT_INLINE bool isAvxEnabled() const noexcept { return (_attributes &amp; kX86AttrAvxEnabled) != 0; }</span></a>
+<a name="973"><span class="lineNum">     973 </span>            :   //! Enable AVX cleanup.</a>
+<a name="974"><span class="lineNum">     974 </span>            :   ASMJIT_INLINE void enableAvx() noexcept { _attributes |= kX86AttrAvxEnabled; }</a>
+<a name="975"><span class="lineNum">     975 </span>            :   //! Disable AVX cleanup.</a>
+<a name="976"><span class="lineNum">     976 </span>            :   ASMJIT_INLINE void disableAvx() noexcept { _attributes &amp;= ~kX86AttrAvxEnabled; }</a>
+<a name="977"><span class="lineNum">     977 </span>            : </a>
+<a name="978"><span class="lineNum">     978 </span>            :   //! Get which registers (by `kind`) are saved/restored in prolog/epilog, respectively.</a>
+<a name="979"><span class="lineNum">     979 </span>            :   ASMJIT_INLINE uint32_t getDirtyRegs(uint32_t kind) const noexcept {</a>
+<a name="980"><span class="lineNum">     980 </span>            :     ASMJIT_ASSERT(kind &lt; kMaxVRegKinds);</a>
+<a name="981"><span class="lineNum">     981 </span><span class="lineCov">       8016 :     return _dirtyRegs[kind];</span></a>
+<a name="982"><span class="lineNum">     982 </span>            :   }</a>
+<a name="983"><span class="lineNum">     983 </span>            : </a>
+<a name="984"><span class="lineNum">     984 </span>            :   //! Set which registers (by `kind`) are saved/restored in prolog/epilog, respectively.</a>
+<a name="985"><span class="lineNum">     985 </span>            :   ASMJIT_INLINE void setDirtyRegs(uint32_t kind, uint32_t regs) noexcept {</a>
+<a name="986"><span class="lineNum">     986 </span>            :     ASMJIT_ASSERT(kind &lt; kMaxVRegKinds);</a>
+<a name="987"><span class="lineNum">     987 </span><span class="lineCov">       2004 :     _dirtyRegs[kind] = regs;</span></a>
+<a name="988"><span class="lineNum">     988 </span>            :   }</a>
+<a name="989"><span class="lineNum">     989 </span>            : </a>
+<a name="990"><span class="lineNum">     990 </span>            :   //! Add registers (by `kind`) to saved/restored registers.</a>
+<a name="991"><span class="lineNum">     991 </span>            :   ASMJIT_INLINE void addDirtyRegs(uint32_t kind, uint32_t regs) noexcept {</a>
+<a name="992"><span class="lineNum">     992 </span>            :     ASMJIT_ASSERT(kind &lt; kMaxVRegKinds);</a>
+<a name="993"><span class="lineNum">     993 </span><span class="lineNoCov">          0 :     _dirtyRegs[kind] |= regs;</span></a>
+<a name="994"><span class="lineNum">     994 </span><span class="lineNoCov">          0 :   }</span></a>
+<a name="995"><span class="lineNum">     995 </span>            : </a>
+<a name="996"><span class="lineNum">     996 </span>            :   ASMJIT_INLINE void setAllDirty() noexcept {</a>
+<a name="997"><span class="lineNum">     997 </span>            :     _dirtyRegs[0] = 0xFFFFFFFFU;</a>
+<a name="998"><span class="lineNum">     998 </span>            :     _dirtyRegs[1] = 0xFFFFFFFFU;</a>
+<a name="999"><span class="lineNum">     999 </span>            :     _dirtyRegs[2] = 0xFFFFFFFFU;</a>
+<a name="1000"><span class="lineNum">    1000 </span>            :     _dirtyRegs[3] = 0xFFFFFFFFU;</a>
+<a name="1001"><span class="lineNum">    1001 </span>            :   }</a>
+<a name="1002"><span class="lineNum">    1002 </span>            : </a>
+<a name="1003"><span class="lineNum">    1003 </span>            :   ASMJIT_INLINE void setAllDirty(uint32_t kind) noexcept {</a>
+<a name="1004"><span class="lineNum">    1004 </span>            :     ASMJIT_ASSERT(kind &lt; kMaxVRegKinds);</a>
+<a name="1005"><span class="lineNum">    1005 </span>            :     _dirtyRegs[kind] = 0xFFFFFFFFU;</a>
+<a name="1006"><span class="lineNum">    1006 </span>            :   }</a>
+<a name="1007"><span class="lineNum">    1007 </span>            : </a>
+<a name="1008"><span class="lineNum">    1008 </span>            :   //! Get stack-frame size used by the function.</a>
+<a name="1009"><span class="lineNum">    1009 </span>            :   ASMJIT_INLINE uint32_t getStackFrameSize() const noexcept { return _stackFrameSize; }</a>
+<a name="1010"><span class="lineNum">    1010 </span>            :   //! Get call-frame size used by the function.</a>
+<a name="1011"><span class="lineNum">    1011 </span>            :   ASMJIT_INLINE uint32_t getCallFrameSize() const noexcept { return _callFrameSize; }</a>
+<a name="1012"><span class="lineNum">    1012 </span>            : </a>
+<a name="1013"><span class="lineNum">    1013 </span>            :   //! Get minimum stack-frame alignment required by the function.</a>
+<a name="1014"><span class="lineNum">    1014 </span><span class="lineCov">       2004 :   ASMJIT_INLINE uint32_t getStackFrameAlignment() const noexcept { return _stackFrameAlignment; }</span></a>
+<a name="1015"><span class="lineNum">    1015 </span>            :   //! Get minimum call-frame alignment required by the function.</a>
+<a name="1016"><span class="lineNum">    1016 </span><span class="lineCov">       2004 :   ASMJIT_INLINE uint32_t getCallFrameAlignment() const noexcept { return _callFrameAlignment; }</span></a>
+<a name="1017"><span class="lineNum">    1017 </span>            : </a>
+<a name="1018"><span class="lineNum">    1018 </span><span class="lineCov">       2004 :   ASMJIT_INLINE void setStackFrameSize(uint32_t size) noexcept { _stackFrameSize = size; }</span></a>
+<a name="1019"><span class="lineNum">    1019 </span>            :   ASMJIT_INLINE void setCallFrameSize(uint32_t size) noexcept { _callFrameSize = size; }</a>
+<a name="1020"><span class="lineNum">    1020 </span>            : </a>
+<a name="1021"><span class="lineNum">    1021 </span>            :   ASMJIT_INLINE void setStackFrameAlignment(uint32_t value) noexcept {</a>
+<a name="1022"><span class="lineNum">    1022 </span>            :     ASMJIT_ASSERT(value &lt; 256);</a>
+<a name="1023"><span class="lineNum">    1023 </span><span class="lineCov">       2004 :     _stackFrameAlignment = static_cast&lt;uint8_t&gt;(value);</span></a>
+<a name="1024"><span class="lineNum">    1024 </span>            :   }</a>
+<a name="1025"><span class="lineNum">    1025 </span>            : </a>
+<a name="1026"><span class="lineNum">    1026 </span>            :   ASMJIT_INLINE void setCallFrameAlignment(uint32_t value) noexcept {</a>
+<a name="1027"><span class="lineNum">    1027 </span>            :     ASMJIT_ASSERT(value &lt; 256);</a>
+<a name="1028"><span class="lineNum">    1028 </span>            :     _callFrameAlignment = static_cast&lt;uint8_t&gt;(value);</a>
+<a name="1029"><span class="lineNum">    1029 </span>            :   }</a>
+<a name="1030"><span class="lineNum">    1030 </span>            : </a>
+<a name="1031"><span class="lineNum">    1031 </span>            :   ASMJIT_INLINE void mergeStackFrameSize(uint32_t size) noexcept { _stackFrameSize = std::max&lt;uint32_t&gt;(_stackFrameSize, size); }</a>
+<a name="1032"><span class="lineNum">    1032 </span><span class="lineCov">       1740 :   ASMJIT_INLINE void mergeCallFrameSize(uint32_t size) noexcept { _callFrameSize = std::max&lt;uint32_t&gt;(_callFrameSize, size); }</span></a>
+<a name="1033"><span class="lineNum">    1033 </span>            : </a>
+<a name="1034"><span class="lineNum">    1034 </span>            :   ASMJIT_INLINE void mergeStackFrameAlignment(uint32_t value) noexcept {</a>
+<a name="1035"><span class="lineNum">    1035 </span>            :     ASMJIT_ASSERT(value &lt; 256);</a>
+<a name="1036"><span class="lineNum">    1036 </span>            :     _stackFrameAlignment = static_cast&lt;uint8_t&gt;(std::max&lt;uint32_t&gt;(_stackFrameAlignment, value));</a>
+<a name="1037"><span class="lineNum">    1037 </span>            :   }</a>
+<a name="1038"><span class="lineNum">    1038 </span>            : </a>
+<a name="1039"><span class="lineNum">    1039 </span>            :   ASMJIT_INLINE void mergeCallFrameAlignment(uint32_t value) noexcept {</a>
+<a name="1040"><span class="lineNum">    1040 </span>            :     ASMJIT_ASSERT(value &lt; 256);</a>
+<a name="1041"><span class="lineNum">    1041 </span>            :     _callFrameAlignment = static_cast&lt;uint8_t&gt;(std::max&lt;uint32_t&gt;(_callFrameAlignment, value));</a>
+<a name="1042"><span class="lineNum">    1042 </span>            :   }</a>
+<a name="1043"><span class="lineNum">    1043 </span>            : </a>
+<a name="1044"><span class="lineNum">    1044 </span>            :   ASMJIT_INLINE bool hasStackArgsRegId() const noexcept {</a>
+<a name="1045"><span class="lineNum">    1045 </span>            :     return _stackArgsRegId != Globals::kInvalidRegId;</a>
+<a name="1046"><span class="lineNum">    1046 </span>            :   }</a>
+<a name="1047"><span class="lineNum">    1047 </span><span class="lineCov">       2004 :   ASMJIT_INLINE uint32_t getStackArgsRegId() const noexcept { return _stackArgsRegId; }</span></a>
+<a name="1048"><span class="lineNum">    1048 </span><span class="lineCov">       2004 :   ASMJIT_INLINE void setStackArgsRegId(uint32_t regId) { _stackArgsRegId = regId; }</span></a>
+<a name="1049"><span class="lineNum">    1049 </span>            : </a>
+<a name="1050"><span class="lineNum">    1050 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="1051"><span class="lineNum">    1051 </span>            :   // [Members]</a>
+<a name="1052"><span class="lineNum">    1052 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="1053"><span class="lineNum">    1053 </span>            : </a>
+<a name="1054"><span class="lineNum">    1054 </span>            :   uint32_t _attributes;                  //!&lt; Function attributes.</a>
+<a name="1055"><span class="lineNum">    1055 </span>            :   uint32_t _dirtyRegs[kMaxVRegKinds];    //!&lt; Registers used by the function.</a>
+<a name="1056"><span class="lineNum">    1056 </span>            : </a>
+<a name="1057"><span class="lineNum">    1057 </span>            :   uint8_t _stackFrameAlignment;          //!&lt; Minimum alignment of stack-frame.</a>
+<a name="1058"><span class="lineNum">    1058 </span>            :   uint8_t _callFrameAlignment;           //!&lt; Minimum alignment of call-frame.</a>
+<a name="1059"><span class="lineNum">    1059 </span>            :   uint8_t _stackArgsRegId;               //!&lt; Register that holds base-address to arguments passed by stack.</a>
+<a name="1060"><span class="lineNum">    1060 </span>            : </a>
+<a name="1061"><span class="lineNum">    1061 </span>            :   uint32_t _stackFrameSize;              //!&lt; Size of a stack-frame used by the function.</a>
+<a name="1062"><span class="lineNum">    1062 </span>            :   uint32_t _callFrameSize;               //!&lt; Size of a call-frame (not part of _stackFrameSize).</a>
+<a name="1063"><span class="lineNum">    1063 </span>            : };</a>
+<a name="1064"><span class="lineNum">    1064 </span>            : </a>
+<a name="1065"><span class="lineNum">    1065 </span>            : // ============================================================================</a>
+<a name="1066"><span class="lineNum">    1066 </span>            : // [asmjit::FuncFrameLayout]</a>
+<a name="1067"><span class="lineNum">    1067 </span>            : // ============================================================================</a>
+<a name="1068"><span class="lineNum">    1068 </span>            : </a>
+<a name="1069"><span class="lineNum">    1069 </span>            : //! Function-frame layout.</a>
+<a name="1070"><span class="lineNum">    1070 </span>            : //!</a>
+<a name="1071"><span class="lineNum">    1071 </span>            : //! Function layout is used directly by prolog and epilog insertion helpers. It</a>
+<a name="1072"><span class="lineNum">    1072 </span>            : //! contains only information necessary to insert proper prolog and epilog, and</a>
+<a name="1073"><span class="lineNum">    1073 </span>            : //! should be always calculated from \ref FuncDetail and \ref FuncFrameInfo, where</a>
+<a name="1074"><span class="lineNum">    1074 </span>            : //! \ref FuncDetail defines function's calling convention and signature, and \ref</a>
+<a name="1075"><span class="lineNum">    1075 </span>            : //! FuncFrameInfo specifies how much stack is used, and which registers are dirty.</a>
+<a name="1076"><span class="lineNum">    1076 </span>            : struct FuncFrameLayout {</a>
+<a name="1077"><span class="lineNum">    1077 </span>            :   ASMJIT_ENUM(Limits) {</a>
+<a name="1078"><span class="lineNum">    1078 </span>            :     kMaxVRegKinds = Globals::kMaxVRegKinds</a>
+<a name="1079"><span class="lineNum">    1079 </span>            :   };</a>
+<a name="1080"><span class="lineNum">    1080 </span>            : </a>
+<a name="1081"><span class="lineNum">    1081 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="1082"><span class="lineNum">    1082 </span>            :   // [Init / Reset]</a>
+<a name="1083"><span class="lineNum">    1083 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="1084"><span class="lineNum">    1084 </span>            : </a>
+<a name="1085"><span class="lineNum">    1085 </span>            :   ASMJIT_API Error init(const FuncDetail&amp; func, const FuncFrameInfo&amp; ffi) noexcept;</a>
+<a name="1086"><span class="lineNum">    1086 </span>            :   ASMJIT_INLINE void reset() noexcept { ::memset(this, 0, sizeof(*this)); }</a>
+<a name="1087"><span class="lineNum">    1087 </span>            : </a>
+<a name="1088"><span class="lineNum">    1088 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="1089"><span class="lineNum">    1089 </span>            :   // [Accessors]</a>
+<a name="1090"><span class="lineNum">    1090 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="1091"><span class="lineNum">    1091 </span>            : </a>
+<a name="1092"><span class="lineNum">    1092 </span><span class="lineCov">       8016 :   ASMJIT_INLINE bool hasPreservedFP() const noexcept { return static_cast&lt;bool&gt;(_preservedFP); }</span></a>
+<a name="1093"><span class="lineNum">    1093 </span><span class="lineNoCov">          0 :   ASMJIT_INLINE bool hasDsaSlotUsed() const noexcept { return static_cast&lt;bool&gt;(_dsaSlotUsed); }</span></a>
+<a name="1094"><span class="lineNum">    1094 </span><span class="lineNoCov">          0 :   ASMJIT_INLINE bool hasAlignedVecSR() const noexcept { return static_cast&lt;bool&gt;(_alignedVecSR); }</span></a>
+<a name="1095"><span class="lineNum">    1095 </span><span class="lineCov">       6012 :   ASMJIT_INLINE bool hasDynamicAlignment() const noexcept { return static_cast&lt;bool&gt;(_dynamicAlignment); }</span></a>
+<a name="1096"><span class="lineNum">    1096 </span>            : </a>
+<a name="1097"><span class="lineNum">    1097 </span><span class="lineCov">       2004 :   ASMJIT_INLINE bool hasMmxCleanup() const noexcept { return static_cast&lt;bool&gt;(_mmxCleanup); }</span></a>
+<a name="1098"><span class="lineNum">    1098 </span><span class="lineCov">       2004 :   ASMJIT_INLINE bool hasAvxCleanup() const noexcept { return static_cast&lt;bool&gt;(_avxCleanup); }</span></a>
+<a name="1099"><span class="lineNum">    1099 </span><span class="lineNoCov">          0 :   ASMJIT_INLINE bool isAvxEnabled() const noexcept { return static_cast&lt;bool&gt;(_avxEnabled); }</span></a>
+<a name="1100"><span class="lineNum">    1100 </span>            : </a>
+<a name="1101"><span class="lineNum">    1101 </span>            :   ASMJIT_INLINE uint32_t getSavedRegs(uint32_t kind) const noexcept {</a>
+<a name="1102"><span class="lineNum">    1102 </span>            :     ASMJIT_ASSERT(kind &lt; kMaxVRegKinds);</a>
+<a name="1103"><span class="lineNum">    1103 </span><span class="lineCov">       8016 :     return _savedRegs[kind];</span></a>
+<a name="1104"><span class="lineNum">    1104 </span>            :   }</a>
+<a name="1105"><span class="lineNum">    1105 </span>            : </a>
+<a name="1106"><span class="lineNum">    1106 </span>            :   //! Get stack size.</a>
+<a name="1107"><span class="lineNum">    1107 </span>            :   ASMJIT_INLINE uint32_t getStackSize() const noexcept { return _stackSize; }</a>
+<a name="1108"><span class="lineNum">    1108 </span>            :   //! Get stack alignment.</a>
+<a name="1109"><span class="lineNum">    1109 </span><span class="lineNoCov">          0 :   ASMJIT_INLINE uint32_t getStackAlignment() const noexcept { return _stackAlignment; }</span></a>
+<a name="1110"><span class="lineNum">    1110 </span>            :   //! Get the offset needed to access the function's stack (it skips call-stack).</a>
+<a name="1111"><span class="lineNum">    1111 </span>            :   ASMJIT_INLINE uint32_t getStackBaseOffset() const noexcept { return _stackBaseOffset; }</a>
+<a name="1112"><span class="lineNum">    1112 </span>            : </a>
+<a name="1113"><span class="lineNum">    1113 </span>            :   //! Get stack size required to save GP registers.</a>
+<a name="1114"><span class="lineNum">    1114 </span><span class="lineNoCov">          0 :   ASMJIT_INLINE uint32_t getGpStackSize() const noexcept { return _gpStackSize; }</span></a>
+<a name="1115"><span class="lineNum">    1115 </span>            :   //! Get stack size required to save VEC registers.</a>
+<a name="1116"><span class="lineNum">    1116 </span>            :   ASMJIT_INLINE uint32_t getVecStackSize() const noexcept { return _vecStackSize; }</a>
+<a name="1117"><span class="lineNum">    1117 </span>            : </a>
+<a name="1118"><span class="lineNum">    1118 </span>            :   ASMJIT_INLINE uint32_t getGpStackOffset() const noexcept { return _gpStackOffset; }</a>
+<a name="1119"><span class="lineNum">    1119 </span><span class="lineNoCov">          0 :   ASMJIT_INLINE uint32_t getVecStackOffset() const noexcept { return _vecStackOffset; }</span></a>
+<a name="1120"><span class="lineNum">    1120 </span>            : </a>
+<a name="1121"><span class="lineNum">    1121 </span><span class="lineCov">       2004 :   ASMJIT_INLINE uint32_t getStackArgsRegId() const noexcept { return _stackArgsRegId; }</span></a>
+<a name="1122"><span class="lineNum">    1122 </span><span class="lineNoCov">          0 :   ASMJIT_INLINE uint32_t getStackArgsOffset() const noexcept { return _stackArgsOffset; }</span></a>
+<a name="1123"><span class="lineNum">    1123 </span>            : </a>
+<a name="1124"><span class="lineNum">    1124 </span><span class="lineCov">       4008 :   ASMJIT_INLINE bool hasStackAdjustment() const noexcept { return _stackAdjustment != 0; }</span></a>
+<a name="1125"><span class="lineNum">    1125 </span>            :   ASMJIT_INLINE uint32_t getStackAdjustment() const noexcept { return _stackAdjustment; }</a>
+<a name="1126"><span class="lineNum">    1126 </span>            : </a>
+<a name="1127"><span class="lineNum">    1127 </span><span class="lineCov">       2004 :   ASMJIT_INLINE bool hasCalleeStackCleanup() const noexcept { return _calleeStackCleanup != 0; }</span></a>
+<a name="1128"><span class="lineNum">    1128 </span>            :   ASMJIT_INLINE uint32_t getCalleeStackCleanup() const noexcept { return _calleeStackCleanup; }</a>
+<a name="1129"><span class="lineNum">    1129 </span>            : </a>
+<a name="1130"><span class="lineNum">    1130 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="1131"><span class="lineNum">    1131 </span>            :   // [Members]</a>
+<a name="1132"><span class="lineNum">    1132 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="1133"><span class="lineNum">    1133 </span>            : </a>
+<a name="1134"><span class="lineNum">    1134 </span>            :   uint8_t _stackAlignment;               //!&lt; Final stack alignment of the functions.</a>
+<a name="1135"><span class="lineNum">    1135 </span>            :   uint8_t _stackBaseRegId;               //!&lt; GP register that holds address of base stack address.</a>
+<a name="1136"><span class="lineNum">    1136 </span>            :   uint8_t _stackArgsRegId;               //!&lt; GP register that holds address of the first argument passed by stack.</a>
+<a name="1137"><span class="lineNum">    1137 </span>            : </a>
+<a name="1138"><span class="lineNum">    1138 </span>            :   uint32_t _savedRegs[kMaxVRegKinds];    //!&lt; Registers that will be saved/restored in prolog/epilog.</a>
+<a name="1139"><span class="lineNum">    1139 </span>            : </a>
+<a name="1140"><span class="lineNum">    1140 </span>            :   uint32_t _preservedFP : 1;             //!&lt; Function preserves frame-pointer.</a>
+<a name="1141"><span class="lineNum">    1141 </span>            :   uint32_t _dsaSlotUsed : 1;             //!&lt; True if `_dsaSlot` contains a valid memory slot/offset.</a>
+<a name="1142"><span class="lineNum">    1142 </span>            :   uint32_t _alignedVecSR : 1;            //!&lt; Use instructions that perform aligned ops to save/restore XMM regs.</a>
+<a name="1143"><span class="lineNum">    1143 </span>            :   uint32_t _dynamicAlignment : 1;        //!&lt; Function must dynamically align the stack.</a>
+<a name="1144"><span class="lineNum">    1144 </span>            : </a>
+<a name="1145"><span class="lineNum">    1145 </span>            :   uint32_t _mmxCleanup : 1;              //!&lt; Emit 'emms' in epilog (X86).</a>
+<a name="1146"><span class="lineNum">    1146 </span>            :   uint32_t _avxCleanup : 1;              //!&lt; Emit 'vzeroupper' in epilog (X86).</a>
+<a name="1147"><span class="lineNum">    1147 </span>            :   uint32_t _avxEnabled : 1;              //!&lt; Use AVX instead of SSE for SIMD saves/restores (X86).</a>
+<a name="1148"><span class="lineNum">    1148 </span>            : </a>
+<a name="1149"><span class="lineNum">    1149 </span>            :   uint32_t _stackSize;                   //!&lt; Stack size (sum of function's stack and call stack).</a>
+<a name="1150"><span class="lineNum">    1150 </span>            :   uint32_t _stackBaseOffset;             //!&lt; Stack offset (non-zero if kFlagHasCalls is set).</a>
+<a name="1151"><span class="lineNum">    1151 </span>            :   uint32_t _stackAdjustment;             //!&lt; Stack adjustment in prolog/epilog.</a>
+<a name="1152"><span class="lineNum">    1152 </span>            :   uint32_t _stackArgsOffset;             //!&lt; Offset to the first argument passed by stack of _stackArgsRegId.</a>
+<a name="1153"><span class="lineNum">    1153 </span>            : </a>
+<a name="1154"><span class="lineNum">    1154 </span>            :   uint32_t _dsaSlot;                     //!&lt; Memory slot where the prolog inserter stores previous (unaligned) ESP.</a>
+<a name="1155"><span class="lineNum">    1155 </span>            :   uint16_t _calleeStackCleanup;          //!&lt; How many bytes the callee should add to the stack (X86 STDCALL).</a>
+<a name="1156"><span class="lineNum">    1156 </span>            :   uint16_t _gpStackSize;                 //!&lt; Stack size required to save GP regs.</a>
+<a name="1157"><span class="lineNum">    1157 </span>            :   uint16_t _vecStackSize;                //!&lt; Stack size required to save VEC regs.</a>
+<a name="1158"><span class="lineNum">    1158 </span>            :   uint32_t _gpStackOffset;               //!&lt; Offset where saved GP regs are stored.</a>
+<a name="1159"><span class="lineNum">    1159 </span>            :   uint32_t _vecStackOffset;              //!&lt; Offset where saved GP regs are stored.</a>
+<a name="1160"><span class="lineNum">    1160 </span>            : };</a>
+<a name="1161"><span class="lineNum">    1161 </span>            : </a>
+<a name="1162"><span class="lineNum">    1162 </span>            : // ============================================================================</a>
+<a name="1163"><span class="lineNum">    1163 </span>            : // [asmjit::FuncArgsMapper]</a>
+<a name="1164"><span class="lineNum">    1164 </span>            : // ============================================================================</a>
+<a name="1165"><span class="lineNum">    1165 </span>            : </a>
+<a name="1166"><span class="lineNum">    1166 </span>            : //! Assign a physical register to each function argument.</a>
+<a name="1167"><span class="lineNum">    1167 </span>            : //!</a>
+<a name="1168"><span class="lineNum">    1168 </span>            : //! This is used to specify where each function argument should be shuffled</a>
+<a name="1169"><span class="lineNum">    1169 </span>            : //! or allocated (in case it's passed by stack).</a>
+<a name="1170"><span class="lineNum">    1170 </span>            : class FuncArgsMapper {</a>
+<a name="1171"><span class="lineNum">    1171 </span>            : public:</a>
+<a name="1172"><span class="lineNum">    1172 </span>            :   struct Value {</a>
+<a name="1173"><span class="lineNum">    1173 </span>            :     // NOTE: The layout is compatible with FuncDetail::Value except stack.</a>
+<a name="1174"><span class="lineNum">    1174 </span>            :     ASMJIT_ENUM(Parts) {</a>
+<a name="1175"><span class="lineNum">    1175 </span>            :       kTypeIdShift      = 24,</a>
+<a name="1176"><span class="lineNum">    1176 </span>            :       kTypeIdMask       = 0xFF000000U,</a>
+<a name="1177"><span class="lineNum">    1177 </span>            : </a>
+<a name="1178"><span class="lineNum">    1178 </span>            :       kRegTypeShift     = 8,</a>
+<a name="1179"><span class="lineNum">    1179 </span>            :       kRegTypeMask      = 0x0000FF00U,</a>
+<a name="1180"><span class="lineNum">    1180 </span>            : </a>
+<a name="1181"><span class="lineNum">    1181 </span>            :       kRegIdShift       = 0,</a>
+<a name="1182"><span class="lineNum">    1182 </span>            :       kRegIdMask        = 0x000000FFU,</a>
+<a name="1183"><span class="lineNum">    1183 </span>            : </a>
+<a name="1184"><span class="lineNum">    1184 </span>            :       kIsAssigned       = 0x00010000U</a>
+<a name="1185"><span class="lineNum">    1185 </span>            :     };</a>
+<a name="1186"><span class="lineNum">    1186 </span>            : </a>
+<a name="1187"><span class="lineNum">    1187 </span>            :     //! Get if this value is initialized (i.e. contains a valid data).</a>
+<a name="1188"><span class="lineNum">    1188 </span><span class="lineNoCov">          0 :     ASMJIT_INLINE bool isAssigned() const noexcept { return _value != 0; }</span></a>
+<a name="1189"><span class="lineNum">    1189 </span>            :     //! Initialize this in/out by a given `typeId`, `regType`, and `regId`.</a>
+<a name="1190"><span class="lineNum">    1190 </span>            :     ASMJIT_INLINE void assign(uint32_t typeId, uint32_t regType, uint32_t regId) noexcept {</a>
+<a name="1191"><span class="lineNum">    1191 </span>            :       _value = (typeId &lt;&lt; kTypeIdShift) | (regType &lt;&lt; kRegTypeShift) | (regId &lt;&lt; kRegIdShift) | kIsAssigned;</a>
+<a name="1192"><span class="lineNum">    1192 </span>            :     }</a>
+<a name="1193"><span class="lineNum">    1193 </span>            :     //! Reset the value to its unassigned state.</a>
+<a name="1194"><span class="lineNum">    1194 </span>            :     ASMJIT_INLINE void reset() noexcept { _value = 0; }</a>
+<a name="1195"><span class="lineNum">    1195 </span>            : </a>
+<a name="1196"><span class="lineNum">    1196 </span>            :     //! Get virtual type of this argument or return value.</a>
+<a name="1197"><span class="lineNum">    1197 </span><span class="lineNoCov">          0 :     ASMJIT_INLINE uint32_t getTypeId() const noexcept { return _value &gt;&gt; kTypeIdShift; }</span></a>
+<a name="1198"><span class="lineNum">    1198 </span>            :     //! Get a register type of the register used to pass the argument or return the value.</a>
+<a name="1199"><span class="lineNum">    1199 </span><span class="lineNoCov">          0 :     ASMJIT_INLINE uint32_t getRegType() const noexcept { return (_value &amp; kRegTypeMask) &gt;&gt; kRegTypeShift; }</span></a>
+<a name="1200"><span class="lineNum">    1200 </span>            :     //! Get a physical id of the register used to pass the argument or return the value.</a>
+<a name="1201"><span class="lineNum">    1201 </span><span class="lineNoCov">          0 :     ASMJIT_INLINE uint32_t getRegId() const noexcept { return (_value &amp; kRegIdMask) &gt;&gt; kRegIdShift; }</span></a>
+<a name="1202"><span class="lineNum">    1202 </span>            : </a>
+<a name="1203"><span class="lineNum">    1203 </span>            :     uint32_t _value;</a>
+<a name="1204"><span class="lineNum">    1204 </span>            :   };</a>
+<a name="1205"><span class="lineNum">    1205 </span>            : </a>
+<a name="1206"><span class="lineNum">    1206 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="1207"><span class="lineNum">    1207 </span>            :   // [Construction / Destruction]</a>
+<a name="1208"><span class="lineNum">    1208 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="1209"><span class="lineNum">    1209 </span>            : </a>
+<a name="1210"><span class="lineNum">    1210 </span>            :   explicit ASMJIT_INLINE FuncArgsMapper(const FuncDetail* fd) noexcept { reset(fd); }</a>
+<a name="1211"><span class="lineNum">    1211 </span>            :   ASMJIT_INLINE FuncArgsMapper(const FuncArgsMapper&amp; other) noexcept {</a>
+<a name="1212"><span class="lineNum">    1212 </span>            :     ::memcpy(this, &amp;other, sizeof(*this));</a>
+<a name="1213"><span class="lineNum">    1213 </span>            :   }</a>
+<a name="1214"><span class="lineNum">    1214 </span>            : </a>
+<a name="1215"><span class="lineNum">    1215 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="1216"><span class="lineNum">    1216 </span>            :   // [Reset]</a>
+<a name="1217"><span class="lineNum">    1217 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="1218"><span class="lineNum">    1218 </span>            : </a>
+<a name="1219"><span class="lineNum">    1219 </span>            :   ASMJIT_INLINE void reset(const FuncDetail* fd = nullptr) noexcept {</a>
+<a name="1220"><span class="lineNum">    1220 </span>            :     _funcDetail = fd;</a>
+<a name="1221"><span class="lineNum">    1221 </span>            :     ::memset(_args, 0, sizeof(_args));</a>
+<a name="1222"><span class="lineNum">    1222 </span>            :   }</a>
+<a name="1223"><span class="lineNum">    1223 </span>            : </a>
+<a name="1224"><span class="lineNum">    1224 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="1225"><span class="lineNum">    1225 </span>            :   // [Accessors]</a>
+<a name="1226"><span class="lineNum">    1226 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="1227"><span class="lineNum">    1227 </span>            : </a>
+<a name="1228"><span class="lineNum">    1228 </span><span class="lineNoCov">          0 :   ASMJIT_INLINE const FuncDetail* getFuncDetail() const noexcept { return _funcDetail; }</span></a>
+<a name="1229"><span class="lineNum">    1229 </span>            :   ASMJIT_INLINE void setFuncDetail(const FuncDetail* fd) noexcept { _funcDetail = fd; }</a>
+<a name="1230"><span class="lineNum">    1230 </span>            : </a>
+<a name="1231"><span class="lineNum">    1231 </span>            :   ASMJIT_INLINE Value&amp; getArg(size_t index) noexcept {</a>
+<a name="1232"><span class="lineNum">    1232 </span>            :     ASMJIT_ASSERT(index &lt; ASMJIT_ARRAY_SIZE(_args));</a>
+<a name="1233"><span class="lineNum">    1233 </span>            :     return _args[index];</a>
+<a name="1234"><span class="lineNum">    1234 </span>            :   }</a>
+<a name="1235"><span class="lineNum">    1235 </span>            :   ASMJIT_INLINE const Value&amp; getArg(size_t index) const noexcept {</a>
+<a name="1236"><span class="lineNum">    1236 </span>            :     ASMJIT_ASSERT(index &lt; ASMJIT_ARRAY_SIZE(_args));</a>
+<a name="1237"><span class="lineNum">    1237 </span>            :     return _args[index];</a>
+<a name="1238"><span class="lineNum">    1238 </span>            :   }</a>
+<a name="1239"><span class="lineNum">    1239 </span>            : </a>
+<a name="1240"><span class="lineNum">    1240 </span>            :   ASMJIT_INLINE bool isAssigned(size_t index) const noexcept {</a>
+<a name="1241"><span class="lineNum">    1241 </span>            :     ASMJIT_ASSERT(index &lt; ASMJIT_ARRAY_SIZE(_args));</a>
+<a name="1242"><span class="lineNum">    1242 </span>            :     return _args[index].isAssigned();</a>
+<a name="1243"><span class="lineNum">    1243 </span>            :   }</a>
+<a name="1244"><span class="lineNum">    1244 </span>            : </a>
+<a name="1245"><span class="lineNum">    1245 </span>            :   ASMJIT_INLINE void assign(size_t index, const Reg&amp; reg, uint32_t typeId = TypeId::kVoid) noexcept {</a>
+<a name="1246"><span class="lineNum">    1246 </span>            :     // Not designed for virtual registers.</a>
+<a name="1247"><span class="lineNum">    1247 </span>            :     ASMJIT_ASSERT(index &lt; ASMJIT_ARRAY_SIZE(_args));</a>
+<a name="1248"><span class="lineNum">    1248 </span>            :     ASMJIT_ASSERT(reg.isPhysReg());</a>
+<a name="1249"><span class="lineNum">    1249 </span>            : </a>
+<a name="1250"><span class="lineNum">    1250 </span>            :     _args[index].assign(typeId, reg.getType(), reg.getId());</a>
+<a name="1251"><span class="lineNum">    1251 </span>            :   }</a>
+<a name="1252"><span class="lineNum">    1252 </span>            : </a>
+<a name="1253"><span class="lineNum">    1253 </span>            :   // NOTE: All `assignAll()` methods are shortcuts to assign all arguments at</a>
+<a name="1254"><span class="lineNum">    1254 </span>            :   // once, however, since registers are passed all at once these initializers</a>
+<a name="1255"><span class="lineNum">    1255 </span>            :   // don't provide any way to pass TypeId and/or to keep any argument between</a>
+<a name="1256"><span class="lineNum">    1256 </span>            :   // the arguments passed uninitialized.</a>
+<a name="1257"><span class="lineNum">    1257 </span>            :   ASMJIT_INLINE void assignAll(const Reg&amp; a0) noexcept {</a>
+<a name="1258"><span class="lineNum">    1258 </span>            :     assign(0, a0);</a>
+<a name="1259"><span class="lineNum">    1259 </span>            :   }</a>
+<a name="1260"><span class="lineNum">    1260 </span>            :   ASMJIT_INLINE void assignAll(const Reg&amp; a0, const Reg&amp; a1) noexcept {</a>
+<a name="1261"><span class="lineNum">    1261 </span>            :     assign(0, a0); assign(1, a1);</a>
+<a name="1262"><span class="lineNum">    1262 </span>            :   }</a>
+<a name="1263"><span class="lineNum">    1263 </span>            :   ASMJIT_INLINE void assignAll(const Reg&amp; a0, const Reg&amp; a1, const Reg&amp; a2) noexcept {</a>
+<a name="1264"><span class="lineNum">    1264 </span>            :     assign(0, a0); assign(1, a1); assign(2, a2);</a>
+<a name="1265"><span class="lineNum">    1265 </span>            :   }</a>
+<a name="1266"><span class="lineNum">    1266 </span>            :   ASMJIT_INLINE void assignAll(const Reg&amp; a0, const Reg&amp; a1, const Reg&amp; a2, const Reg&amp; a3) noexcept {</a>
+<a name="1267"><span class="lineNum">    1267 </span>            :     assign(0, a0); assign(1, a1); assign(2, a2); assign(3, a3);</a>
+<a name="1268"><span class="lineNum">    1268 </span>            :   }</a>
+<a name="1269"><span class="lineNum">    1269 </span>            :   ASMJIT_INLINE void assignAll(const Reg&amp; a0, const Reg&amp; a1, const Reg&amp; a2, const Reg&amp; a3, const Reg&amp; a4) noexcept {</a>
+<a name="1270"><span class="lineNum">    1270 </span>            :     assign(0, a0); assign(1, a1); assign(2, a2); assign(3, a3);</a>
+<a name="1271"><span class="lineNum">    1271 </span>            :     assign(4, a4);</a>
+<a name="1272"><span class="lineNum">    1272 </span>            :   }</a>
+<a name="1273"><span class="lineNum">    1273 </span>            :   ASMJIT_INLINE void assignAll(const Reg&amp; a0, const Reg&amp; a1, const Reg&amp; a2, const Reg&amp; a3, const Reg&amp; a4, const Reg&amp; a5) noexcept {</a>
+<a name="1274"><span class="lineNum">    1274 </span>            :     assign(0, a0); assign(1, a1); assign(2, a2); assign(3, a3);</a>
+<a name="1275"><span class="lineNum">    1275 </span>            :     assign(4, a4); assign(5, a5);</a>
+<a name="1276"><span class="lineNum">    1276 </span>            :   }</a>
+<a name="1277"><span class="lineNum">    1277 </span>            :   ASMJIT_INLINE void assignAll(const Reg&amp; a0, const Reg&amp; a1, const Reg&amp; a2, const Reg&amp; a3, const Reg&amp; a4, const Reg&amp; a5, const Reg&amp; a6) noexcept {</a>
+<a name="1278"><span class="lineNum">    1278 </span>            :     assign(0, a0); assign(1, a1); assign(2, a2); assign(3, a3);</a>
+<a name="1279"><span class="lineNum">    1279 </span>            :     assign(4, a4); assign(5, a5); assign(6, a6);</a>
+<a name="1280"><span class="lineNum">    1280 </span>            :   }</a>
+<a name="1281"><span class="lineNum">    1281 </span>            :   ASMJIT_INLINE void assignAll(const Reg&amp; a0, const Reg&amp; a1, const Reg&amp; a2, const Reg&amp; a3, const Reg&amp; a4, const Reg&amp; a5, const Reg&amp; a6, const Reg&amp; a7) noexcept {</a>
+<a name="1282"><span class="lineNum">    1282 </span>            :     assign(0, a0); assign(1, a1); assign(2, a2); assign(3, a3);</a>
+<a name="1283"><span class="lineNum">    1283 </span>            :     assign(4, a4); assign(5, a5); assign(6, a6); assign(7, a7);</a>
+<a name="1284"><span class="lineNum">    1284 </span>            :   }</a>
+<a name="1285"><span class="lineNum">    1285 </span>            : </a>
+<a name="1286"><span class="lineNum">    1286 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="1287"><span class="lineNum">    1287 </span>            :   // [Utilities]</a>
+<a name="1288"><span class="lineNum">    1288 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="1289"><span class="lineNum">    1289 </span>            : </a>
+<a name="1290"><span class="lineNum">    1290 </span>            :   //! Update `FuncFrameInfo` accordingly to FuncArgsMapper.</a>
+<a name="1291"><span class="lineNum">    1291 </span>            :   //!</a>
+<a name="1292"><span class="lineNum">    1292 </span>            :   //! This method must be called if you use `FuncArgsMapper` and you plan to</a>
+<a name="1293"><span class="lineNum">    1293 </span>            :   //! use `FuncUtils::allocArgs()` to remap all arguments after the prolog is</a>
+<a name="1294"><span class="lineNum">    1294 </span>            :   //! inserted.</a>
+<a name="1295"><span class="lineNum">    1295 </span>            :   ASMJIT_API Error updateFrameInfo(FuncFrameInfo&amp; ffi) const noexcept;</a>
+<a name="1296"><span class="lineNum">    1296 </span>            : </a>
+<a name="1297"><span class="lineNum">    1297 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="1298"><span class="lineNum">    1298 </span>            :   // [Members]</a>
+<a name="1299"><span class="lineNum">    1299 </span>            :   // --------------------------------------------------------------------------</a>
+<a name="1300"><span class="lineNum">    1300 </span>            : </a>
+<a name="1301"><span class="lineNum">    1301 </span>            :   const FuncDetail* _funcDetail;         //!&lt; Function detail.</a>
+<a name="1302"><span class="lineNum">    1302 </span>            :   Value _args[kFuncArgCountLoHi];        //!&lt; Mapping of each function argument.</a>
+<a name="1303"><span class="lineNum">    1303 </span>            : };</a>
+<a name="1304"><span class="lineNum">    1304 </span>            : </a>
+<a name="1305"><span class="lineNum">    1305 </span>            : // ============================================================================</a>
+<a name="1306"><span class="lineNum">    1306 </span>            : // [asmjit::FuncUtils]</a>
+<a name="1307"><span class="lineNum">    1307 </span>            : // ============================================================================</a>
+<a name="1308"><span class="lineNum">    1308 </span>            : </a>
+<a name="1309"><span class="lineNum">    1309 </span>            : struct FuncUtils {</a>
+<a name="1310"><span class="lineNum">    1310 </span>            :   ASMJIT_API static Error emitProlog(CodeEmitter* emitter, const FuncFrameLayout&amp; layout);</a>
+<a name="1311"><span class="lineNum">    1311 </span>            :   ASMJIT_API static Error emitEpilog(CodeEmitter* emitter, const FuncFrameLayout&amp; layout);</a>
+<a name="1312"><span class="lineNum">    1312 </span>            :   ASMJIT_API static Error allocArgs(CodeEmitter* emitter, const FuncFrameLayout&amp; layout, const FuncArgsMapper&amp; args);</a>
+<a name="1313"><span class="lineNum">    1313 </span>            : };</a>
+<a name="1314"><span class="lineNum">    1314 </span>            : </a>
+<a name="1315"><span class="lineNum">    1315 </span>            : //! \}</a>
+<a name="1316"><span class="lineNum">    1316 </span>            : </a>
+<a name="1317"><span class="lineNum">    1317 </span>            : } // asmjit namespace</a>
+<a name="1318"><span class="lineNum">    1318 </span>            : } // namespace PLMD</a>
+<a name="1319"><span class="lineNum">    1319 </span>            : </a>
+<a name="1320"><span class="lineNum">    1320 </span>            : // [Api-End]</a>
+<a name="1321"><span class="lineNum">    1321 </span>            : #include &quot;./asmjit_apiend.h&quot;</a>
+<a name="1322"><span class="lineNum">    1322 </span>            : </a>
+<a name="1323"><span class="lineNum">    1323 </span>            : // [Guard]</a>
+<a name="1324"><span class="lineNum">    1324 </span>            : #endif // _ASMJIT_BASE_FUNC_H</a>
+<a name="1325"><span class="lineNum">    1325 </span>            : #pragma GCC diagnostic pop</a>
+<a name="1326"><span class="lineNum">    1326 </span>            : #endif // __PLUMED_HAS_ASMJIT</a>
+<a name="1327"><span class="lineNum">    1327 </span>            : #endif</a>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="https://github.com/linux-test-project/lcov" target="_parent">LCOV version 1.16</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>
